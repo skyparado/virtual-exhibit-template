@@ -86,6 +86,8 @@ Add this at the very top of your `.mdx` file before any content:
 layout: ../layouts/ExhibitLayout.astro
 title: "Your Title Here"
 description: "A short description of your topic."
+author: "Surname, Firstname; Surname2, Firstname2"
+readingTime: "67 minutes"
 ---
 ```
 
