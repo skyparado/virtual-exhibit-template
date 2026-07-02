@@ -15,61 +15,71 @@ function createSlideshow(imgId, images) {
 // ===== Text-to-Punch Card Simulator (typewriter-driven) =====
 (function () {
   const canvas = document.getElementById('punchCanvas');
-  if (!canvas) return; // section not on page, skip
+  if (!canvas) return;
   const ctx = canvas.getContext('2d');
 
   const DPR = window.devicePixelRatio || 1;
-  const W_CSS = 900, H_CSS = 220;
-  canvas.width = W_CSS * DPR;
-  canvas.height = H_CSS * DPR;
-  canvas.style.width = W_CSS + 'px';
-  canvas.style.height = H_CSS + 'px';
-  ctx.scale(DPR, DPR);
 
   const MAX_COLS = 40;
   const ROW_LABELS = ['12', '11', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
   const TOP_MARGIN = 26;
   const LEFT_MARGIN = 36;
   const ROW_GAP = 15;
-  const COL_GAP = (W_CSS - LEFT_MARGIN - 20) / MAX_COLS;
 
   let buffer = '';
   let shiftLock = false;
   let shiftHeld = false;
 
-  // Hollerith code: returns array of row indices (0-11, matching ROW_LABELS) to punch
+  // ── Canvas resize ─────────────────────────────────────────────
+  function getW() {
+    return canvas.parentElement.clientWidth || 900;
+  }
+
+  function resizeCanvas() {
+    const W = getW();
+    const H = 220;
+    canvas.width  = W * DPR;
+    canvas.height = H * DPR;
+    canvas.style.width  = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(DPR, DPR);
+    drawCard(buffer);
+  }
+
+  window.addEventListener('resize', resizeCanvas);
+
+  // ── Hollerith encoding ────────────────────────────────────────
   function charToRows(ch) {
     const c = ch.toUpperCase();
     if (c === ' ') return [];
 
     if (c >= '0' && c <= '9') {
-      const d = parseInt(c, 10);
-      return [2 + d];
+      return [2 + parseInt(c, 10)];
     }
 
     if (c >= 'A' && c <= 'Z') {
       const code = c.charCodeAt(0) - 65;
-      if (code <= 8) {
-        const digit = code + 1;
-        return [0, 2 + digit];
-      } else if (code <= 17) {
-        const digit = code - 9 + 1;
-        return [1, 2 + digit];
-      } else {
-        const digit = code - 18 + 2;
-        return [2, 2 + digit];
-      }
+      if (code <= 8)  return [0, 2 + code + 1];
+      if (code <= 17) return [1, 2 + (code - 9) + 1];
+      return [2, 2 + (code - 18) + 2];
     }
 
-    return []; // punctuation left unpunched
+    return [];
   }
 
+  // ── Draw ──────────────────────────────────────────────────────
   function drawCard(text) {
-    ctx.clearRect(0, 0, W_CSS, H_CSS);
+    const W = getW();
+    const H = 220;
+    const COL_GAP = (W - LEFT_MARGIN - 20) / MAX_COLS;
+
+    ctx.clearRect(0, 0, W, H);
 
     ctx.fillStyle = '#e8dfc0';
-    ctx.fillRect(0, 0, W_CSS, H_CSS);
+    ctx.fillRect(0, 0, W, H);
 
+    // Row labels
     ctx.font = '9px "Space Mono", monospace';
     ctx.textAlign = 'right';
     ctx.fillStyle = '#665f45';
@@ -83,15 +93,17 @@ function createSlideshow(imgId, images) {
     for (let col = 0; col < MAX_COLS; col++) {
       const x = LEFT_MARGIN + col * COL_GAP + COL_GAP / 2;
 
+      // Column number labels
       if ((col + 1) % 5 === 0 || col === 0) {
         ctx.font = '7px "Space Mono", monospace';
         ctx.fillStyle = '#9c916c';
         ctx.textAlign = 'center';
-        ctx.fillText(String(col + 1), x, H_CSS - 5);
+        ctx.fillText(String(col + 1), x, H - 5);
       }
 
       const punched = chars[col] ? charToRows(chars[col]) : [];
 
+      // Draw holes
       for (let r = 0; r < ROW_LABELS.length; r++) {
         const y = TOP_MARGIN + r * ROW_GAP;
         const isPunched = punched.includes(r);
@@ -111,6 +123,7 @@ function createSlideshow(imgId, images) {
         }
       }
 
+      // Character label above card
       if (chars[col]) {
         ctx.font = 'bold 10px "Space Mono", monospace';
         ctx.fillStyle = '#3a3520';
@@ -119,7 +132,7 @@ function createSlideshow(imgId, images) {
       }
     }
 
-    // blinking cursor on next free column
+    // Blinking cursor
     const cursorCol = chars.length;
     if (cursorCol < MAX_COLS) {
       const x = LEFT_MARGIN + cursorCol * COL_GAP + COL_GAP / 2;
@@ -131,18 +144,17 @@ function createSlideshow(imgId, images) {
       ctx.stroke();
     }
 
+    // Card border
     ctx.strokeStyle = '#9c916c';
     ctx.lineWidth = 1.5;
-    ctx.strokeRect(2, 2, W_CSS - 4, H_CSS - 4);
+    ctx.strokeRect(2, 2, W - 4, H - 4);
   }
 
   function updateOutput() {
     const outEl = document.getElementById('punchOutput');
-    if (!buffer.trim()) {
-      outEl.textContent = '';
-      return;
-    }
-    const shown = buffer.slice(0, MAX_COLS);
+    if (!outEl) return;
+    if (!buffer.trim()) { outEl.textContent = ''; return; }
+    const shown   = buffer.slice(0, MAX_COLS);
     const punched = shown.split('').filter(ch => charToRows(ch).length > 0).length;
     const skipped = shown.length - punched;
     outEl.textContent = `Column ${Math.min(buffer.length, MAX_COLS)} of ${MAX_COLS} — "${shown}" (${punched} punched, ${skipped} skipped)`;
@@ -153,15 +165,16 @@ function createSlideshow(imgId, images) {
     updateOutput();
   }
 
-  // ---- Keyboard wiring ----
-  const keys = document.querySelectorAll('.tw-key[data-char], .tw-spacebar[data-char]');
-  const actionKeys = document.querySelectorAll('.tw-key[data-action]');
+  // ── Keyboard wiring ───────────────────────────────────────────
+  const keys        = document.querySelectorAll('.tw-key[data-char], .tw-spacebar[data-char]');
+  const actionKeys  = document.querySelectorAll('.tw-key[data-action]');
   const shiftLockKey = document.getElementById('shiftLockKey');
-  const shiftKeys = [document.getElementById('shiftKeyLeft'), document.getElementById('shiftKeyRight')];
+  const shiftKeys   = [
+    document.getElementById('shiftKeyLeft'),
+    document.getElementById('shiftKeyRight'),
+  ];
 
-  function isShiftActive() {
-    return shiftLock || shiftHeld;
-  }
+  function isShiftActive() { return shiftLock || shiftHeld; }
 
   function updateShiftVisuals() {
     if (shiftLockKey) shiftLockKey.classList.toggle('tw-active', shiftLock);
@@ -170,9 +183,9 @@ function createSlideshow(imgId, images) {
 
   keys.forEach(key => {
     key.addEventListener('click', () => {
-      const baseChar = key.getAttribute('data-char');
+      const baseChar  = key.getAttribute('data-char');
       const shiftChar = key.getAttribute('data-shift');
-      let charToAdd = baseChar;
+      let charToAdd   = baseChar;
 
       if (isShiftActive()) {
         if (shiftChar) {
@@ -190,7 +203,6 @@ function createSlideshow(imgId, images) {
       key.classList.add('tw-pressed');
       setTimeout(() => key.classList.remove('tw-pressed'), 100);
 
-      // momentary shift releases after one keystroke (like a real shift key)
       if (shiftHeld && !shiftLock) {
         shiftHeld = false;
         updateShiftVisuals();
@@ -218,6 +230,6 @@ function createSlideshow(imgId, images) {
     });
   });
 
-  // Init
-  drawCard('');
+  // Init — wait for layout to settle before first draw
+  requestAnimationFrame(resizeCanvas);
 })();
