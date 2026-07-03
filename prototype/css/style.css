@@ -751,6 +751,7 @@ body {
 .article-body h3 {
   font-family: var(--font-head);
   font-size: 1rem;
+  font-weight: normal;
   color: var(--accent-magenta);
   letter-spacing: 2px;
   margin: 1.5rem 0 0.75rem;
@@ -798,6 +799,7 @@ body {
 .compare-table th {
   font-family: var(--font-head);
   font-size: 1rem;
+  font-weight: normal;
   color: var(--accent-cyan);
   letter-spacing: 1.5px;
   text-align: left;

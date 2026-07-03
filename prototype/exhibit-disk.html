@@ -28,8 +28,8 @@
       <h2 class="toc-heading">Contents</h2>
       <ul class="toc-list" id="tocList">
         <li><a href="#intro">Introduction</a></li>
-        <li><a href="#magnetic-recording">Magnetic Recording</a></li>
-        <li><a href="#hdd-anatomy">HDD Anatomy</a></li>
+        <li><a href="#magnetic-recording">Magnetic Storage Principle</a></li>
+        <li><a href="#hdd-anatomy">Key Components of an HDD</a></li>
         <li><a href="#access">Random vs. Sequential Access</a></li>
         <li><a href="#areal-density">Areal Density &amp; Capacity</a></li>
         <li><a href="#memory-hierarchy">Memory Hierarchy</a></li>
@@ -67,96 +67,130 @@
           </p>
         </section>
 
-        <!-- ── MAGNETIC RECORDING ─────────────────────────────────── -->
+        <!-- ── MAGNETIC STORAGE PRINCIPLE ─────────────────────────── -->
         <section id="magnetic-recording">
-          <h2>Magnetic Recording Principles</h2>
+          <h2>Magnetic Storage Principle</h2>
           <p style="text-align:justify;">
-            At the core of every hard drive is a deceptively simple physical fact: magnetic
-            materials can be polarized in one of two stable orientations, and that orientation
-            can be detected and changed by a nearby magnetic field. This binary stability —
-            north or south, 1 or 0 — is what makes magnetic media a natural fit for storing
-            digital information (Seagate, 2023).
+            Magnetic storage is a long-term and non-volatile way of storing analog, digital, and
+            alphanumeric data. Magnetic storage technology fundamentally operates by defining
+            different magnetization states of a magnetic medium to represent binary data,
+            specifically '1' and '0'. The storage of information is achieved by actively changing
+            the magnetization state of this magnetic medium (Sun, 2024). In most applications, an
+            electric current is employed to generate a changing magnetic field across a specially
+            prepared tape or disk that imprints the tape or disk with patterns that, when "read"
+            by an electromagnetic drive "head," mimics the wavelengths of the original signal
+            (Meyers, 2021).
           </p>
 
           <h3>Writing Data</h3>
           <p style="text-align:justify;">
-            A write head consists of a tiny electromagnet with a gap cut into its core. When
-            current flows through the coil, it generates a fringing magnetic field at that gap
-            — strong enough to polarize the magnetic grains on the disk surface directly beneath
-            it. Reversing the current reverses the field direction, writing the opposite bit.
-            Because the disk is spinning rapidly beneath the head, each polarity reversal is
-            laid down as a short magnetized region along a circular track (Patterson &amp;
-            Hennessy, 2017).
+            During the write process, a write current I<sub>w</sub> flows through the write coil,
+            generating magnetic flux in the soft magnetic yoke that concentrates in the main pole,
+            creating a high magnetic field (1.2–2T) in a small area adjacent to the recording
+            medium. This perpendicular magnetic field creates magnetization transitions in the
+            hard recording layer when it exceeds the medium coercivity H<sub>c</sub>, forming a
+            write bubble where the field is sufficient for recording. As the head flies over the
+            medium, the write bubble has leading and trailing edges, and when the write current
+            changes polarity, the field reverses instantaneously, forming sharp magnetization
+            transitions on the trailing edge (Heidmann &amp; Taratorin, 2011).
           </p>
 
           <h3>Reading Data</h3>
           <p style="text-align:justify;">
-            Early drives used an inductive read head — the same coil that wrote data could
-            also detect the voltage induced as magnetized regions passed beneath it. Modern
-            drives use a separate magnetoresistive (MR) read element, whose electrical
-            resistance changes in response to the magnetic field of the passing data regions.
-            This approach is far more sensitive, allowing the detection of much smaller and
-            more densely packed magnetic domains (Iwasaki, 1980).
+            The read process uses a sensitive multilayer element (TMR or GMR sensor) placed
+            between soft magnetic shields that detects the magnetic fields from previously
+            recorded transitions. During reading operations, the sensor is exposed to local
+            magnetic fields from the recorded data, and changes in sensor resistance are
+            transformed into playback voltage by read channel electronics, enabling data
+            detection and recovery (Heidmann &amp; Taratorin, 2011).
           </p>
 
           <h3>Perpendicular Magnetic Recording (PMR)</h3>
           <p style="text-align:justify;">
             For most of the HDD's history, bits were recorded longitudinally — the magnetic
-            domains lay flat along the surface, end to end. As areal density pushed higher,
-            neighboring domains began interfering with each other, creating a physical limit.
-            The shift to <strong>perpendicular magnetic recording</strong>, which orients domains
-            vertically (standing on end, like fence posts), dramatically reduced this interference
-            and enabled far greater bit density on the same physical area. Seagate and Hitachi
-            introduced commercial PMR drives in 2005 (Kryder, 2005).
+            domains lay flat along the surface, end to end. The main feature of
+            <strong>Perpendicular Magnetic Recording (PMR)</strong> is that the magnetic
+            induction direction is perpendicular to the direction of magnetic head movement,
+            rather than longitudinally (parallel to the surface) as in older technologies. This
+            vertical orientation allows for a higher density of data storage because the magnetic
+            domains can be packed more closely together without interfering with each other as
+            much as horizontally oriented domains would (Sun, 2024).
           </p>
+
+          <figure class="figure-placeholder">
+            <img src="images/PMR.png" alt="Diagrams of longitudinal and perpendicular magnetic storage structures" class="figure-img figure-img-pmr" />
+            <figcaption>
+              Fig. 1 Diagrams of (a) longitudinal and (b) perpendicular magnetic storage structures
+            </figcaption>
+          </figure>
         </section>
 
-        <!-- ── HDD ANATOMY ────────────────────────────────────────── -->
+        <!-- ── KEY COMPONENTS OF AN HDD ───────────────────────────── -->
         <section id="hdd-anatomy">
-          <h2>Platters, Read/Write Heads, and Actuator Arms</h2>
-          <p style="text-align:justify;">
-            A modern hard disk drive is a precision mechanical assembly. Understanding its
-            components reveals why it performs as it does — and why each part became a target
-            for engineering improvement across decades.
-          </p>
+          <h2>Key Components of an HDD</h2>
+
+          <figure class="figure-placeholder">
+            <img src="images/hdd-components.jpg" alt="Diagram of a hard disk drive's internal components" class="figure-img figure-img-hdd" />
+            <figcaption>
+              Source: <a href="https://itpartsupply.com/blog/what-is-a-hard-disk-drive-actuator/" target="_blank" rel="noopener">itpartsupply.com</a>
+            </figcaption>
+          </figure>
 
           <h3>Platters</h3>
           <p style="text-align:justify;">
-            Platters are rigid disks, typically made of aluminum or glass, coated with a thin
-            layer of ferromagnetic material — originally iron oxide, later cobalt-based alloys
-            for higher coercivity. A single drive may contain one to eight stacked platters,
-            each with two recordable surfaces, spinning at a constant speed. Consumer drives
-            typically spin at 5,400 or 7,200 RPM; high-performance enterprise drives run at
-            10,000 or even 15,000 RPM (Seagate, 2023).
+            The platter is the primary storage component of a hard disk drive (HDD). It is a
+            circular disk typically made of aluminum, glass, or ceramic, with glass commonly used
+            in smaller drives because of its smoother surface. The platter is coated with several
+            thin magnetic and protective layers that enable data to be stored magnetically while
+            improving durability. Data is organized into tracks (concentric circles), sectors
+            (subdivisions of tracks), magnetic domains (which represent binary data), and
+            cylinders (aligned tracks across multiple platters) (Tuteja, 2026).
           </p>
           <p style="text-align:justify;">
-            Data is organized on each surface in concentric rings called <strong>tracks</strong>,
-            which are further subdivided into <strong>sectors</strong> (traditionally 512 bytes,
-            more recently 4,096 bytes with Advanced Format). The set of tracks at the same
-            radial position across all platter surfaces forms a <strong>cylinder</strong>.
+            Because the platter stores data magnetically, it is highly sensitive to contamination
+            and physical damage. Even a tiny particle of dust can scratch its surface during
+            operation, potentially causing data loss or drive failure. For this reason, HDDs are
+            assembled and opened only in specialized cleanroom environments. Dampers or
+            separators are also placed between platters to reduce air turbulence and noise, while
+            the head stack assembly, which carries the read/write heads, is even more delicate
+            than the platters themselves.
           </p>
 
           <h3>Read/Write Heads</h3>
           <p style="text-align:justify;">
-            Each platter surface has a dedicated read/write head. These heads do not physically
-            touch the surface — they float on a thin film of air (the "air bearing") generated
-            by the spinning platter, at a distance of just a few nanometers. This flying height
-            has shrunk dramatically over decades: early IBM drives flew at around 20 micrometers;
-            modern drives fly at under 5 nanometers, a distance smaller than most virus particles
-            (Patterson &amp; Hennessy, 2017).
+            Read/write heads are tiny electromagnetic components located at the head of a hard
+            disk drive's mechanical swivel arm. When the magnetic disks rotate, they are floating
+            at the nanoscale above the ferromagnetic data layer on a tiny air cushion. Mechanical
+            hard drives have rotation speeds ranging from 5,400 to 15,000 rpm (revolutions per
+            minute) (Evers, n.d.).
+          </p>
+          <p style="text-align:justify;">
+            These heads are responsible for writing data to and reading data from the HDD
+            platters. During the writing process, they generate a magnetic field that changes the
+            orientation of magnetic regions on the platter, allowing data to be stored through
+            remanent magnetization. During the reading process, the heads detect these magnetic
+            orientations as induced electrical signals, which are interpreted as stored data. The
+            number of read/write heads depends on the number of writable magnetic surfaces in the
+            drive (Evers, n.d.).
           </p>
 
           <h3>Actuator Arm</h3>
           <p style="text-align:justify;">
-            All the heads are mounted on a single actuator arm assembly that pivots on a
-            voice-coil actuator — an electromagnet that moves the arm across the platter radius
-            with high precision. When the drive needs to access a different track, the actuator
-            swings the heads to the correct radial position. This movement is called a
-            <strong>seek</strong>, and the time it takes — seek time — is one of the primary
-            performance bottlenecks of an HDD. A typical modern consumer drive has an average
-            seek time of 8–12 milliseconds (Western Digital, 2022).
+            The actuator arm (frequently referred to as the E-block) serves as the primary
+            physical chassis within a hard disk drive (HDD) that mechanically bridges the
+            controller's magnetic drive commands with the data surfaces of the disk platters
+            (Trawiński, 2018). Driven by an electromagnetic Voice Coil Motor (VCM), this rigid
+            aluminum component swings radially across the spinning platters to position the
+            attached hardware precisely over microscale data tracks (Horsley et al., 1998; Sankar
+            et al., 2008). Because every read/write head is mounted onto this single, unified arm
+            assembly, all of the heads physically move in perfect unison across the media
+            surfaces. Consequently, while only one specific head activates to read or write data
+            at any given microsecond, the entire array of heads simultaneously hovers over the
+            exact same vertical cylinder of data across the various stacked platter layers
+            (Sankar et al., 2008).
           </p>
 
+          <h3>Table of HDD Internal Components</h3>
           <table class="compare-table" style="margin-top:1.25rem;">
             <thead>
               <tr>
@@ -204,7 +238,7 @@
         <section id="access">
           <h2>Random Access vs. Sequential Access</h2>
           <p style="text-align:justify;">
-            One of the HDD's defining advantages over its predecessor — magnetic tape — was its
+            One of the HDD's defining advantages over its predecessor, magnetic tape, was its
             ability to access data in any order without rewinding through intervening content.
             This capability is called <strong>random access</strong>, and it transformed how
             operating systems and databases could be designed.
@@ -212,27 +246,32 @@
 
           <h3>Sequential Access</h3>
           <p style="text-align:justify;">
-            In sequential access, data is read or written in a fixed linear order — each byte
-            follows the previous one along the track. Magnetic tape operates this way: to reach
-            data at position 1,000, you must fast-forward past positions 1 through 999. Sequential
-            access is efficient when reading large contiguous files (streaming video, large backups)
-            but impractical for workloads that require jumping between unrelated locations
-            (Tanenbaum, 2014).
+            Sequential access is a method of reading or writing data in a fixed, linear order,
+            processing information one piece at a time from the beginning toward the end
+            (GeeksforGeeks, 2025). Although it can be slower when accessing specific data, it is
+            efficient for workloads where data is processed in a predictable sequence. This
+            method also benefits from spatial locality, allowing nearby data to be accessed
+            efficiently and enabling techniques such as prefetching, where data is loaded into
+            faster memory before it is needed (Mishra, 2025).
           </p>
 
           <h3>Random Access</h3>
           <p style="text-align:justify;">
-            An HDD can swing its actuator arm to any track within milliseconds, then wait for
-            the platter to rotate the target sector beneath the head — a delay called
-            <strong>rotational latency</strong>. On a 7,200 RPM drive, average rotational latency
-            is about 4.2 milliseconds. The combination of seek time and rotational latency gives
-            an effective random-access latency of roughly 10–20 milliseconds — far slower than
-            DRAM (nanoseconds), but orders of magnitude faster than tape (seconds to minutes).
+            Random access allows data to be read or written directly from any location in memory
+            or storage without following a sequential order (GeeksforGeeks, 2025). This enables
+            fast retrieval of specific data regardless of its physical location, making it well
+            suited for storage devices such as hard disk drives (HDDs) and solid-state drives
+            (SSDs). However, because data requests may be scattered across different locations,
+            random access can result in more cache misses and higher latency than sequential
+            access (Mishra, 2024).
           </p>
           <p style="text-align:justify;">
-            This random-access capability made the HDD the natural home for file systems,
-            relational databases, and virtual memory swap space — workloads that constantly
-            jump between unrelated data locations (Patterson &amp; Hennessy, 2017).
+            Reading from or writing to an HDD begins with a seek, where the actuator arm moves
+            the read/write head to the correct track (typically 2–10 ms). The drive then waits
+            for the target sector to rotate beneath the head, known as rotational latency (about
+            4 ms at 7,500 RPM), before transferring data at around 100–150 MB/s. The combined
+            seek time and rotational latency is called disk latency, which is typically 5–10 ms
+            (Stanford University, n.d.).
           </p>
         </section>
 
@@ -241,15 +280,18 @@
           <h2>Storage Capacity Scaling and Areal Density</h2>
           <p style="text-align:justify;">
             Areal density measures how many bits can be stored per unit area of disk surface,
-            typically expressed in gigabits per square inch (Gb/in²). It is the fundamental
-            driver of HDD capacity growth — the same physical disk form factor stores more
-            data with each generation simply by packing bits closer together.
+            typically expressed in gigabits per square inch (Gb/in²) or megabits per square inch
+            (Mb/in²). It is the fundamental driver of HDD capacity growth — the same physical
+            disk form factor stores more data with each generation simply by packing bits closer
+            together (Thompson &amp; Best, 2000).
           </p>
           <p style="text-align:justify;">
-            From 1956 to the early 2000s, areal density roughly doubled every 18 months — a
-            pace that tracked closely with Moore's Law in semiconductors. This compounding
+            From 1956 to the early 2000s, areal density roughly doubled every 12 to 18 months —
+            a pace that tracked closely with, and occasionally exceeded, Moore's Law in
+            semiconductors (Quick &amp; Choo, 2014; Thompson &amp; Best, 2000). This compounding
             improvement of approximately 60–100% per year was the engine behind HDD capacity
-            growing from 5 MB in 1956 to multiple terabytes by the 2010s (Kryder, 2005).
+            growing from under 5 MB in 1956 to multiple terabytes by the 2010s (Goda &amp;
+            Kitsuregawa, 2012; Haug &amp; Drazen, 2023).
           </p>
 
           <div class="density-chart">
@@ -296,9 +338,9 @@
           </div>
 
           <p style="text-align:justify; margin-top:0.75rem; font-size:0.82rem; color:rgba(170,170,204,0.55); font-style:italic;">
-            Areal density figures are approximate, compiled from Seagate (2023) and Kryder (2005).
-            The logarithmic nature of the growth means even the smallest early bars represent
-            enormous engineering achievements.
+            Figure Caption. Areal density figures are approximate, compiled from industry data.
+            The logarithmic nature of this growth means even the smallest early incremental steps
+            represent monumental engineering achievements.
           </p>
 
           <h3>Technologies That Enabled Growth</h3>
@@ -315,13 +357,27 @@
 
         <!-- ── MEMORY HIERARCHY ───────────────────────────────────── -->
         <section id="memory-hierarchy">
-          <h2>HDD Role in the Memory Hierarchy</h2>
+          <h2>HDD Role in Memory Hierarchy</h2>
+
+          <h3>The Principle of the Memory Hierarchy</h3>
           <p style="text-align:justify;">
-            Computer architects organize storage into a hierarchy based on speed, cost, and
-            capacity. Faster storage is more expensive per byte and therefore smaller; slower
-            storage is cheaper and therefore larger. The HDD occupied the secondary storage
-            tier of this hierarchy for decades — below RAM in speed and cost, but above magnetic
-            tape in both (Patterson &amp; Hennessy, 2017).
+            The fundamental organization of computer storage into a pyramid of varying speeds,
+            costs, and capacities is dictated by the principle of locality of reference (temporal
+            and spatial locality).
+          </p>
+
+          <figure class="figure-placeholder">
+            <img src="images/memory-hierarchy.png" alt="Pyramid diagram of the computer memory storage hierarchy" class="figure-img figure-img-mem" />
+            <figcaption>
+              Source: <a href="https://www.shutterstock.com/image-vector/hierarchy-storage-memory-computer-2024777099" target="_blank" rel="noopener">shutterstock.com</a>
+            </figcaption>
+          </figure>
+
+          <p style="text-align:justify;">
+            Faster storage is more expensive per byte and therefore smaller; slower storage is
+            cheaper and therefore larger. The HDD occupied the secondary storage tier of this
+            hierarchy for decades; below RAM in speed and cost, but above magnetic tape in both
+            (Hennessy &amp; Patterson, 2017).
           </p>
 
           <div class="mem-hierarchy">
@@ -354,12 +410,12 @@
 
           <p style="text-align:justify;">
             Because the HDD is orders of magnitude slower than DRAM but orders of magnitude
-            cheaper per byte, operating systems use it for <strong>virtual memory</strong> — swapping
-            pages of RAM content to disk when physical memory is full. File systems, databases,
-            and application data all reside permanently on the HDD, loaded into RAM only when
-            needed. This two-tier arrangement of DRAM + HDD was the dominant computing model
-            from the 1970s until SSDs became cost-competitive in the early 2010s
-            (Tanenbaum, 2014).
+            cheaper per byte, operating systems use it for <strong>virtual memory</strong> —
+            swapping pages of RAM content to disk when physical memory is full (Tanenbaum &amp;
+            Bos, 2014). File systems, databases, and application data all reside permanently on
+            the HDD, loaded into RAM only when needed. This two-tier arrangement of DRAM + HDD
+            was the dominant computing model from the 1970s until SSDs became cost-competitive in
+            the early 2010s (Tanenbaum &amp; Bos, 2014).
           </p>
         </section>
 
@@ -480,31 +536,86 @@
           <h2>References</h2>
           <ul>
             <li>
-              Iwasaki, S. (1980). Perpendicular magnetic recording.
-              <em>IEEE Transactions on Magnetics, 16</em>(1), 71–76.
-              https://doi.org/10.1109/TMAG.1980.1060738
+              Evers, S. (n.d.). <em>Read/Write heads.</em> Attingo Data Rescue.
+              https://www.attingo.com/keywords/read-write-heads/
             </li>
             <li>
-              Kryder, M. H. (2005). After hard drives — what comes next?
-              <em>IEEE Transactions on Magnetics, 41</em>(10), 2856–2862.
-              https://doi.org/10.1109/TMAG.2005.854269
+              GeeksforGeeks. (2025). <em>Difference between sequential and random memory access.</em>
+              GeeksforGeeks.
+              https://www.geeksforgeeks.org/computer-organization-architecture/difference-between-sequential-and-random-memory-access/
             </li>
             <li>
-              Patterson, D. A., &amp; Hennessy, J. L. (2017).
-              <em>Computer organization and design: The hardware/software interface</em>
-              (5th ed.). Morgan Kaufmann.
+              Goda, K., &amp; Kitsuregawa, M. (2012). The history of storage systems.
+              <em>Proceedings of the IEEE, 100</em>(Special Centennial Issue), 1433–1440.
+              https://doi.org/10.1109/jproc.2012.2189787
             </li>
             <li>
-              Seagate. (2023). <em>Hard disk drive basics.</em>
-              https://www.seagate.com/do-more/everything-you-wanted-to-know-about-hard-drives-master-dm/
+              Haug, C. J., &amp; Drazen, J. M. (2023). Artificial intelligence and machine
+              learning in clinical medicine, 2023.
+              <em>New England Journal of Medicine, 388</em>(13), 1201–1208.
+              https://doi.org/10.1056/nejmra2302038
             </li>
             <li>
-              Tanenbaum, A. S. (2014).
-              <em>Modern operating systems</em> (4th ed.). Pearson.
+              Heidmann, J., &amp; Taratorin, A. M. (2011). Magnetic Recording Heads (Vol. 19,
+              pp. 1–105). Elsevier. https://doi.org/10.1016/B978-0-444-53780-5.00001-6
             </li>
             <li>
-              Western Digital. (2022). <em>Understanding hard drive specifications.</em>
-              https://www.westerndigital.com/solutions/storage-101
+              Hennessy, J. L., &amp; Patterson, D. A. (2017).
+              <em>Computer architecture: A quantitative approach</em> (6th ed.). Morgan Kaufmann.
+            </li>
+            <li>
+              Horsley, D. A., Horowitz, R., &amp; Pisano, A. P. (1998). Microfabricated
+              electrostatic actuators for hard disk drives.
+              <em>IEEE/ASME Transactions on Mechatronics, 3</em>(3), 175–183.
+              https://doi.org/10.1109/3516.712113
+            </li>
+            <li>
+              Meyers, J. M. (2021). <em>Magnetic Storage | Computer Science | Research Starters.</em>
+              EBSCO. https://www.ebsco.com/research-starters/computer-science/magnetic-storage
+            </li>
+            <li>
+              Mishra, M. (2024). <em>The Dual Nature of Data Access: Sequential vs. Random in
+              Database Systems.</em> Medium.
+              https://mohitmishra786687.medium.com/the-dual-nature-of-data-access-sequential-vs-random-in-database-systems-eac3f26a395e
+            </li>
+            <li>
+              Quick, D., &amp; Choo, K. K. (2014). Data reduction and data mining framework for
+              digital forensic evidence: Storage, intelligence, review and archive.
+              <em>Trends and Issues in Crime and Criminal Justice</em>, (480).
+              https://doi.org/10.52922/ti180697
+            </li>
+            <li>
+              Sankar, S., Gurumurthi, S., &amp; Stan, M. R. (2008). Intra-disk Parallelism.
+              <em>ACM SIGARCH Computer Architecture News, 36</em>(3), 303–314.
+              https://doi.org/10.1145/1394608.1382147
+            </li>
+            <li>
+              Stanford University. (n.d.). <em>Magnetic Disks (Hard Drives).</em> Stanford
+              University. https://web.stanford.edu/~ouster/cs111-spring21/lectures/disks/
+            </li>
+            <li>
+              Sun, J. Z. (2024). Development And Application of Magnetic Storage Technology.
+              <em>Highlights in Science Engineering and Technology, 111</em>, 167–173.
+              https://doi.org/10.54097/mpny0v89
+            </li>
+            <li>
+              Tanenbaum, A. S., &amp; Bos, H. (2014). <em>Modern operating systems</em> (4th ed.).
+              Pearson.
+            </li>
+            <li>
+              Thompson, D. A., &amp; Best, J. S. (2000). The future of magnetic data storage
+              technology. <em>IBM Journal of Research and Development, 44</em>(3), 311–322.
+              https://doi.org/10.1147/rd.443.0311
+            </li>
+            <li>
+              Trawiński, T. (2018). Mathematical model of multiactuator for HDD head positioning
+              system. <em>AIP Conference Proceedings, 2026</em>(1), 020075.
+              https://doi.org/10.1063/1.5066537
+            </li>
+            <li>
+              Tuteja, U. (2026). <em>Inside a hard drive: head, platter, PCB, and spindle motor.</em>
+              Stellar Data Recovery India.
+              https://www.stellarinfo.co.in/hdd/key-components-of-hard-drive.php
             </li>
           </ul>
         </section>

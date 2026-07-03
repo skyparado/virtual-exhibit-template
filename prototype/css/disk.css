@@ -266,3 +266,62 @@
   .hdd-stat-grid      { grid-template-columns: 1fr; }
   .mem-tier-meta      { display: none; }
 }
+
+.figure-placeholder {
+  margin: 1.5rem 0;
+  text-align: center;
+}
+ 
+.figure-img {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: block;
+  margin: 0 auto;
+}
+
+.figure-img-pmr {
+  max-width: 650px;
+}
+ 
+.figure-img-hdd {
+  max-width: 600px;
+}
+
+.figure-img-mem {
+  max-width: 500px;
+}
+ 
+/* fallback box, kept in case an image is missing/not yet added */
+.figure-placeholder-box {
+  width: 100%;
+  min-height: 220px;
+  background: rgba(26, 0, 51, 0.5);
+  border: 1px dashed rgba(0, 255, 255, 0.25);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(170, 170, 204, 0.45);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+}
+ 
+.figure-placeholder figcaption {
+  margin-top: 0.6rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+ 
+.figure-placeholder figcaption a {
+  color: var(--accent-cyan);
+  text-decoration: none;
+}
+ 
+.figure-placeholder figcaption a:hover {
+  text-decoration: underline;
+}
