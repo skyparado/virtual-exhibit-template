@@ -635,6 +635,7 @@ body.theme-fullcapacity {
 
 .footer {
   text-align: center;
+  background: transparent;
   padding: 2rem;
   font-size: 1rem;
   color: var(--text-muted);
