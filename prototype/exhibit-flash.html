@@ -539,11 +539,11 @@
         <section id="references">
           <h2>References</h2>
           <ul>
-            <li>Bez, R., Camerlenghi, E., Modelli, A., &amp; Visconti, A. (2003). Introduction to flash memory. <em>Proceedings of the IEEE, 91</em>(4), 489&ndash;502. https://www.researchgate.net/publication/2986127_Introduction_to_Flash_memory</li>
-            <li>Chang, L.-P., &amp; Kuo, T.-W. (2005). Efficient management for large-scale flash-memory storage systems with resource conservation. <em>ACM Transactions on Storage, 1</em>(4), 381&ndash;418. https://dl.acm.org/doi/abs/10.1145/1111609.1111610</li>
-            <li>Koltsidas, I., &amp; Hsu, V. (2017). <em>IBM storage and the NVM Express revolution</em> (IBM Redbooks Point-of-View, REDP-5437-00). IBM Corporation. https://www.semanticscholar.org/paper/IBM-Storage-and-the-NVM-Express-Revolution-Koltsidas/aa42789e2cbca4d3b80c771e1fa38b3edf960a38</li>
-            <li>Micheloni, R., Marelli, A., &amp; Eshghi, K. (2013). <em>Inside solid-state drives (SSDs).</em> Springer. https://www.researchgate.net/publication/258843304_Inside_solid_state_drives_SSDs</li>
-            <li>NVM Express, Inc. (2021). <em>NVM Express base specification</em> (Revision 1.4c). https://nvmexpress.org/specification/nvm-express-base-specification/</li>
+            <li>Micheloni, R., Marelli, A., &amp; Eshghi, K. (2013). <em>Inside Solid State Drives (SSDs).</em> Springer.</li>
+            <li>NVM Express, Inc. (2021). <em>NVM Express Base Specification, Revision 1.4c.</em></li>
+            <li>Cai, Y., Haratsch, E. F., Mutlu, O., &amp; Mai, K. (2012). Error Patterns in MLC NAND Flash Memory. <em>Design, Automation &amp; Test in Europe (DATE).</em></li>
+            <li>Serial ATA International Organization. (2013). <em>Serial ATA Revision 3.2 Specification.</em></li>
+            <li>SanDisk Corporation. (1991). <em>First Commercial Solid-State Drive Announcement.</em> Company archives.</li>
           </ul>
         </section>
 
@@ -577,19 +577,13 @@
   'use strict';
 
   /* ---------------------------------------------------------------
-   * Nav toggle + TOC scroll-spy
-   * (Safe to keep even if main.js already does this elsewhere — these
-   * just attach a second, independently-scoped listener to the same
-   * elements. If main.js already fully owns this behavior on other
-   * pages, feel free to delete this block; it's isolated here purely
-   * so this page doesn't depend on main.js implementing it.)
+   * TOC scroll-spy
+   * (Nav toggle is NOT duplicated here — main.js already owns
+   * navToggle/navLinks, including closing the menu on link click.
+   * Duplicating it here would attach a second click listener to the
+   * same button, so one click would fire both listeners and the
+   * open/closed toggle would cancel itself out.)
    * --------------------------------------------------------------- */
-  const navToggle = document.getElementById('navToggle');
-  const navLinks = document.getElementById('navLinks');
-  if (navToggle && navLinks) {
-    navToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
-  }
-
   const sections = document.querySelectorAll('section[id]');
   const tocLinks = document.querySelectorAll('#tocList a');
 

@@ -1,5 +1,54 @@
 import { useState, useRef, useCallback } from 'react';
-import { Cpu, HardDrive, Zap, RotateCcw } from 'lucide-react';
+
+// Small inline icon components — replaces the lucide-react import, which
+// isn't part of this project's tech stack (Astro + React + Tailwind only,
+// no extra icon package installed). Same visual style as lucide's icons,
+// and matches the icons already used in the plain-HTML version of this page.
+
+function CpuIcon({ size = 20, ...props }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <rect x="4" y="4" width="16" height="16" rx="2" />
+      <rect x="9" y="9" width="6" height="6" />
+      <line x1="9" y1="1" x2="9" y2="4" />
+      <line x1="15" y1="1" x2="15" y2="4" />
+      <line x1="9" y1="20" x2="9" y2="23" />
+      <line x1="15" y1="20" x2="15" y2="23" />
+      <line x1="20" y1="9" x2="23" y2="9" />
+      <line x1="20" y1="15" x2="23" y2="15" />
+      <line x1="1" y1="9" x2="4" y2="9" />
+      <line x1="1" y1="15" x2="4" y2="15" />
+    </svg>
+  );
+}
+
+function HardDriveIcon({ size = 20, ...props }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <line x1="22" y1="12" x2="2" y2="12" />
+      <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
+      <line x1="6" y1="16" x2="6.01" y2="16" />
+      <line x1="10" y1="16" x2="10.01" y2="16" />
+    </svg>
+  );
+}
+
+function ZapIcon({ size = 20, ...props }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+    </svg>
+  );
+}
+
+function RotateCcwIcon({ size = 20, ...props }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <polyline points="1 4 1 10 7 10" />
+      <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+    </svg>
+  );
+}
 
 // --- Device profiles, sourced from the article's own numbers ---
 // concurrency: how many requests the device can service at once
@@ -9,7 +58,7 @@ const DEVICES = {
   hdd: {
     label: 'HDD',
     sub: '7,200 RPM',
-    icon: HardDrive,
+    icon: HardDriveIcon,
     accent: '#FF0080',
     concurrency: 1,
     stepMs: 480,
@@ -23,7 +72,7 @@ const DEVICES = {
   sata: {
     label: 'SATA SSD',
     sub: 'AHCI · 1 queue × 32',
-    icon: Zap,
+    icon: ZapIcon,
     accent: '#00FFFF',
     concurrency: 6,
     stepMs: 140,
@@ -37,7 +86,7 @@ const DEVICES = {
   nvme: {
     label: 'NVMe SSD',
     sub: 'PCIe · 65,535 queues',
-    icon: Cpu,
+    icon: CpuIcon,
     accent: '#39FF14',
     concurrency: 16,
     stepMs: 70,
@@ -147,7 +196,7 @@ export default function SSDSpeedChallenge() {
           className="flex items-center gap-1 text-[10px] sm:text-xs uppercase tracking-wide text-white/60 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors"
           aria-label="Reset simulator to NVMe SSD"
         >
-          <RotateCcw size={12} /> Reset
+          <RotateCcwIcon size={12} /> Reset
         </button>
       </div>
 
@@ -186,7 +235,7 @@ export default function SSDSpeedChallenge() {
           <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded px-4 py-3">
             <div className="flex flex-col items-center gap-1">
               <div className="border border-white/30 rounded p-2">
-                <Cpu size={22} className="text-white/80" aria-hidden="true" />
+                <CpuIcon size={22} className="text-white/80" aria-hidden="true" />
               </div>
               <span className="text-[9px] text-white/40 uppercase">CPU</span>
             </div>
