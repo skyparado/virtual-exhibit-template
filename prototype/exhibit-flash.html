@@ -7,27 +7,265 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* Page-specific styles for the SSD Speed Challenge simulator.
+       Everything else (nav, toc, cd-diagram, compare-table, sim-wrap shell)
+       comes from css/style.css and matches the optical exhibit page. */
+
+    .ssdsim-body {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    @media (max-width: 640px) {
+      .ssdsim-body { grid-template-columns: 1fr; }
+    }
+
+    .ssdsim-devices {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    @media (max-width: 640px) {
+      .ssdsim-devices { flex-direction: row; }
+    }
+    .ssdsim-device-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      border: 1px solid rgba(170,170,204,0.25);
+      background: transparent;
+      color: #888;
+      padding: 0.65rem 0.4rem;
+      cursor: pointer;
+      font-family: "Space Mono", monospace;
+      transition: all 0.15s;
+    }
+    .ssdsim-device-btn.active {
+      background: rgba(255,255,255,0.06);
+    }
+    .ssdsim-device-btn:disabled { cursor: not-allowed; }
+    .ssdsim-device-btn:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: 2px;
+    }
+    .ssdsim-device-btn .dname { font-size: 0.72rem; font-weight: 700; }
+    .ssdsim-device-btn .dsub {
+      font-size: 0.6rem;
+      color: rgba(170,170,204,0.5);
+      display: none;
+    }
+    @media (min-width: 641px) {
+      .ssdsim-device-btn .dsub { display: block; }
+    }
+
+    .ssdsim-path {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(170,170,204,0.15);
+      padding: 0.9rem 1.1rem;
+      margin-bottom: 1rem;
+    }
+    .ssdsim-path-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .ssdsim-path-box {
+      border: 1px solid rgba(170,170,204,0.4);
+      padding: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ssdsim-path-label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: rgba(170,170,204,0.5);
+    }
+    .ssdsim-path-line {
+      flex: 1;
+      height: 1px;
+      margin: 0 0.8rem;
+      position: relative;
+    }
+    .ssdsim-path-dot {
+      position: absolute;
+      top: -3px;
+      left: 0;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      opacity: 0;
+      transition: left 0.3s ease;
+    }
+    .ssdsim-path-dot.on {
+      opacity: 1;
+      animation: ssdsim-pulse 0.9s ease-in-out infinite alternate;
+    }
+    @keyframes ssdsim-pulse {
+      from { opacity: 0.4; }
+      to   { opacity: 1; }
+    }
+
+    .ssdsim-queue-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    .ssdsim-queue-label {
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(170,170,204,0.5);
+    }
+    .ssdsim-queue-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 0.35rem;
+      margin-bottom: 1rem;
+    }
+    .ssdsim-queue-cell {
+      aspect-ratio: 1;
+      border: 1px solid rgba(170,170,204,0.15);
+      background: rgba(255,255,255,0.03);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      transition: all 0.15s;
+    }
+
+    .ssdsim-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.8rem;
+      margin-bottom: 1rem;
+    }
+    .ssdsim-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .ssdsim-stat-track {
+      width: 100%;
+      height: 70px;
+      background: rgba(255,255,255,0.03);
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+    }
+    .ssdsim-stat-fill {
+      width: 100%;
+      transition: height 0.5s ease-out;
+    }
+    .ssdsim-stat-name {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: rgba(170,170,204,0.5);
+    }
+    .ssdsim-stat-value {
+      font-size: 0.68rem;
+      font-weight: 700;
+    }
+
+    .ssdsim-blurb {
+      font-size: 0.78rem;
+      color: rgba(170,170,204,0.7);
+      line-height: 1.6;
+      border-top: 1px solid rgba(170,170,204,0.15);
+      padding-top: 0.9rem;
+      margin: 0 0 0.9rem 0;
+    }
+
+    .ssdsim-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      border-top: 1px solid rgba(170,170,204,0.15);
+      padding-top: 0.9rem;
+    }
+    .ssdsim-legend-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-size: 0.68rem;
+      color: rgba(170,170,204,0.6);
+      line-height: 1.5;
+    }
+    .ssdsim-legend-swatch {
+      margin-top: 3px;
+      width: 8px;
+      height: 8px;
+      flex-shrink: 0;
+    }
+    .ssdsim-legend-name {
+      font-weight: 700;
+    }
+
+    .ssdsim-caveat {
+      font-size: 0.62rem;
+      color: rgba(170,170,204,0.35);
+      line-height: 1.5;
+      margin: 0.9rem 0 0 0;
+    }
+
+    /* Fallback button styling, scoped by ID so it can never clash with
+       whatever css/style.css defines for .btn-primary/.btn-sm elsewhere
+       on the site — the Fire/Reset buttons should always be usable and
+       visible even if those utility classes aren't defined globally. */
+    #fireBtn, #simReset {
+      font-family: "Space Mono", monospace;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: transparent;
+      border: 1px solid rgba(170,170,204,0.4);
+      color: #ccc;
+      padding: 0.45rem 0.9rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    #fireBtn:disabled { cursor: not-allowed; opacity: 0.5; }
+    #fireBtn:focus-visible, #simReset:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: 2px;
+    }
+  </style>
 </head>
 <body>
 
   <nav class="navbar">
     <div class="nav-logo">FULL CAPACITY</div>
-    <ul class="nav-links">
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">&#9776;</button>
+    <ul class="nav-links" id="navLinks">
       <li><a href="index.html">Home</a></li>
       <li><a href="index.html#exhibits">Explore</a></li>
       <li><a href="about.html">About Us</a></li>
     </ul>
-    <a href="index.html" class="btn btn-outline">Back to Main</a>
+    <a href="index.html" class="btn btn-outline nav-cta">Back to Main</a>
   </nav>
 
   <div class="exhibit-page-wrap">
 
     <aside class="toc-sidebar">
-      <h2 class="toc-heading">Table of Contents</h2>
-      <ul class="toc-list">
+      <h2 class="toc-heading">Contents</h2>
+      <ul class="toc-list" id="tocList">
         <li><a href="#intro">Introduction</a></li>
         <li><a href="#nand">NAND Flash Architecture</a></li>
+        <li><a href="#lifespan">Wear Leveling &amp; Lifespan</a></li>
         <li><a href="#interfaces">SATA vs. NVMe</a></li>
+        <li><a href="#performance">Speed, Latency &amp; IOPS</a></li>
         <li><a href="#simulator">Interactive Simulator</a></li>
         <li><a href="#references">References</a></li>
       </ul>
@@ -38,7 +276,7 @@
         <a href="index.html" class="back-link">&larr; Back to Exhibits</a>
         <h1 class="exhibit-page-title">THE FLASH:</h1>
         <p class="exhibit-page-sub">SSDs, NAND, and NVMe</p>
-        <span class="exhibit-meta">by Surname, Firstname &middot; 15 minute read</span>
+        <span class="exhibit-meta">by Galicia, Lance Krystofer &middot; ~15 minute read</span>
       </div>
 
       <article class="article-body">
@@ -46,34 +284,267 @@
         <section id="intro">
           <h2>Introduction</h2>
           <p>
-            This section explores the transition from mechanical storage devices to flash-based
-            storage technologies. It examines how Solid-State Drives (SSDs) use NAND flash
-            memory to store data electronically without moving parts, significantly improving
-            speed, reliability, and power efficiency. It also covers NVMe — a PCIe-based
-            protocol enabling the high-performance storage used in modern computers and servers.
+            Every storage medium before this one had a motor. Punch cards were fed through
+            rollers, drums spun, platters rotated, discs whirled under a laser. In 1991,
+            SanDisk shipped the first commercial <strong>solid-state drive</strong> — a
+            20 MB unit with no motor at all. Data was trapped as electrical charge inside
+            silicon, and for the first time, "seeking" a piece of data meant nothing: every
+            cell was equally close.
+          </p>
+          <p>
+            It took almost two decades for flash to become cheap enough to replace the hard
+            drive in everyday computers. But once <strong>NAND flash</strong> caught up in
+            price, it changed the shape of the memory hierarchy — closing the long-standing
+            gap between fast, volatile RAM and slow, mechanical secondary storage.
           </p>
         </section>
 
         <section id="nand">
           <h2>NAND Flash Memory Architecture</h2>
-          <p><em>[ Content goes here ]</em></p>
+          <p>
+            A NAND flash chip stores data in <strong>floating-gate transistors</strong> — a
+            normal transistor with a second, electrically isolated gate buried inside it.
+            Trapping electrons on that floating gate raises the cell's threshold voltage;
+            removing them lowers it. Because the gate is insulated, the charge stays put
+            with no power applied — this is what makes flash <strong>non-volatile</strong>.
+          </p>
+
+          <div class="cd-diagram">
+            <div class="cd-layer">
+              <span class="cd-layer-label">Package (multiple dies)</span>
+              <div class="cd-layer-bar layer-label"></div>
+            </div>
+            <div class="cd-layer">
+              <span class="cd-layer-label">Die &rarr; Plane</span>
+              <div class="cd-layer-bar layer-lacquer"></div>
+            </div>
+            <div class="cd-layer">
+              <span class="cd-layer-label">Block (erase unit, ~128&ndash;256 pages)</span>
+              <div class="cd-layer-bar layer-reflect"></div>
+            </div>
+            <div class="cd-layer">
+              <span class="cd-layer-label">Page (write unit, 4&ndash;16 KB)</span>
+              <div class="cd-layer-bar layer-pc"></div>
+            </div>
+            <div class="cd-layer">
+              <span class="cd-layer-label">Cell (floating-gate transistor)</span>
+              <div class="cd-layer-bar layer-laser"></div>
+            </div>
+          </div>
+
+          <p>
+            Cells are organized into <strong>pages</strong> (the smallest unit that can be
+            written) and pages are grouped into <strong>blocks</strong> (the smallest unit
+            that can be erased). A cell can only hold one voltage state at a time, so more
+            bits per cell means finer voltage steps and a noisier read:
+          </p>
+          <ul>
+            <li><strong>SLC</strong> &mdash; 1 bit/cell, 2 voltage states, fastest and most durable.</li>
+            <li><strong>MLC</strong> &mdash; 2 bits/cell, 4 voltage states.</li>
+            <li><strong>TLC</strong> &mdash; 3 bits/cell, 8 voltage states, the mainstream consumer standard.</li>
+            <li><strong>QLC</strong> &mdash; 4 bits/cell, 16 voltage states, cheapest per gigabyte, shortest lifespan.</li>
+          </ul>
+          <p>
+            NAND has one quirk that shapes everything above it: it can write to an empty
+            page, but it <strong>cannot overwrite</strong> a page directly &mdash; the whole block
+            must be erased first. An SSD controller works around this by writing updates to
+            a fresh page elsewhere and marking the old one invalid, then later copying the
+            still-valid pages out of a block and erasing it wholesale. This background
+            process is called <strong>garbage collection</strong>.
+          </p>
+        </section>
+
+        <section id="lifespan">
+          <h2>Wear Leveling and Flash Lifespan</h2>
+          <p>
+            Each erase cycle stresses the oxide layer around the floating gate a little
+            more. Eventually a cell can no longer reliably hold a charge, so every NAND
+            cell has a finite budget of <strong>program/erase (P/E) cycles</strong> &mdash;
+            roughly 100,000 for SLC, down to a few hundred for QLC.
+          </p>
+          <p>
+            If a drive always rewrote the same "hot" blocks &mdash; a swap file, a database log &mdash;
+            those blocks would wear out in weeks while the rest of the chip sat untouched.
+            <strong>Wear leveling</strong> algorithms prevent this by spreading writes
+            evenly across the whole chip:
+          </p>
+          <ul>
+            <li><strong>Dynamic wear leveling</strong> &mdash; new writes are steered toward the least-worn free blocks.</li>
+            <li><strong>Static wear leveling</strong> &mdash; even data that never changes is occasionally relocated, so its block re-enters the rotation instead of sitting idle forever.</li>
+          </ul>
+          <p>
+            Drives also reserve a slice of raw capacity that the user never sees, called
+            <strong>over-provisioning</strong>, to give the controller room to juggle
+            garbage collection and wear leveling without running out of free blocks. The
+            <strong>TRIM</strong> command lets the operating system tell the drive which
+            pages are no longer in use, so the controller can erase them ahead of time
+            instead of scrambling during a write.
+          </p>
         </section>
 
         <section id="interfaces">
           <h2>SATA vs. NVMe Interfaces</h2>
-          <p><em>[ Content goes here ]</em></p>
+          <p>
+            An SSD is only as fast as the road connecting it to the CPU. Early SSDs were
+            built into the 2.5" form factor and spoke <strong>SATA</strong> &mdash; a protocol
+            and connector designed in 2003 for spinning platters. SATA III tops out around
+            6 Gbps (about 550 MB/s after overhead), and its command layer, <strong>AHCI</strong>,
+            supports exactly one command queue, 32 commands deep &mdash; plenty for a mechanical
+            drive that could barely keep that queue full, but a hard ceiling for flash.
+          </p>
+          <p>
+            <strong>NVMe</strong> (Non-Volatile Memory Express) throws out that legacy path
+            entirely. It talks straight to the CPU over <strong>PCIe lanes</strong> instead
+            of a storage-specific bus, and its command set was designed from scratch around
+            what flash can actually do: up to <strong>65,535 queues</strong>, each up to
+            <strong>65,536 commands</strong> deep, so a modern multi-core CPU can issue
+            requests to the drive in parallel instead of standing in one line.
+          </p>
+
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>Interface</th>
+                <th>Bus</th>
+                <th>Protocol</th>
+                <th>Queues &times; Depth</th>
+                <th>Typical form factor</th>
+                <th>Practical throughput</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>SATA III SSD</td>
+                <td>SATA</td>
+                <td>AHCI</td>
+                <td>1 &times; 32</td>
+                <td>2.5&Prime;</td>
+                <td>~550 MB/s</td>
+              </tr>
+              <tr>
+                <td>NVMe SSD (PCIe 3.0 x4)</td>
+                <td>PCIe</td>
+                <td>NVMe</td>
+                <td>65,535 &times; 65,536</td>
+                <td>M.2 / U.2</td>
+                <td>~3,500 MB/s</td>
+              </tr>
+              <tr>
+                <td>NVMe SSD (PCIe 4.0 x4)</td>
+                <td>PCIe</td>
+                <td>NVMe</td>
+                <td>65,535 &times; 65,536</td>
+                <td>M.2 / U.2</td>
+                <td>~7,000 MB/s</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p>
+            The gap isn't just bandwidth &mdash; it's overhead. Every AHCI command travels
+            through a driver stack built for disks that took milliseconds to respond. NVMe
+            strips that stack down to the operations flash actually needs, cutting CPU
+            cycles spent per command and letting drives fully exploit PCIe's lanes as
+            generations move from PCIe 3.0 to 4.0 and beyond.
+          </p>
+        </section>
+
+        <section id="performance">
+          <h2>Storage Performance: Latency and IOPS</h2>
+          <p>
+            Two numbers describe how "fast" a drive really feels in everyday use, and
+            neither of them is the big MB/s figure on the box.
+          </p>
+          <ul>
+            <li>
+              <strong>Latency</strong> &mdash; the delay before a single request starts
+              returning data. An HDD pays for a physical seek and rotational delay, often
+              several milliseconds. Flash has no moving parts to wait for, so NVMe latency
+              is typically measured in <strong>microseconds</strong>.
+            </li>
+            <li>
+              <strong>IOPS</strong> (Input/Output Operations Per Second) &mdash; how many
+              individual read or write operations a drive can complete per second,
+              especially with small, random requests. This is the metric that matters for
+              databases, virtual machines, and boot times, where the workload is thousands
+              of tiny scattered requests rather than one long stream.
+            </li>
+          </ul>
+          <p>
+            A 7,200 RPM HDD manages roughly 100&ndash;200 random IOPS, limited by how fast its
+            arm can physically move. A SATA SSD reaches tens of thousands. An NVMe drive,
+            freed from AHCI's single queue, can push past a million &mdash; not because flash
+            reads any single cell faster than that, but because thousands of requests can
+            be in flight across its parallel queues at once.
+          </p>
         </section>
 
         <section id="simulator">
           <h2>Interactive: SSD Speed Challenge</h2>
-          <div class="simulator-placeholder">
-            [ SSD Speed Challenge Component ]
+          <p>
+            Pick a drive, then fire off a queue of random read requests and watch how it
+            handles them. The HDD's arm has to physically seek to each address in turn;
+            the SSD answers every request at once, straight from the NAND grid.
+          </p>
+
+          <div class="sim-wrap">
+            <div class="ssdsim-body">
+              <div class="ssdsim-devices" id="deviceList" role="group" aria-label="Storage device selector"></div>
+
+              <div>
+                <div class="ssdsim-path" id="ssdsimPath">
+                  <div class="ssdsim-path-node">
+                    <div class="ssdsim-path-box">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,220,0.8)" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="15" x2="23" y2="15"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="15" x2="4" y2="15"/></svg>
+                    </div>
+                    <span class="ssdsim-path-label">CPU</span>
+                  </div>
+                  <div class="ssdsim-path-line" id="pathLine">
+                    <div class="ssdsim-path-dot" id="pathDot"></div>
+                  </div>
+                  <div class="ssdsim-path-node">
+                    <div class="ssdsim-path-box" id="devIconBox"></div>
+                    <span class="ssdsim-path-label" id="devIconLabel"></span>
+                  </div>
+                </div>
+
+                <div class="ssdsim-queue-head">
+                  <span class="ssdsim-queue-label" id="queueLabel">Read Queue</span>
+                  <button class="btn btn-primary btn-sm" id="fireBtn">Fire Queue</button>
+                </div>
+                <div class="ssdsim-queue-grid" id="queueGrid" role="img" aria-label="16 pending read requests"></div>
+
+                <div class="ssdsim-stats" id="statsRow"></div>
+
+                <p class="ssdsim-blurb" id="blurb"></p>
+
+                <!-- Legend: explains each interface's communication method,
+                     built from the same DEVICES data as the JSX version. -->
+                <div class="ssdsim-legend" id="legendList"></div>
+
+                <p class="ssdsim-caveat">
+                  <strong>Simplified model:</strong> concurrency and per-request timing above
+                  are illustrative, scaled from each interface's real queue depth and typical
+                  latency &mdash; not a cycle-accurate simulation of controller firmware.
+                </p>
+              </div>
+            </div>
+
+            <div class="sim-actions">
+              <button class="btn btn-outline btn-sm" id="simReset" aria-label="Reset simulator to NVMe SSD">Reset</button>
+            </div>
           </div>
         </section>
 
         <section id="references">
           <h2>References</h2>
-          <p><em>[ References go here ]</em></p>
+          <ul>
+            <li>Micheloni, R., Marelli, A., &amp; Eshghi, K. (2013). <em>Inside Solid State Drives (SSDs).</em> Springer.</li>
+            <li>NVM Express, Inc. (2021). <em>NVM Express Base Specification, Revision 1.4c.</em></li>
+            <li>Cai, Y., Haratsch, E. F., Mutlu, O., &amp; Mai, K. (2012). Error Patterns in MLC NAND Flash Memory. <em>Design, Automation &amp; Test in Europe (DATE).</em></li>
+            <li>Serial ATA International Organization. (2013). <em>Serial ATA Revision 3.2 Specification.</em></li>
+            <li>SanDisk Corporation. (1991). <em>First Commercial Solid-State Drive Announcement.</em> Company archives.</li>
+          </ul>
         </section>
 
       </article>
@@ -84,9 +555,328 @@
   </div>
 
   <footer class="footer">
-    FULL CAPACITY &mdash; The Evolution of Computer Data Storage &mdash; CSARCH2 Group 7 [S01]
+    FULL CAPACITY &mdash; The Evolution of Computer Data Storage<br>
+    CSARCH2 Group 7 [S01] &mdash; De La Salle University &mdash; 3rd Term, A.Y. 2025&ndash;2026
   </footer>
 
   <script src="js/main.js"></script>
+  <script>
+// exhibit-flash.js
+// Page logic for "The Flash" exhibit: TOC scroll-spy + SSD Speed Challenge.
+//
+// Everything lives inside ONE top-level IIFE. This is deliberate: if
+// js/main.js (loaded just before this file) already declares top-level
+// `const`/`let` bindings for nav/TOC handling — which it likely does, since
+// every exhibit page needs the same nav toggle + scroll-spy behavior — then
+// a second classic <script> re-declaring those same names at its own top
+// level throws `SyntaxError: Identifier '...' has already been declared'
+// and NOTHING in that script tag runs, including the whole simulator below.
+// Wrapping in a function gives every name here its own scope, so it can
+// never collide with globals from main.js.
+(function () {
+  'use strict';
+
+  /* ---------------------------------------------------------------
+   * Nav toggle + TOC scroll-spy
+   * (Safe to keep even if main.js already does this elsewhere — these
+   * just attach a second, independently-scoped listener to the same
+   * elements. If main.js already fully owns this behavior on other
+   * pages, feel free to delete this block; it's isolated here purely
+   * so this page doesn't depend on main.js implementing it.)
+   * --------------------------------------------------------------- */
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  if (navToggle && navLinks) {
+    navToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+  }
+
+  const sections = document.querySelectorAll('section[id]');
+  const tocLinks = document.querySelectorAll('#tocList a');
+
+  if (sections.length && tocLinks.length && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            tocLinks.forEach((a) => {
+              a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id);
+            });
+          }
+        });
+      },
+      { rootMargin: '-20% 0px -70% 0px' }
+    );
+    sections.forEach((s) => observer.observe(s));
+  }
+
+  /* ---------------------------------------------------------------
+   * SSD Speed Challenge
+   * --------------------------------------------------------------- */
+  const simRoot = document.getElementById('deviceList');
+  if (!simRoot) return; // simulator isn't on this page — nothing more to do
+
+  const ICONS = {
+    hdd: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="12" x2="2" y2="12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><line x1="6" y1="16" x2="6.01" y2="16"/><line x1="10" y1="16" x2="10.01" y2="16"/></svg>',
+    sata: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+    nvme: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="15" x2="23" y2="15"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="15" x2="4" y2="15"/></svg>',
+  };
+
+  const DEVICES = {
+    hdd: {
+      label: 'HDD', sub: '7,200 RPM', accent: '#FF0080',
+      concurrency: 1, stepMs: 480,
+      latency: '~6 ms', iops: '~150', throughput: '~150 MB/s',
+      barPct: { speed: 12, latency: 95, iops: 4 },
+      blurb: 'One request at a time — the arm has to physically seek before each read.',
+      legend: 'One request serviced at a time (physical seek).',
+    },
+    sata: {
+      label: 'SATA SSD', sub: 'AHCI · 1 queue × 32', accent: '#00FFFF',
+      concurrency: 6, stepMs: 140,
+      latency: '~100 µs', iops: '~50,000', throughput: '~550 MB/s',
+      barPct: { speed: 55, latency: 15, iops: 45 },
+      blurb: 'No seek time, but AHCI still caps the drive to a single command queue.',
+      legend: 'No seek time, but capped to one AHCI queue, 32 commands deep.',
+    },
+    nvme: {
+      label: 'NVMe SSD', sub: 'PCIe · 65,535 queues', accent: '#39FF14',
+      concurrency: 16, stepMs: 70,
+      latency: '~20 µs', iops: '1,000,000+', throughput: '~7,000 MB/s',
+      barPct: { speed: 100, latency: 3, iops: 100 },
+      blurb: 'Thousands of queues in flight at once — requests barely wait at all.',
+      legend: 'Talks directly over PCIe with up to 65,535 parallel queues.',
+    },
+  };
+  const ORDER = ['hdd', 'sata', 'nvme'];
+  const QUEUE_SIZE = 16;
+
+  let deviceKey = 'nvme';
+  let running = false;
+  let timers = [];
+  let queue = [];
+  let cycles = 0;
+
+  const el = {
+    path: document.getElementById('ssdsimPath'),
+    reset: document.getElementById('simReset'),
+    deviceList: document.getElementById('deviceList'),
+    pathLine: document.getElementById('pathLine'),
+    pathDot: document.getElementById('pathDot'),
+    devIconBox: document.getElementById('devIconBox'),
+    devIconLabel: document.getElementById('devIconLabel'),
+    queueLabel: document.getElementById('queueLabel'),
+    fireBtn: document.getElementById('fireBtn'),
+    queueGrid: document.getElementById('queueGrid'),
+    statsRow: document.getElementById('statsRow'),
+    blurb: document.getElementById('blurb'),
+    legendList: document.getElementById('legendList'),
+  };
+
+  function randomAddr() {
+    const n = Math.floor(Math.random() * 0xffff);
+    return '0x' + n.toString(16).padStart(4, '0').toUpperCase();
+  }
+
+  function makeQueue() {
+    const q = [];
+    for (let i = 0; i < QUEUE_SIZE; i++) {
+      q.push({ id: i, addr: randomAddr(), status: 'queued' });
+    }
+    return q;
+  }
+
+  function clearTimers() {
+    timers.forEach(clearTimeout);
+    timers = [];
+  }
+
+  function renderDeviceList() {
+    el.deviceList.innerHTML = '';
+    ORDER.forEach((key) => {
+      const d = DEVICES[key];
+      const selected = key === deviceKey;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'ssdsim-device-btn' + (selected ? ' active' : '');
+      btn.disabled = running;
+      btn.setAttribute('aria-pressed', selected ? 'true' : 'false');
+      btn.style.borderColor = selected ? d.accent : 'rgba(170,170,204,0.25)';
+      btn.style.color = selected ? d.accent : '#888';
+      btn.innerHTML = `<span>${ICONS[key]}</span><span class="dname">${d.label}</span><span class="dsub">${d.sub}</span>`;
+      btn.addEventListener('click', () => selectDevice(key));
+      el.deviceList.appendChild(btn);
+    });
+  }
+
+  function renderQueue() {
+    const d = DEVICES[deviceKey];
+    el.queueGrid.setAttribute(
+      'aria-label',
+      `${QUEUE_SIZE} pending read requests, ${
+        d.concurrency === 1 ? 'serviced one at a time' : `serviced ${d.concurrency} at a time`
+      }`
+    );
+    el.queueGrid.innerHTML = '';
+    queue.forEach((r) => {
+      const cell = document.createElement('div');
+      cell.className = 'ssdsim-queue-cell';
+      cell.title = r.addr;
+      if (r.status === 'done') {
+        cell.style.background = d.accent + '33';
+        cell.style.borderColor = d.accent;
+      } else if (r.status === 'active') {
+        cell.style.background = d.accent;
+        cell.style.borderColor = d.accent;
+        cell.style.color = '#000';
+        cell.textContent = '●';
+      } else {
+        cell.style.background = '';
+        cell.style.borderColor = '';
+        cell.style.color = '';
+      }
+      el.queueGrid.appendChild(cell);
+    });
+  }
+
+  function renderStats() {
+    const d = DEVICES[deviceKey];
+    const stats = [
+      { label: 'Access Speed', pct: d.barPct.speed, value: d.throughput },
+      { label: 'Latency', pct: d.barPct.latency, value: d.latency },
+      { label: 'IOPS', pct: d.barPct.iops, value: d.iops },
+    ];
+    el.statsRow.innerHTML = '';
+    stats.forEach((s) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'ssdsim-stat';
+      wrap.innerHTML = `
+        <div class="ssdsim-stat-track"><div class="ssdsim-stat-fill" style="height:${Math.max(s.pct, 4)}%; background:${d.accent};"></div></div>
+        <span class="ssdsim-stat-name">${s.label}</span>
+        <span class="ssdsim-stat-value" style="color:${d.accent};">${s.value}</span>
+      `;
+      el.statsRow.appendChild(wrap);
+    });
+  }
+
+  function renderLegend() {
+    el.legendList.innerHTML = '';
+    ORDER.forEach((key) => {
+      const d = DEVICES[key];
+      const item = document.createElement('div');
+      item.className = 'ssdsim-legend-item';
+      item.innerHTML = `
+        <span class="ssdsim-legend-swatch" style="background:${d.accent};"></span>
+        <span><span class="ssdsim-legend-name" style="color:${d.accent};">${d.label}</span> — ${d.legend}</span>
+      `;
+      el.legendList.appendChild(item);
+    });
+  }
+
+  function renderChrome() {
+    const d = DEVICES[deviceKey];
+
+    el.devIconBox.style.borderColor = d.accent;
+    el.devIconBox.style.color = d.accent;
+    el.devIconBox.innerHTML = ICONS[deviceKey];
+    el.devIconLabel.textContent = d.label;
+    el.devIconLabel.style.color = d.accent;
+
+    el.pathLine.style.background = d.accent + '44';
+    el.pathDot.style.background = d.accent;
+    el.pathDot.classList.toggle('on', running);
+    // BUG FIX: this dot never moved before — only its opacity pulsed in
+    // place. Now its position along the CPU↔device wire tracks progress,
+    // matching the reference component.
+    el.pathDot.style.left = ((cycles * 37) % 90) + '%';
+
+    el.queueLabel.textContent = `Read Queue — ${
+      d.concurrency === 1 ? 'sequential' : d.concurrency + '-wide parallel'
+    }`;
+
+    // BUG FIX: fireBtn/simReset previously relied on undefined "btn-primary"/
+    // "btn-sm" classes and never picked up the device's accent color, so
+    // they looked like plain, unstyled default buttons. Style them directly,
+    // consistent with every other accented element in the widget.
+    el.fireBtn.disabled = running;
+    el.fireBtn.textContent = running ? 'Running…' : 'Fire Queue';
+    el.fireBtn.style.borderColor = d.accent;
+    el.fireBtn.style.color = running ? '#666' : d.accent;
+
+    el.reset.style.borderColor = 'rgba(170,170,204,0.4)';
+
+    el.blurb.textContent = d.blurb;
+    el.path.classList.toggle('running', running);
+  }
+
+  function renderAll() {
+    renderDeviceList();
+    renderChrome();
+    renderQueue();
+    renderStats();
+    renderLegend();
+  }
+
+  function selectDevice(key) {
+    if (running) return;
+    deviceKey = key;
+    queue = makeQueue();
+    cycles = 0;
+    renderAll();
+  }
+
+  function reset() {
+    clearTimers();
+    running = false;
+    deviceKey = 'nvme';
+    queue = makeQueue();
+    cycles = 0;
+    renderAll();
+  }
+
+  function runQueue() {
+    if (running) return;
+    clearTimers();
+    queue = makeQueue();
+    running = true;
+    cycles = 0;
+    renderAll();
+
+    const d = DEVICES[deviceKey];
+    let pending = queue.map((r) => r.id);
+
+    function runBatch() {
+      if (pending.length === 0) {
+        running = false;
+        renderChrome();
+        return;
+      }
+      const batch = pending.slice(0, d.concurrency);
+      pending = pending.slice(d.concurrency);
+      cycles += 1;
+
+      queue = queue.map((r) => (batch.includes(r.id) ? { ...r, status: 'active' } : r));
+      renderQueue();
+      el.pathDot.style.left = ((cycles * 37) % 90) + '%';
+
+      const t1 = setTimeout(() => {
+        queue = queue.map((r) => (batch.includes(r.id) ? { ...r, status: 'done' } : r));
+        renderQueue();
+        const t2 = setTimeout(runBatch, 90);
+        timers.push(t2);
+      }, d.stepMs);
+      timers.push(t1);
+    }
+
+    runBatch();
+  }
+
+  el.reset.addEventListener('click', reset);
+  el.fireBtn.addEventListener('click', runQueue);
+
+  queue = makeQueue();
+  renderAll();
+})();
+
+  </script>
 </body>
 </html>
