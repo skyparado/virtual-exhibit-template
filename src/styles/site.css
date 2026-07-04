@@ -897,9 +897,29 @@ body.theme-fullcapacity {
 .sim-input:focus { border-color: var(--accent-cyan); }
 .sim-input::placeholder { color: rgba(170,170,204,0.4); }
 
+.sim-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.sim-toggle input { accent-color: var(--accent-magenta); cursor: pointer; }
+.sim-toggle em { color: rgba(170,170,204,0.55); font-style: italic; }
+
+.sim-canvas-holder {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.sim-canvas-holder canvas,
 #discCanvas {
   display: block;
-  width: 100%;
   max-width: 100%;
   border-radius: 6px;
   border: 1px solid rgba(255,255,255,0.06);
