@@ -7,367 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
-  <style>
-    /* Page-specific styles for the SSD Speed Challenge simulator.
-       Everything else (nav, toc, cd-diagram, compare-table, sim-wrap shell)
-       comes from css/style.css and matches the optical exhibit page. */
+  <link rel="stylesheet" href="css/flash.css" />
 
-    .ssdsim-body {
-      display: grid;
-      grid-template-columns: 150px 1fr;
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-    @media (max-width: 640px) {
-      .ssdsim-body { grid-template-columns: 1fr; }
-    }
-
-    .ssdsim-devices {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-    @media (max-width: 640px) {
-      .ssdsim-devices { flex-direction: row; }
-    }
-    .ssdsim-device-btn {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.3rem;
-      border: 1px solid rgba(170,170,204,0.25);
-      background: transparent;
-      color: #888;
-      padding: 0.65rem 0.4rem;
-      cursor: pointer;
-      font-family: "Space Mono", monospace;
-      transition: all 0.15s;
-    }
-    .ssdsim-device-btn.active {
-      background: rgba(255,255,255,0.06);
-    }
-    .ssdsim-device-btn:disabled { cursor: not-allowed; }
-    .ssdsim-device-btn:focus-visible {
-      outline: 2px solid currentColor;
-      outline-offset: 2px;
-    }
-    .ssdsim-device-btn .dname { font-size: 0.72rem; font-weight: 700; }
-    .ssdsim-device-btn .dsub {
-      font-size: 0.6rem;
-      color: rgba(170,170,204,0.5);
-      display: none;
-    }
-    @media (min-width: 641px) {
-      .ssdsim-device-btn .dsub { display: block; }
-    }
-
-    .ssdsim-path {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(170,170,204,0.15);
-      padding: 0.9rem 1.1rem;
-      margin-bottom: 1rem;
-    }
-    .ssdsim-path-node {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.3rem;
-    }
-    .ssdsim-path-box {
-      border: 1px solid rgba(170,170,204,0.4);
-      padding: 0.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .ssdsim-path-label {
-      font-size: 0.6rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: rgba(170,170,204,0.5);
-    }
-    .ssdsim-path-line {
-      flex: 1;
-      height: 1px;
-      margin: 0 0.8rem;
-      position: relative;
-    }
-    .ssdsim-path-dot {
-      position: absolute;
-      top: -3px;
-      left: 0;
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      opacity: 0;
-      transition: left 0.3s ease;
-    }
-    .ssdsim-path-dot.on {
-      opacity: 1;
-      animation: ssdsim-pulse 0.9s ease-in-out infinite alternate;
-    }
-    @keyframes ssdsim-pulse {
-      from { opacity: 0.4; }
-      to   { opacity: 1; }
-    }
-
-    .ssdsim-queue-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 0.5rem;
-    }
-    .ssdsim-queue-label {
-      font-size: 0.62rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: rgba(170,170,204,0.5);
-    }
-    .ssdsim-queue-grid {
-      display: grid;
-      grid-template-columns: repeat(8, 1fr);
-      gap: 0.35rem;
-      margin-bottom: 1rem;
-    }
-    .ssdsim-queue-cell {
-      aspect-ratio: 1;
-      border: 1px solid rgba(170,170,204,0.15);
-      background: rgba(255,255,255,0.03);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 8px;
-      transition: all 0.15s;
-    }
-
-    .ssdsim-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.8rem;
-      margin-bottom: 1rem;
-    }
-    .ssdsim-stat {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.4rem;
-    }
-    .ssdsim-stat-track {
-      width: 100%;
-      height: 70px;
-      background: rgba(255,255,255,0.03);
-      display: flex;
-      align-items: flex-end;
-      overflow: hidden;
-    }
-    .ssdsim-stat-fill {
-      width: 100%;
-      transition: height 0.5s ease-out;
-    }
-    .ssdsim-stat-name {
-      font-size: 0.6rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: rgba(170,170,204,0.5);
-    }
-    .ssdsim-stat-value {
-      font-size: 0.68rem;
-      font-weight: 700;
-    }
-
-    .ssdsim-blurb {
-      font-size: 0.78rem;
-      color: rgba(170,170,204,0.7);
-      line-height: 1.6;
-      border-top: 1px solid rgba(170,170,204,0.15);
-      padding-top: 0.9rem;
-      margin: 0 0 0.9rem 0;
-    }
-
-    .ssdsim-legend {
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-      border-top: 1px solid rgba(170,170,204,0.15);
-      padding-top: 0.9rem;
-    }
-    .ssdsim-legend-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.5rem;
-      font-size: 0.68rem;
-      color: rgba(170,170,204,0.6);
-      line-height: 1.5;
-    }
-    .ssdsim-legend-swatch {
-      margin-top: 3px;
-      width: 8px;
-      height: 8px;
-      flex-shrink: 0;
-    }
-    .ssdsim-legend-name {
-      font-weight: 700;
-    }
-
-    .ssdsim-caveat {
-      font-size: 0.62rem;
-      color: rgba(170,170,204,0.35);
-      line-height: 1.5;
-      margin: 0.9rem 0 0 0;
-    }
-
-    /* Fallback button styling, scoped by ID so it can never clash with
-       whatever css/style.css defines for .btn-primary/.btn-sm elsewhere
-       on the site — the Fire/Reset buttons should always be usable and
-       visible even if those utility classes aren't defined globally. */
-    #fireBtn, #simReset {
-      font-family: "Space Mono", monospace;
-      font-size: 0.68rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      background: transparent;
-      border: 1px solid rgba(170,170,204,0.4);
-      color: #ccc;
-      padding: 0.45rem 0.9rem;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    #fireBtn:disabled { cursor: not-allowed; opacity: 0.5; }
-    #fireBtn:focus-visible, #simReset:focus-visible {
-      outline: 2px solid currentColor;
-      outline-offset: 2px;
-    }
-
-    /* ============================================================
-       NAND physical hierarchy — nested containment diagram.
-       Replaces the old .cd-diagram (which was literally a CD/DVD
-       layer cross-section relabeled with NAND terms — the bar
-       widths never meant anything). This instead nests each level
-       inside the one that contains it: Package > Die/Plane > Block
-       > Page > Cell, so the visual matches the actual relationship
-       described in the text.
-       ============================================================ */
-    .nand-hierarchy {
-      display: flex;
-      justify-content: center;
-      margin: 2rem 0 1.75rem;
-    }
-    .nh-level {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      border-radius: 10px;
-      padding: 1.4rem 1.4rem 1.6rem;
-      width: 100%;
-    }
-    .nh-tag {
-      font-family: var(--font-head);
-      font-size: 0.72rem;
-      letter-spacing: 2px;
-      padding: 0.2rem 0.7rem;
-      border-radius: 999px;
-      margin-bottom: 0.9rem;
-      white-space: nowrap;
-    }
-    .nh-sub {
-      font-size: 0.62rem;
-      letter-spacing: 0.5px;
-      color: var(--text-muted);
-      margin: -0.6rem 0 0.9rem;
-    }
-    .nh-package {
-      background: rgba(128, 0, 255, 0.08);
-      border: 1px solid rgba(128, 0, 255, 0.35);
-    }
-    .nh-package > .nh-tag { color: var(--accent-purple); border: 1px solid rgba(128,0,255,0.5); }
-    .nh-die {
-      background: rgba(0, 255, 255, 0.06);
-      border: 1px solid rgba(0, 255, 255, 0.3);
-      width: 82%;
-    }
-    .nh-die > .nh-tag { color: var(--accent-cyan); border: 1px solid rgba(0,255,255,0.45); }
-    .nh-block {
-      background: rgba(57, 255, 20, 0.06);
-      border: 1px solid rgba(57, 255, 20, 0.3);
-      width: 84%;
-    }
-    .nh-block > .nh-tag { color: var(--accent-green); border: 1px solid rgba(57,255,20,0.45); }
-    .nh-page {
-      background: rgba(255, 0, 255, 0.06);
-      border: 1px solid rgba(255, 0, 255, 0.3);
-      width: 86%;
-    }
-    .nh-page > .nh-tag { color: var(--accent-magenta); border: 1px solid rgba(255,0,255,0.45); }
-    .nh-cell {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px dashed rgba(255, 255, 255, 0.3);
-      width: 88%;
-      padding-bottom: 1.4rem;
-    }
-    .nh-cell > .nh-tag { color: var(--text); border: 1px solid rgba(255,255,255,0.4); }
-    .nh-cell > .nh-sub { margin-bottom: 0; }
-    @media (max-width: 640px) {
-      .nh-level { padding: 1rem 0.6rem 1.2rem; }
-      .nh-tag { font-size: 0.62rem; letter-spacing: 1px; }
-    }
-
-    /* ============================================================
-       Reusable horizontal bar-chart for quick numeric comparisons
-       (P/E cycle budgets, IOPS). Values below are on a log scale
-       since the real-world ranges span 2-4 orders of magnitude —
-       plotted linearly, the smaller bars would vanish to nothing.
-       ============================================================ */
-    .flash-barchart {
-      margin: 1.5rem 0 1.75rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.85rem;
-    }
-    .fbc-row {
-      display: grid;
-      grid-template-columns: 90px 1fr 96px;
-      align-items: center;
-      gap: 0.9rem;
-    }
-    .fbc-label {
-      font-family: var(--font-head);
-      font-size: 0.68rem;
-      letter-spacing: 1px;
-      color: var(--text);
-      text-align: right;
-    }
-    .fbc-track {
-      height: 14px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 999px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-    .fbc-fill {
-      height: 100%;
-      border-radius: 999px;
-    }
-    .fbc-value {
-      font-size: 0.68rem;
-      color: var(--text-muted);
-      white-space: nowrap;
-    }
-    .flash-barchart-note {
-      font-size: 0.62rem;
-      color: rgba(170,170,204,0.4);
-      letter-spacing: 0.5px;
-      margin-top: -0.4rem;
-    }
-    @media (max-width: 640px) {
-      .fbc-row { grid-template-columns: 62px 1fr 74px; gap: 0.5rem; }
-      .fbc-label { font-size: 0.58rem; }
-      .fbc-value { font-size: 0.6rem; }
-    }
-  </style>
 </head>
 <body>
 
@@ -423,6 +64,11 @@
             price, it changed the shape of the memory hierarchy — closing the long-standing
             gap between fast, volatile RAM and slow, mechanical secondary storage.
           </p>
+          
+          <figure class="figure-placeholder">
+            <img src="images/early-ssd.png" alt="Photo of an early solid-state flash storage card" class="figure-img figure-img-flash" />
+            <figcaption>Fig. Early solid-state flash storage, decades before SSDs replaced hard drives <a href="https://en.wikipedia.org/wiki/Solid-state_drive" target="_blank" rel="noopener">(Wikipedia)</a></figcaption>
+          </figure>
         </section>
 
         <section id="nand">
@@ -435,26 +81,51 @@
             with no power applied — this is what makes flash <strong>non-volatile</strong>.
           </p>
 
-          <div class="nand-hierarchy" role="img" aria-label="NAND physical hierarchy: a package contains multiple dies, each die is divided into planes, each plane into blocks, each block into pages, and each page into cells">
-            <div class="nh-level nh-package">
-              <span class="nh-tag">PACKAGE</span>
-              <div class="nh-level nh-die">
-                <span class="nh-tag">DIE &rarr; PLANE</span>
-                <div class="nh-level nh-block">
-                  <span class="nh-tag">BLOCK</span>
-                  <span class="nh-sub">erase unit &middot; ~128&ndash;256 pages</span>
-                  <div class="nh-level nh-page">
-                    <span class="nh-tag">PAGE</span>
-                    <span class="nh-sub">write unit &middot; 4&ndash;16 KB</span>
-                    <div class="nh-level nh-cell">
-                      <span class="nh-tag">CELL</span>
-                      <span class="nh-sub">floating-gate transistor</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <!--
+            IMAGE PLACEHOLDER
+            Path/filename to add:  images/floating-gate-cell.png
+            Suggested content: a labeled cross-section diagram of a
+            floating-gate transistor (control gate / floating gate /
+            tunnel oxide / source / drain). Drop the file into images/
+            with this exact name to render it.
+          -->
+          <figure class="figure-placeholder">
+            <img src="images/floating-gate-cell.jpg" alt="Cross-section diagram of a floating-gate transistor memory cell" class="figure-img figure-img-flash" />
+            <figcaption>Fig. Cross-section of a floating-gate transistor — the physical basis of every NAND cell <a href="https://en.wikipedia.org/wiki/Floating-gate_MOSFET" target="_blank" rel="noopener">(Wikipedia)</a></figcaption>
+          </figure>
+
+          <div class="nand-hierarchy">
+            <div class="nand-tier tier-package">
+              <div class="nand-tier-name">PACKAGE</div>
+              <div class="nand-tier-bar-wrap"><div class="nand-tier-bar"></div></div>
+              <div class="nand-tier-meta">multiple dies</div>
+            </div>
+            <div class="nand-tier tier-die">
+              <div class="nand-tier-name">DIE &rarr; PLANE</div>
+              <div class="nand-tier-bar-wrap"><div class="nand-tier-bar"></div></div>
+              <div class="nand-tier-meta">one silicon die</div>
+            </div>
+            <div class="nand-tier tier-block">
+              <div class="nand-tier-name">BLOCK</div>
+              <div class="nand-tier-bar-wrap"><div class="nand-tier-bar"></div></div>
+              <div class="nand-tier-meta">erase unit, ~128&ndash;256 pages</div>
+            </div>
+            <div class="nand-tier tier-page">
+              <div class="nand-tier-name">PAGE</div>
+              <div class="nand-tier-bar-wrap"><div class="nand-tier-bar"></div></div>
+              <div class="nand-tier-meta">write unit, 4&ndash;16 KB</div>
+            </div>
+            <div class="nand-tier tier-cell">
+              <div class="nand-tier-name">CELL</div>
+              <div class="nand-tier-bar-wrap"><div class="nand-tier-bar"></div></div>
+              <div class="nand-tier-meta">floating-gate transistor</div>
             </div>
           </div>
+          <p class="nand-caveat">
+            Bar widths are on a log scale to fit five orders of magnitude on one chart &mdash;
+            they show containment order (package &sup; die &sup; block &sup; page &sup; cell),
+            not literal proportional size.
+          </p>
 
           <p>
             Cells are organized into <strong>pages</strong> (the smallest unit that can be
@@ -487,30 +158,29 @@
             roughly 100,000 for SLC, down to a few hundred for QLC.
           </p>
 
-          <div class="flash-barchart" role="img" aria-label="Approximate program/erase cycle budget by NAND type: SLC about 100,000, MLC about 10,000, TLC about 3,000, QLC about 500">
-            <div class="fbc-row">
-              <span class="fbc-label">SLC</span>
-              <div class="fbc-track"><div class="fbc-fill" style="width:100%; background:var(--accent-green);"></div></div>
-              <span class="fbc-value">~100,000</span>
+          <div class="wear-chart">
+            <div class="wear-row wear-slc">
+              <div class="wear-label">SLC</div>
+              <div class="wear-track"><div class="wear-fill"></div></div>
+              <div class="wear-val">~100,000 P/E cycles</div>
             </div>
-            <div class="fbc-row">
-              <span class="fbc-label">MLC</span>
-              <div class="fbc-track"><div class="fbc-fill" style="width:67%; background:var(--accent-cyan);"></div></div>
-              <span class="fbc-value">~10,000</span>
+            <div class="wear-row wear-mlc">
+              <div class="wear-label">MLC</div>
+              <div class="wear-track"><div class="wear-fill"></div></div>
+              <div class="wear-val">~3,000&ndash;10,000</div>
             </div>
-            <div class="fbc-row">
-              <span class="fbc-label">TLC</span>
-              <div class="fbc-track"><div class="fbc-fill" style="width:49%; background:var(--accent-magenta);"></div></div>
-              <span class="fbc-value">~3,000</span>
+            <div class="wear-row wear-tlc">
+              <div class="wear-label">TLC</div>
+              <div class="wear-track"><div class="wear-fill"></div></div>
+              <div class="wear-val">~1,000&ndash;3,000</div>
             </div>
-            <div class="fbc-row">
-              <span class="fbc-label">QLC</span>
-              <div class="fbc-track"><div class="fbc-fill" style="width:23%; background:var(--accent-purple);"></div></div>
-              <span class="fbc-value">~500</span>
+            <div class="wear-row wear-qlc">
+              <div class="wear-label">QLC</div>
+              <div class="wear-track"><div class="wear-fill"></div></div>
+              <div class="wear-val">~100&ndash;300</div>
             </div>
           </div>
-          <p class="flash-barchart-note">P/E cycles per cell, approximate figures, plotted on a log scale.</p>
-
+          <p class="nand-caveat">Bars are log-scaled — QLC's real endurance is roughly 300&times; lower than SLC's, not just half as short as the bar might suggest at a glance.</p>
           <p>
             If a drive always rewrote the same "hot" blocks &mdash; a swap file, a database log &mdash;
             those blocks would wear out in weeks while the rest of the chip sat untouched.
@@ -541,6 +211,18 @@
             supports exactly one command queue, 32 commands deep &mdash; plenty for a mechanical
             drive that could barely keep that queue full, but a hard ceiling for flash.
           </p>
+
+          <!--
+            IMAGE PLACEHOLDER
+            Path/filename to add:  images/sata-vs-m2.jpg
+            Suggested content: a side-by-side photo comparing a 2.5" SATA
+            SSD connector/cable and an M.2 NVMe stick. Drop the file into
+            images/ with this exact name to render it.
+          -->
+          <figure class="figure-placeholder">
+            <img src="images/sata-vs-m2.jpg" alt="Side-by-side comparison of a SATA SSD connector and an M.2 NVMe drive" class="figure-img figure-img-flash" />
+            <figcaption>Fig. SATA's cable-and-connector interface next to an M.2 NVMe stick that plugs directly into PCIe lanes <a href="https://en.wikipedia.org/wiki/M.2" target="_blank" rel="noopener">(Wikipedia)</a></figcaption>
+          </figure>
           <p>
             <strong>NVMe</strong> (Non-Volatile Memory Express) throws out that legacy path
             entirely. It talks straight to the CPU over <strong>PCIe lanes</strong> instead
@@ -627,24 +309,24 @@
             be in flight across its parallel queues at once.
           </p>
 
-          <div class="flash-barchart" role="img" aria-label="Approximate random IOPS by drive type: HDD about 150, SATA SSD about 50,000, NVMe SSD over 1,000,000">
-            <div class="fbc-row">
-              <span class="fbc-label">HDD</span>
-              <div class="fbc-track"><div class="fbc-fill" style="width:5%; background:var(--accent-magenta);"></div></div>
-              <span class="fbc-value">~150</span>
+          <div class="iops-chart">
+            <div class="iops-row iops-hdd">
+              <div class="iops-label">HDD</div>
+              <div class="iops-track"><div class="iops-fill"></div></div>
+              <div class="iops-val">~100&ndash;200 IOPS</div>
             </div>
-            <div class="fbc-row">
-              <span class="fbc-label">SATA SSD</span>
-              <div class="fbc-track"><div class="fbc-fill" style="width:68%; background:var(--accent-cyan);"></div></div>
-              <span class="fbc-value">~50,000</span>
+            <div class="iops-row iops-sata">
+              <div class="iops-label">SATA SSD</div>
+              <div class="iops-track"><div class="iops-fill"></div></div>
+              <div class="iops-val">~50,000 IOPS</div>
             </div>
-            <div class="fbc-row">
-              <span class="fbc-label">NVMe SSD</span>
-              <div class="fbc-track"><div class="fbc-fill" style="width:100%; background:var(--accent-green);"></div></div>
-              <span class="fbc-value">1,000,000+</span>
+            <div class="iops-row iops-nvme">
+              <div class="iops-label">NVMe SSD</div>
+              <div class="iops-track"><div class="iops-fill"></div></div>
+              <div class="iops-val">1,000,000+ IOPS</div>
             </div>
           </div>
-          <p class="flash-barchart-note">Random 4K read IOPS, approximate figures, plotted on a log scale.</p>
+          <p class="nand-caveat">Log-scaled again — NVMe's real advantage over a spinning HDD is on the order of 10,000&times;, not the ~7&times; the bar lengths alone would suggest.</p>
         </section>
 
         <section id="simulator">
