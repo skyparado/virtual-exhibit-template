@@ -8,6 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/horizon.css" />
+  <link rel="stylesheet" href="css/horizon-simulator.css" />
 </head>
 <body>
 
@@ -69,20 +70,9 @@
           </p>
         </section>
 
-        <!-- ══════════════════════════════════════════════════════════
-             CLOUD STORAGE ARCHITECTURE
-             ══════════════════════════════════════════════════════════ -->
         <section id="cloud-architecture">
           <h2>Cloud Storage Architecture</h2>
 
-          <!--
-            IMAGE PLACEHOLDER
-            Path/filename to add:  images/cloud-architecture.png
-            Suggested content: a labeled diagram or screenshot showing the
-            front-end / network / back-end / delivery-platform flow of cloud
-            storage. Drop the file into the images/ folder using this exact
-            name and it will render automatically — no other edits needed.
-          -->
           <figure class="figure-placeholder">
             <img src="images/cloud-architecture.png" alt="Diagram of cloud storage architecture components" class="figure-img figure-img-cloud" />
             <figcaption>Fig. Cloud Storage Architecture</figcaption>
@@ -278,12 +268,6 @@
         <section id="data-centers">
           <h2>Data Centers</h2>
 
-          <!--
-            IMAGE PLACEHOLDER
-            Path/filename to add:  images/data-center.png
-            Suggested content: a photo of server racks / a real data center hall.
-            Drop the file into images/ with this exact name to render it.
-          -->
           <figure class="figure-placeholder">
             <img src="images/data-center.jpg" alt="Photo of a modern data center with server racks" class="figure-img figure-img-datacenter" />
             <figcaption>Fig. Modern Data Center <a href="https://www.hiclipart.com/free-transparent-background-png-clipart-donyq" target="_blank" rel="noopener">(HiClipart)</a></figcaption>
@@ -350,9 +334,6 @@
           </p>
         </section>
 
-        <!-- ══════════════════════════════════════════════════════════
-             EMERGING TECHNOLOGIES
-             ══════════════════════════════════════════════════════════ -->
         <section id="emerging-tech">
           <h2>Emerging Storage Technologies</h2><br>
 
@@ -387,13 +368,6 @@
         <section id="dna-storage">
           <h2>DNA Storage</h2>
 
-          <!--
-            IMAGE PLACEHOLDER
-            Path/filename to add:  images/dna-storage.png
-            Suggested content: a close-up/illustration of DNA strands or a
-            DNA storage capsule/vial. Drop the file into images/ with this
-            exact name to render it.
-          -->
           <figure class="figure-placeholder">
             <img src="images/dna-storage.jpg" alt="Illustration of DNA strands used for digital data storage" class="figure-img figure-img-dna" />
             <figcaption>Fig. Illustration of Synthetic DNA Strand with Data Encoded <a href="https://www.geneticsdigest.com/the-role-of-dna-data-storage-in-health-and-technology/?srsltid=AfmBOooPJbsAd8aCW52MLnbrryH3Yrvz3Wwd8iubpR81qbp-ZXXLOXU-" target="_blank" rel="noopener">(Genetics Digest)</a></figcaption>
@@ -456,13 +430,6 @@
         <section id="holographic-storage">
           <h2>Holographic Storage</h2>
 
-          <!--
-            IMAGE PLACEHOLDER
-            Path/filename to add:  images/holographic-storage.png
-            Suggested content: a diagram or photo of a holographic
-            storage disc/laser setup. Drop the file into images/ with this
-            exact name to render it.
-          -->
           <figure class="figure-placeholder">
             <img src="images/holographic-storage.jpg" alt="Diagram of holographic data storage using lasers" class="figure-img figure-img-holo" />
             <figcaption>Fig. — Lasers record and read data across the full depth of a holographic medium <a href="https://www.thehindu.com/sci-tech/technology/microsofts-exploring-holographic-storage-devices-for-its-cloud-what-does-it-mean/article61735059.ece" target="_blank" rel="noopener">(The Hindu)</a></figcaption>
@@ -548,8 +515,21 @@
 
         <section id="simulator">
           <h2>Interactive: Data Storage Destination Simulator</h2>
-          <div class="simulator-placeholder">
-            [ Data Storage Destination Simulator Component ]
+          <div class="sim-launch-card">
+            <div class="sim-launch-icon">📡</div>
+            <h3>Where Would Your Data Live?</h3>
+            <p>
+              Pick a data type, choose a storage technology, and watch where it travels —
+              from your device to SSDs, the cloud, distributed server clusters, or even
+              synthetic DNA. Compare trade-offs and see which option fits best.
+            </p>
+            <button class="sim-launch-btn" id="simLaunchBtn">▶ Launch Simulator</button>
+            <div class="sim-launch-tags">
+              <span class="sim-launch-tag">💾 SSD</span>
+              <span class="sim-launch-tag">☁️ Cloud</span>
+              <span class="sim-launch-tag">🕸️ Distributed</span>
+              <span class="sim-launch-tag">🧬 DNA</span>
+            </div>
           </div>
         </section>
 
@@ -601,5 +581,6 @@
 
   <script src="js/main.js"></script>
   <script src="js/horizon.js"></script>
+  <script src="js/horizon-simulator.js"></script>
 </body>
 </html>

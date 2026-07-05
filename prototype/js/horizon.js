@@ -1,10 +1,3 @@
-/* ============================================================
-   horizon.js — lightweight step-cycling animations for
-   exhibit-horizon.html (data-access flow + DNA encoding process)
-   Uses IntersectionObserver so loops only run once a diagram is
-   actually on screen (kinder to battery/CPU).
-   ============================================================ */
-
 const tocObserver = new IntersectionObserver(entries => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {

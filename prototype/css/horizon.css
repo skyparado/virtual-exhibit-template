@@ -1,10 +1,3 @@
-/* ============================================================
-   HORIZON.CSS — styles for exhibit-horizon.html
-   (Cloud / DNA / Emerging Storage)
-   Palette + type inherited from css/style.css (--accent-*, --text*, --font-*)
-   ============================================================ */
-
-/* ── shared figure/image placeholder (same contract as disk.css) ── */
 .figure-placeholder {
   margin: 1.75rem 0;
   text-align: center;
@@ -35,15 +28,12 @@
 .figure-placeholder figcaption a { color: var(--accent-cyan); text-decoration: none; }
 .figure-placeholder figcaption a:hover { text-decoration: underline; }
 
-/* if the <img> hasn't been dropped in yet, show a tidy dashed box
-   instead of a broken-image icon */
 .figure-img {
   min-height: 80px;
   background: rgba(26, 0, 51, 0.5);
 }
 .figure-img::before { content: ''; }
 
-/* ── section intro strip (small kicker line above a heading) ── */
 .section-kicker {
   font-family: var(--font-body);
   font-size: 0.75rem;
@@ -54,7 +44,6 @@
   opacity: 0.85;
 }
 
-/* ── "Did You Know?" fact box ── */
 .fact-box {
   display: flex;
   gap: 1rem;
@@ -90,9 +79,6 @@
   line-height: 1.7;
 }
 
-/* ================================================================
-   CLOUD ARCHITECTURE — four-part anatomy strip
-   ================================================================ */
 .arch-strip {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -139,7 +125,6 @@
   line-height: 1.5;
 }
 
-/* connecting arrow between parts, desktop only */
 .arch-part:not(:last-child)::after {
   content: '\2192';
   position: absolute;
@@ -159,9 +144,6 @@
   .arch-part:not(:last-child)::after { content: '\2193'; right: 50%; top: auto; bottom: -0.55rem; transform: translateX(50%); }
 }
 
-/* ================================================================
-   SCALABILITY — growth staircase diagram
-   ================================================================ */
 .scale-diagram {
   display: flex;
   align-items: flex-end;
@@ -217,7 +199,7 @@
 @keyframes growBar {
   0%   { height: 0;           opacity: 0.4; }
   25%  { height: var(--target); opacity: 1; }
-  75%  { height: var(--target); opacity: 1; }  /* 3s hold at full height (25%–75% of 6.4s) */
+  75%  { height: var(--target); opacity: 1; }
   100% { height: 0;           opacity: 0.4; }
 }
 
@@ -250,9 +232,6 @@
   margin: 0.75rem 0 1.5rem;
 }
 
-/* ================================================================
-   DATA ACCESS — horizontal pipeline of glowing nodes
-   ================================================================ */
 .flow-diagram-wrap {
   position: relative;
   margin: 2rem auto 0.25rem;
@@ -358,7 +337,6 @@
 
 .flow-step.is-active .flow-label { color: var(--text); }
 
-/* Index + Metadata merge into a single dual node */
 .flow-step.flow-parallel {
   flex-direction: row;
   width: auto;
@@ -371,7 +349,6 @@
 .flow-parallel-item { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
 .flow-icon-sm { width: 42px; height: 42px; font-size: 1.05rem; }
 
-/* connectors — a live circuit trace between nodes */
 .flow-connector {
   flex: 1 1 34px;
   min-width: 22px;
@@ -418,7 +395,6 @@
   .flow-connector { margin-top: 23px; }
 }
 
-/* key technologies — single horizontal row of cards */
 .keytech-row {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -464,9 +440,6 @@
   .keytech-row { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* ================================================================
-   DISTRIBUTED STORAGE — replication / sharding tree
-   ================================================================ */
 .tree-diagram {
   margin: 1.75rem 0;
   padding: 2rem 1rem 1.5rem;
@@ -482,7 +455,6 @@
   margin-bottom: 28px;
 }
 
-/* static stem line, root -> bracket */
 .tree-root::after {
   content: '';
   position: absolute;
@@ -491,7 +463,6 @@
   background: rgba(255,255,255,0.25);
 }
 
-/* traveling dot: root -> bracket */
 .tree-root::before {
   content: '';
   position: absolute;
@@ -505,10 +476,12 @@
 }
 
 @keyframes dotStem {
-  0%, 100% { opacity: 0; bottom: 0; }
-  2%       { opacity: 1; bottom: 0; }
-  13%      { opacity: 1; bottom: -28px; }
-  15%      { opacity: 0; bottom: -28px; }
+  0%     { opacity: 0; bottom: 0; }
+  1.9%   { opacity: 0; bottom: 0; }
+  2%     { opacity: 1; bottom: 0; }
+  13%    { opacity: 1; bottom: -28px; }
+  13.1%  { opacity: 0; bottom: -28px; }
+  100%   { opacity: 0; bottom: -28px; }
 }
 
 .tree-node {
@@ -530,7 +503,6 @@
   padding-top: 28px;
 }
 
-/* static bracket line */
 .tree-branches::before {
   content: '';
   position: absolute;
@@ -547,7 +519,6 @@
   position: relative;
 }
 
-/* static drop line, bracket -> division label */
 .tree-branch::before {
   content: '';
   position: absolute;
@@ -557,7 +528,6 @@
 .tree-branch.branch-replication::before { background: rgba(0,255,255,0.35); }
 .tree-branch.branch-sharding::before    { background: rgba(255,0,255,0.35); }
 
-/* traveling dots: split from center, slide to own box, then drop in — together */
 .tree-branch::after {
   content: '';
   position: absolute;
@@ -579,19 +549,23 @@
 }
 
 @keyframes dotSplitLeft {
-  0%, 60% { opacity: 0; left: calc(100% + 1.5rem); top: -28px; }
-  17%      { opacity: 1; left: calc(100% + 1.5rem); top: -28px; }
-  35%      { opacity: 1; left: 50%; top: -28px; }
-  58%      { opacity: 1; left: 50%; top: 0; }
-  60%      { opacity: 0; left: 50%; top: 0; }
+  0%   { opacity: 0; left: calc(100% + 1.5rem); top: -28px; }
+  16%  { opacity: 0; left: calc(100% + 1.5rem); top: -28px; }
+  17%  { opacity: 1; left: calc(100% + 1.5rem); top: -28px; }
+  35%  { opacity: 1; left: 50%; top: -28px; }
+  58%  { opacity: 1; left: 50%; top: 0; }
+  60%  { opacity: 0; left: 50%; top: 0; }
+  100% { opacity: 0; left: 50%; top: 0; }
 }
 
 @keyframes dotSplitRight {
-  0%, 60% { opacity: 0; left: calc(0% - 1.5rem); top: -28px; }
-  17%      { opacity: 1; left: calc(0% - 1.5rem); top: -28px; }
-  35%      { opacity: 1; left: 50%; top: -28px; }
-  58%      { opacity: 1; left: 50%; top: 0; }
-  60%      { opacity: 0; left: 50%; top: 0; }
+  0%   { opacity: 0; left: calc(0% - 1.5rem); top: -28px; }
+  16%  { opacity: 0; left: calc(0% - 1.5rem); top: -28px; }
+  17%  { opacity: 1; left: calc(0% - 1.5rem); top: -28px; }
+  35%  { opacity: 1; left: 50%; top: -28px; }
+  58%  { opacity: 1; left: 50%; top: 0; }
+  60%  { opacity: 0; left: 50%; top: 0; }
+  100% { opacity: 0; left: 50%; top: 0; }
 }
 
 .tree-branch-title {
@@ -653,7 +627,6 @@
 .branch-replication .tree-leaf { border: 1px solid rgba(0,255,255,0.35); color: var(--accent-cyan); }
 .branch-sharding .tree-leaf { border: 1px solid rgba(255,0,255,0.35); color: var(--accent-magenta); }
 
-/* NEW: second-level traveling dots — division -> individual servers */
 .tree-leaf::after {
   content: '';
   position: absolute;
@@ -667,36 +640,40 @@
 .branch-replication .tree-leaf::after { box-shadow: 0 0 6px var(--accent-cyan), 0 0 10px rgba(0,255,255,0.5); }
 .branch-sharding .tree-leaf::after    { box-shadow: 0 0 6px var(--accent-magenta), 0 0 10px rgba(255,0,255,0.5); }
 
-/* replication: 2 boxes, both slide in from the shared center */
 .branch-replication .tree-leaf:nth-child(1)::after { animation: leafSplitLeft 4s linear infinite; }
 .branch-replication .tree-leaf:nth-child(2)::after { animation: leafSplitRight 4s linear infinite; }
 
-/* sharding: 3 boxes — outer two slide in, middle drops straight down */
 .branch-sharding .tree-leaf:nth-child(1)::after { animation: leafSplitLeft 4s linear infinite; }
 .branch-sharding .tree-leaf:nth-child(2)::after { left: 50%; animation: leafDropStraight 4s linear infinite; }
 .branch-sharding .tree-leaf:nth-child(3)::after { animation: leafSplitRight 4s linear infinite; }
 
 @keyframes leafSplitLeft {
-  0%, 60% { opacity: 0; left: calc(100% + 3.5rem); top: -20px; }
-  62%     { opacity: 1; left: calc(100% + 3.5rem); top: -20px; }
-  78%     { opacity: 1; left: 50%; top: -20px; }
-  92%     { opacity: 1; left: 50%; top: 0; }
-  94%, 100% { opacity: 0; left: 50%; top: 0; }
+  0%   { opacity: 0; left: calc(100% + 3.5rem); top: -20px; }
+  60%  { opacity: 0; left: calc(100% + 3.5rem); top: -20px; }
+  62%  { opacity: 1; left: calc(100% + 3.5rem); top: -20px; }
+  78%  { opacity: 1; left: 50%; top: -20px; }
+  92%  { opacity: 1; left: 50%; top: 0; }
+  94%  { opacity: 0; left: 50%; top: 0; }
+  100% { opacity: 0; left: 50%; top: 0; }
 }
 
 @keyframes leafSplitRight {
-  0%, 60% { opacity: 0; left: calc(0% - 3.5rem); top: -20px; }
-  62%     { opacity: 1; left: calc(0% - 3.5rem); top: -20px; }
-  78%     { opacity: 1; left: 50%; top: -20px; }
-  92%     { opacity: 1; left: 50%; top: 0; }
-  94%, 100% { opacity: 0; left: 50%; top: 0; }
+  0%   { opacity: 0; left: calc(0% - 3.5rem); top: -20px; }
+  60%  { opacity: 0; left: calc(0% - 3.5rem); top: -20px; }
+  62%  { opacity: 1; left: calc(0% - 3.5rem); top: -20px; }
+  78%  { opacity: 1; left: 50%; top: -20px; }
+  92%  { opacity: 1; left: 50%; top: 0; }
+  94%  { opacity: 0; left: 50%; top: 0; }
+  100% { opacity: 0; left: 50%; top: 0; }
 }
 
 @keyframes leafDropStraight {
-  0%, 60% { opacity: 0; top: -20px; }
-  62%     { opacity: 1; top: -20px; }
-  92%     { opacity: 1; top: 0; }
-  94%, 100% { opacity: 0; top: 0; }
+  0%   { opacity: 0; top: -20px; }
+  60%  { opacity: 0; top: -20px; }
+  62%  { opacity: 1; top: -20px; }
+  92%  { opacity: 1; top: 0; }
+  94%  { opacity: 0; top: 0; }
+  100% { opacity: 0; top: 0; }
 }
 
 .tree-footer {
@@ -729,9 +706,6 @@
   .tree-leaf { white-space: normal; }
 }
 
-/* ================================================================
-   DNA STORAGE — encoding process diagram
-   ================================================================ */
 .dna-diagram {
   display: flex;
   flex-wrap: wrap;
@@ -795,9 +769,6 @@
   .dna-arrow { transform: rotate(90deg); }
 }
 
-/* ================================================================
-   EMERGING TECH — orbiting icon banner
-   ================================================================ */
 .orbit-banner {
   position: relative;
   height: 190px;
@@ -859,9 +830,6 @@
   .orbit-banner { transform: scale(0.72); height: 150px; }
 }
 
-/* ================================================================
-   HOLOGRAPHIC STORAGE — volumetric cube with scanning laser
-   ================================================================ */
 .holo-stage {
   display: flex;
   justify-content: center;
@@ -918,9 +886,6 @@
   margin-bottom: 1.5rem;
 }
 
-/* ================================================================
-   NEUROMORPHIC — brain → chip morph, the "wow" moment
-   ================================================================ */
 .neuro-stage {
   margin: 1.75rem 0;
   padding: 2rem 1.5rem;
