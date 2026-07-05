@@ -241,6 +241,132 @@
       outline: 2px solid currentColor;
       outline-offset: 2px;
     }
+
+    /* ============================================================
+       NAND physical hierarchy — nested containment diagram.
+       Replaces the old .cd-diagram (which was literally a CD/DVD
+       layer cross-section relabeled with NAND terms — the bar
+       widths never meant anything). This instead nests each level
+       inside the one that contains it: Package > Die/Plane > Block
+       > Page > Cell, so the visual matches the actual relationship
+       described in the text.
+       ============================================================ */
+    .nand-hierarchy {
+      display: flex;
+      justify-content: center;
+      margin: 2rem 0 1.75rem;
+    }
+    .nh-level {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border-radius: 10px;
+      padding: 1.4rem 1.4rem 1.6rem;
+      width: 100%;
+    }
+    .nh-tag {
+      font-family: var(--font-head);
+      font-size: 0.72rem;
+      letter-spacing: 2px;
+      padding: 0.2rem 0.7rem;
+      border-radius: 999px;
+      margin-bottom: 0.9rem;
+      white-space: nowrap;
+    }
+    .nh-sub {
+      font-size: 0.62rem;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin: -0.6rem 0 0.9rem;
+    }
+    .nh-package {
+      background: rgba(128, 0, 255, 0.08);
+      border: 1px solid rgba(128, 0, 255, 0.35);
+    }
+    .nh-package > .nh-tag { color: var(--accent-purple); border: 1px solid rgba(128,0,255,0.5); }
+    .nh-die {
+      background: rgba(0, 255, 255, 0.06);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      width: 82%;
+    }
+    .nh-die > .nh-tag { color: var(--accent-cyan); border: 1px solid rgba(0,255,255,0.45); }
+    .nh-block {
+      background: rgba(57, 255, 20, 0.06);
+      border: 1px solid rgba(57, 255, 20, 0.3);
+      width: 84%;
+    }
+    .nh-block > .nh-tag { color: var(--accent-green); border: 1px solid rgba(57,255,20,0.45); }
+    .nh-page {
+      background: rgba(255, 0, 255, 0.06);
+      border: 1px solid rgba(255, 0, 255, 0.3);
+      width: 86%;
+    }
+    .nh-page > .nh-tag { color: var(--accent-magenta); border: 1px solid rgba(255,0,255,0.45); }
+    .nh-cell {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px dashed rgba(255, 255, 255, 0.3);
+      width: 88%;
+      padding-bottom: 1.4rem;
+    }
+    .nh-cell > .nh-tag { color: var(--text); border: 1px solid rgba(255,255,255,0.4); }
+    .nh-cell > .nh-sub { margin-bottom: 0; }
+    @media (max-width: 640px) {
+      .nh-level { padding: 1rem 0.6rem 1.2rem; }
+      .nh-tag { font-size: 0.62rem; letter-spacing: 1px; }
+    }
+
+    /* ============================================================
+       Reusable horizontal bar-chart for quick numeric comparisons
+       (P/E cycle budgets, IOPS). Values below are on a log scale
+       since the real-world ranges span 2-4 orders of magnitude —
+       plotted linearly, the smaller bars would vanish to nothing.
+       ============================================================ */
+    .flash-barchart {
+      margin: 1.5rem 0 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+    .fbc-row {
+      display: grid;
+      grid-template-columns: 90px 1fr 96px;
+      align-items: center;
+      gap: 0.9rem;
+    }
+    .fbc-label {
+      font-family: var(--font-head);
+      font-size: 0.68rem;
+      letter-spacing: 1px;
+      color: var(--text);
+      text-align: right;
+    }
+    .fbc-track {
+      height: 14px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .fbc-fill {
+      height: 100%;
+      border-radius: 999px;
+    }
+    .fbc-value {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .flash-barchart-note {
+      font-size: 0.62rem;
+      color: rgba(170,170,204,0.4);
+      letter-spacing: 0.5px;
+      margin-top: -0.4rem;
+    }
+    @media (max-width: 640px) {
+      .fbc-row { grid-template-columns: 62px 1fr 74px; gap: 0.5rem; }
+      .fbc-label { font-size: 0.58rem; }
+      .fbc-value { font-size: 0.6rem; }
+    }
   </style>
 </head>
 <body>
@@ -309,26 +435,24 @@
             with no power applied — this is what makes flash <strong>non-volatile</strong>.
           </p>
 
-          <div class="cd-diagram">
-            <div class="cd-layer">
-              <span class="cd-layer-label">Package (multiple dies)</span>
-              <div class="cd-layer-bar layer-label"></div>
-            </div>
-            <div class="cd-layer">
-              <span class="cd-layer-label">Die &rarr; Plane</span>
-              <div class="cd-layer-bar layer-lacquer"></div>
-            </div>
-            <div class="cd-layer">
-              <span class="cd-layer-label">Block (erase unit, ~128&ndash;256 pages)</span>
-              <div class="cd-layer-bar layer-reflect"></div>
-            </div>
-            <div class="cd-layer">
-              <span class="cd-layer-label">Page (write unit, 4&ndash;16 KB)</span>
-              <div class="cd-layer-bar layer-pc"></div>
-            </div>
-            <div class="cd-layer">
-              <span class="cd-layer-label">Cell (floating-gate transistor)</span>
-              <div class="cd-layer-bar layer-laser"></div>
+          <div class="nand-hierarchy" role="img" aria-label="NAND physical hierarchy: a package contains multiple dies, each die is divided into planes, each plane into blocks, each block into pages, and each page into cells">
+            <div class="nh-level nh-package">
+              <span class="nh-tag">PACKAGE</span>
+              <div class="nh-level nh-die">
+                <span class="nh-tag">DIE &rarr; PLANE</span>
+                <div class="nh-level nh-block">
+                  <span class="nh-tag">BLOCK</span>
+                  <span class="nh-sub">erase unit &middot; ~128&ndash;256 pages</span>
+                  <div class="nh-level nh-page">
+                    <span class="nh-tag">PAGE</span>
+                    <span class="nh-sub">write unit &middot; 4&ndash;16 KB</span>
+                    <div class="nh-level nh-cell">
+                      <span class="nh-tag">CELL</span>
+                      <span class="nh-sub">floating-gate transistor</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -362,6 +486,31 @@
             cell has a finite budget of <strong>program/erase (P/E) cycles</strong> &mdash;
             roughly 100,000 for SLC, down to a few hundred for QLC.
           </p>
+
+          <div class="flash-barchart" role="img" aria-label="Approximate program/erase cycle budget by NAND type: SLC about 100,000, MLC about 10,000, TLC about 3,000, QLC about 500">
+            <div class="fbc-row">
+              <span class="fbc-label">SLC</span>
+              <div class="fbc-track"><div class="fbc-fill" style="width:100%; background:var(--accent-green);"></div></div>
+              <span class="fbc-value">~100,000</span>
+            </div>
+            <div class="fbc-row">
+              <span class="fbc-label">MLC</span>
+              <div class="fbc-track"><div class="fbc-fill" style="width:67%; background:var(--accent-cyan);"></div></div>
+              <span class="fbc-value">~10,000</span>
+            </div>
+            <div class="fbc-row">
+              <span class="fbc-label">TLC</span>
+              <div class="fbc-track"><div class="fbc-fill" style="width:49%; background:var(--accent-magenta);"></div></div>
+              <span class="fbc-value">~3,000</span>
+            </div>
+            <div class="fbc-row">
+              <span class="fbc-label">QLC</span>
+              <div class="fbc-track"><div class="fbc-fill" style="width:23%; background:var(--accent-purple);"></div></div>
+              <span class="fbc-value">~500</span>
+            </div>
+          </div>
+          <p class="flash-barchart-note">P/E cycles per cell, approximate figures, plotted on a log scale.</p>
+
           <p>
             If a drive always rewrote the same "hot" blocks &mdash; a swap file, a database log &mdash;
             those blocks would wear out in weeks while the rest of the chip sat untouched.
@@ -477,6 +626,25 @@
             reads any single cell faster than that, but because thousands of requests can
             be in flight across its parallel queues at once.
           </p>
+
+          <div class="flash-barchart" role="img" aria-label="Approximate random IOPS by drive type: HDD about 150, SATA SSD about 50,000, NVMe SSD over 1,000,000">
+            <div class="fbc-row">
+              <span class="fbc-label">HDD</span>
+              <div class="fbc-track"><div class="fbc-fill" style="width:5%; background:var(--accent-magenta);"></div></div>
+              <span class="fbc-value">~150</span>
+            </div>
+            <div class="fbc-row">
+              <span class="fbc-label">SATA SSD</span>
+              <div class="fbc-track"><div class="fbc-fill" style="width:68%; background:var(--accent-cyan);"></div></div>
+              <span class="fbc-value">~50,000</span>
+            </div>
+            <div class="fbc-row">
+              <span class="fbc-label">NVMe SSD</span>
+              <div class="fbc-track"><div class="fbc-fill" style="width:100%; background:var(--accent-green);"></div></div>
+              <span class="fbc-value">1,000,000+</span>
+            </div>
+          </div>
+          <p class="flash-barchart-note">Random 4K read IOPS, approximate figures, plotted on a log scale.</p>
         </section>
 
         <section id="simulator">
