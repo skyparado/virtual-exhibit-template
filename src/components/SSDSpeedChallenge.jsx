@@ -1,13 +1,9 @@
 import { useState, useRef, useCallback } from 'react';
 
-// Small inline icon components — replaces the lucide-react import, which
-// isn't part of this project's tech stack (Astro + React + Tailwind only,
-// no extra icon package installed). Same visual style as lucide's icons,
-// and matches the icons already used in the plain-HTML version of this page.
-
-function CpuIcon({ size = 20, ...props }) {
+// Small inline icon components — no external icon package needed.
+function CpuIcon({ size = 20, color, style }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color || 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={style} aria-hidden="true">
       <rect x="4" y="4" width="16" height="16" rx="2" />
       <rect x="9" y="9" width="6" height="6" />
       <line x1="9" y1="1" x2="9" y2="4" />
@@ -22,9 +18,9 @@ function CpuIcon({ size = 20, ...props }) {
   );
 }
 
-function HardDriveIcon({ size = 20, ...props }) {
+function HardDriveIcon({ size = 20, color, style }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color || 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={style} aria-hidden="true">
       <line x1="22" y1="12" x2="2" y2="12" />
       <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
       <line x1="6" y1="16" x2="6.01" y2="16" />
@@ -33,17 +29,17 @@ function HardDriveIcon({ size = 20, ...props }) {
   );
 }
 
-function ZapIcon({ size = 20, ...props }) {
+function ZapIcon({ size = 20, color, style }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color || 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={style} aria-hidden="true">
       <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
     </svg>
   );
 }
 
-function RotateCcwIcon({ size = 20, ...props }) {
+function RotateCcwIcon({ size = 20, color, style }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color || 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={style} aria-hidden="true">
       <polyline points="1 4 1 10 7 10" />
       <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
     </svg>
@@ -51,48 +47,27 @@ function RotateCcwIcon({ size = 20, ...props }) {
 }
 
 // --- Device profiles, sourced from the article's own numbers ---
-// concurrency: how many requests the device can service at once
-// stepMs: time for one request to complete once it's being serviced
-// latencyLabel / iops / throughput: display stats
 const DEVICES = {
   hdd: {
-    label: 'HDD',
-    sub: '7,200 RPM',
-    icon: HardDriveIcon,
-    accent: '#FF0080',
-    concurrency: 1,
-    stepMs: 480,
-    latency: '~6 ms',
-    iops: '~150',
-    throughput: '~150 MB/s',
+    label: 'HDD', sub: '7,200 RPM', icon: HardDriveIcon, accent: '#FF0080',
+    concurrency: 1, stepMs: 480,
+    latency: '~6 ms', iops: '~150', throughput: '~150 MB/s',
     barPct: { speed: 12, latency: 95, iops: 4 },
     blurb: 'One request at a time — the arm has to physically seek before each read.',
     legend: 'One request serviced at a time (physical seek).',
   },
   sata: {
-    label: 'SATA SSD',
-    sub: 'AHCI · 1 queue × 32',
-    icon: ZapIcon,
-    accent: '#00FFFF',
-    concurrency: 6,
-    stepMs: 140,
-    latency: '~100 µs',
-    iops: '~50,000',
-    throughput: '~550 MB/s',
+    label: 'SATA SSD', sub: 'AHCI · 1 queue × 32', icon: ZapIcon, accent: '#00FFFF',
+    concurrency: 6, stepMs: 140,
+    latency: '~100 µs', iops: '~50,000', throughput: '~550 MB/s',
     barPct: { speed: 55, latency: 15, iops: 45 },
     blurb: 'No seek time, but AHCI still caps the drive to a single command queue.',
     legend: 'No seek time, but capped to one AHCI queue, 32 commands deep.',
   },
   nvme: {
-    label: 'NVMe SSD',
-    sub: 'PCIe · 65,535 queues',
-    icon: CpuIcon,
-    accent: '#39FF14',
-    concurrency: 16,
-    stepMs: 70,
-    latency: '~20 µs',
-    iops: '1,000,000+',
-    throughput: '~7,000 MB/s',
+    label: 'NVMe SSD', sub: 'PCIe · 65,535 queues', icon: CpuIcon, accent: '#39FF14',
+    concurrency: 16, stepMs: 70,
+    latency: '~20 µs', iops: '1,000,000+', throughput: '~7,000 MB/s',
     barPct: { speed: 100, latency: 3, iops: 100 },
     blurb: 'Thousands of queues in flight at once — requests barely wait at all.',
     legend: 'Talks directly over PCIe with up to 65,535 parallel queues.',
@@ -178,31 +153,61 @@ export default function SSDSpeedChallenge() {
     runBatch();
   }, [deviceKey]);
 
+  // All layout below is plain inline styles — this project doesn't run
+  // Tailwind (confirmed: none of these utility classes exist anywhere in
+  // the deployed CSS), so no className here does anything useful except
+  // "sim-wrap" / "btn" / "btn-outline" / "btn-sm", which ARE real classes
+  // already defined site-wide and used by the other exhibits' simulators.
+
   return (
     <div
-      className="w-full max-w-3xl mx-auto border-2 rounded-md overflow-hidden bg-black"
+      className="sim-wrap"
       style={{ borderColor: device.accent, fontFamily: "'Space Mono', monospace" }}
     >
       {/* Title bar */}
-      <div className="flex items-center justify-between px-4 py-2 bg-black border-b-2" style={{ borderColor: device.accent }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingBottom: '0.75rem',
+          marginBottom: '1.25rem',
+          borderBottom: `2px solid ${device.accent}`,
+        }}
+      >
         <span
-          className="text-xs sm:text-sm tracking-[0.2em] uppercase"
-          style={{ color: device.accent, fontFamily: "'Mokoto Glitch', 'Space Mono', monospace" }}
+          style={{
+            fontSize: '0.85rem',
+            letterSpacing: '0.2em',
+            textTransform: 'uppercase',
+            color: device.accent,
+          }}
         >
           SSD Speed Challenge
         </span>
         <button
           onClick={reset}
-          className="flex items-center gap-1 text-[10px] sm:text-xs uppercase tracking-wide text-white/60 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors"
+          className="btn btn-outline btn-sm"
           aria-label="Reset simulator to NVMe SSD"
+          style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}
         >
           <RotateCcwIcon size={12} /> Reset
         </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-4 p-4">
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '140px 1fr',
+          gap: '1.25rem',
+        }}
+      >
         {/* Device selector */}
-        <div className="flex sm:flex-col gap-2" role="group" aria-label="Storage device selector">
+        <div
+          style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
+          role="group"
+          aria-label="Storage device selector"
+        >
           {ORDER.map((key) => {
             const d = DEVICES[key];
             const DIcon = d.icon;
@@ -213,81 +218,115 @@ export default function SSDSpeedChallenge() {
                 onClick={() => selectDevice(key)}
                 disabled={running}
                 aria-pressed={selected}
-                className="flex-1 sm:flex-none flex sm:flex-col items-center gap-1 sm:gap-1.5 border rounded px-2 py-2 text-center transition-all disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                 style={{
-                  borderColor: selected ? d.accent : '#333',
-                  backgroundColor: selected ? `${d.accent}1A` : 'transparent',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  border: `1px solid ${selected ? d.accent : 'rgba(170,170,204,0.25)'}`,
+                  borderRadius: '4px',
+                  background: selected ? `${d.accent}1A` : 'transparent',
                   color: selected ? d.accent : '#888',
-                  outlineColor: d.accent,
+                  padding: '0.6rem 0.4rem',
+                  cursor: running ? 'not-allowed' : 'pointer',
+                  fontFamily: "'Space Mono', monospace",
+                  transition: 'all 0.15s',
                 }}
               >
-                <DIcon size={16} aria-hidden="true" />
-                <span className="text-[10px] sm:text-xs font-bold">{d.label}</span>
-                <span className="hidden sm:block text-[9px] text-white/40">{d.sub}</span>
+                <DIcon size={16} color={selected ? d.accent : '#888'} />
+                <span style={{ fontSize: '0.72rem', fontWeight: 700 }}>{d.label}</span>
+                <span style={{ fontSize: '0.6rem', color: 'rgba(170,170,204,0.5)' }}>{d.sub}</span>
               </button>
             );
           })}
         </div>
 
         {/* Main panel */}
-        <div className="flex flex-col gap-4">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {/* Data path: CPU <-> device */}
-          <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded px-4 py-3">
-            <div className="flex flex-col items-center gap-1">
-              <div className="border border-white/30 rounded p-2">
-                <CpuIcon size={22} className="text-white/80" aria-hidden="true" />
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(170,170,204,0.15)',
+              borderRadius: '4px',
+              padding: '0.9rem 1.1rem',
+            }}
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.3rem' }}>
+              <div style={{ border: '1px solid rgba(170,170,204,0.4)', borderRadius: '4px', padding: '0.5rem' }}>
+                <CpuIcon size={22} color="rgba(200,200,220,0.8)" />
               </div>
-              <span className="text-[9px] text-white/40 uppercase">CPU</span>
+              <span style={{ fontSize: '0.6rem', color: 'rgba(170,170,204,0.5)', textTransform: 'uppercase' }}>CPU</span>
             </div>
 
-            <div className="flex-1 mx-3 h-px relative" style={{ backgroundColor: `${device.accent}44` }}>
+            <div style={{ flex: 1, margin: '0 0.8rem', height: '1px', position: 'relative', background: `${device.accent}44` }}>
               {running && (
                 <div
-                  className="absolute -top-[3px] h-[7px] w-[7px] rounded-full animate-pulse"
-                  style={{ backgroundColor: device.accent, left: `${(cycles * 37) % 90}%` }}
+                  style={{
+                    position: 'absolute',
+                    top: '-3px',
+                    height: '7px',
+                    width: '7px',
+                    borderRadius: '50%',
+                    background: device.accent,
+                    left: `${(cycles * 37) % 90}%`,
+                    transition: 'left 0.3s ease',
+                    animation: 'ssdsim-pulse 0.9s ease-in-out infinite alternate',
+                  }}
                 />
               )}
             </div>
 
-            <div className="flex flex-col items-center gap-1">
-              <div className="border rounded p-2" style={{ borderColor: device.accent }}>
-                <Icon size={22} style={{ color: device.accent }} aria-hidden="true" />
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.3rem' }}>
+              <div style={{ border: `1px solid ${device.accent}`, borderRadius: '4px', padding: '0.5rem' }}>
+                <Icon size={22} color={device.accent} />
               </div>
-              <span className="text-[9px] uppercase" style={{ color: device.accent }}>
-                {device.label}
-              </span>
+              <span style={{ fontSize: '0.6rem', color: device.accent, textTransform: 'uppercase' }}>{device.label}</span>
             </div>
           </div>
 
           {/* Request queue visualization */}
           <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[10px] text-white/40 uppercase tracking-wide">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+              <span style={{ fontSize: '0.62rem', color: 'rgba(170,170,204,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                 Read Queue — {device.concurrency === 1 ? 'sequential' : `${device.concurrency}-wide parallel`}
               </span>
               <button
                 onClick={runQueue}
                 disabled={running}
-                className="text-[10px] uppercase tracking-wide border rounded px-3 py-1 transition-colors disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                style={{ borderColor: device.accent, color: device.accent, outlineColor: device.accent }}
+                className="btn btn-outline btn-sm"
+                style={{ borderColor: device.accent, color: running ? '#666' : device.accent }}
               >
                 {running ? 'Running…' : 'Fire Queue'}
               </button>
             </div>
-            <div className="grid grid-cols-8 gap-1.5" role="img" aria-label={`${QUEUE_SIZE} pending read requests, ${device.concurrency === 1 ? 'serviced one at a time' : `serviced ${device.concurrency} at a time`}`}>
+            <div
+              style={{ display: 'grid', gridTemplateColumns: 'repeat(8, 1fr)', gap: '0.35rem' }}
+              role="img"
+              aria-label={`${QUEUE_SIZE} pending read requests, ${device.concurrency === 1 ? 'serviced one at a time' : `serviced ${device.concurrency} at a time`}`}
+            >
               {queue.map((r) => (
                 <div
                   key={r.id}
-                  className="aspect-square rounded-sm flex items-center justify-center text-[8px] transition-all duration-150"
                   style={{
-                    backgroundColor:
+                    aspectRatio: '1',
+                    borderRadius: '2px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '8px',
+                    transition: 'all 0.15s',
+                    background:
                       r.status === 'done'
                         ? `${device.accent}33`
                         : r.status === 'active'
                         ? device.accent
-                        : '#1a1a1a',
+                        : 'rgba(255,255,255,0.03)',
                     color: r.status === 'active' ? '#000' : '#555',
-                    border: `1px solid ${r.status === 'queued' ? '#2a2a2a' : device.accent}`,
+                    border: `1px solid ${r.status === 'queued' ? 'rgba(170,170,204,0.15)' : device.accent}`,
                   }}
                   title={r.addr}
                 >
@@ -298,61 +337,85 @@ export default function SSDSpeedChallenge() {
           </div>
 
           {/* Stats bars */}
-          <div className="grid grid-cols-3 gap-3">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.8rem' }}>
             {[
               { label: 'Access Speed', pct: device.barPct.speed, value: device.throughput },
               { label: 'Latency', pct: device.barPct.latency, value: device.latency },
               { label: 'IOPS', pct: device.barPct.iops, value: device.iops },
             ].map((stat) => (
-              <div key={stat.label} className="flex flex-col items-center gap-1.5">
-                <div className="w-full h-20 bg-white/5 rounded-sm relative flex items-end overflow-hidden">
+              <div key={stat.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
+                <div
+                  style={{
+                    width: '100%',
+                    height: '70px',
+                    background: 'rgba(255,255,255,0.03)',
+                    display: 'flex',
+                    alignItems: 'flex-end',
+                    overflow: 'hidden',
+                  }}
+                >
                   <div
-                    className="w-full transition-all duration-500 ease-out"
-                    style={{ height: `${Math.max(stat.pct, 4)}%`, backgroundColor: device.accent }}
+                    style={{
+                      width: '100%',
+                      height: `${Math.max(stat.pct, 4)}%`,
+                      background: device.accent,
+                      transition: 'height 0.5s ease-out',
+                    }}
                   />
                 </div>
-                <span className="text-[9px] text-white/40 uppercase tracking-wide">{stat.label}</span>
-                <span className="text-[10px] font-bold" style={{ color: device.accent }}>
-                  {stat.value}
+                <span style={{ fontSize: '0.6rem', color: 'rgba(170,170,204,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  {stat.label}
                 </span>
+                <span style={{ fontSize: '0.68rem', fontWeight: 700, color: device.accent }}>{stat.value}</span>
               </div>
             ))}
           </div>
 
-          <p className="text-[11px] text-white/50 leading-relaxed border-t border-white/10 pt-3">
+          <p
+            style={{
+              fontSize: '0.78rem',
+              color: 'rgba(170,170,204,0.7)',
+              lineHeight: 1.6,
+              borderTop: '1px solid rgba(170,170,204,0.15)',
+              paddingTop: '0.9rem',
+              margin: 0,
+            }}
+          >
             {device.blurb}
           </p>
 
-          {/* Legend: explains each interface's communication method, per the
-              proposal's "Explanations of SATA and NVMe communication methods" */}
-          <div className="flex flex-col gap-1.5 border-t border-white/10 pt-3">
+          {/* Legend: explains each interface's communication method */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', borderTop: '1px solid rgba(170,170,204,0.15)', paddingTop: '0.9rem' }}>
             {ORDER.map((key) => {
               const d = DEVICES[key];
               return (
-                <div key={key} className="flex items-start gap-2">
-                  <span
-                    className="mt-[3px] h-2 w-2 rounded-sm shrink-0"
-                    style={{ backgroundColor: d.accent }}
-                    aria-hidden="true"
-                  />
-                  <span className="text-[10px] text-white/50 leading-relaxed">
-                    <span className="font-bold" style={{ color: d.accent }}>
-                      {d.label}
-                    </span>{' '}
-                    — {d.legend}
+                <div key={key} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+                  <span style={{ marginTop: '3px', width: '8px', height: '8px', borderRadius: '2px', background: d.accent, flexShrink: 0 }} />
+                  <span style={{ fontSize: '0.68rem', color: 'rgba(170,170,204,0.6)', lineHeight: 1.5 }}>
+                    <span style={{ fontWeight: 700, color: d.accent }}>{d.label}</span> — {d.legend}
                   </span>
                 </div>
               );
             })}
           </div>
 
-          <p className="text-[9px] text-white/30 leading-relaxed">
-            <span className="font-bold text-white/40">Simplified model:</span> concurrency and
-            per-request timing above are illustrative, scaled from each interface's real queue
+          <p style={{ fontSize: '0.62rem', color: 'rgba(170,170,204,0.35)', lineHeight: 1.5, margin: 0 }}>
+            <span style={{ fontWeight: 700, color: 'rgba(170,170,204,0.5)' }}>Simplified model:</span> concurrency and
+            per-request timing above are illustrative, scaled from each interface&rsquo;s real queue
             depth and typical latency — not a cycle-accurate simulation of controller firmware.
           </p>
         </div>
       </div>
+
+      <style>{`
+        @keyframes ssdsim-pulse {
+          from { opacity: 0.4; }
+          to   { opacity: 1; }
+        }
+        @media (max-width: 640px) {
+          .sim-wrap > div { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   );
 }
