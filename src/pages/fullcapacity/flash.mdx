@@ -40,6 +40,11 @@ import SSDSpeedChallenge from '../../components/SSDSpeedChallenge.jsx';
     price, it changed the shape of the memory hierarchy — closing the long-standing
     gap between fast, volatile RAM and slow, mechanical secondary storage.
   </p>
+
+  <figure class="figure-placeholder">
+    <img src={`${import.meta.env.BASE_URL}images/early-ssd.png`} alt="Photo of an early solid-state flash storage card" class="figure-img figure-img-flash" />
+    <figcaption>Fig. Early solid-state flash storage, decades before SSDs replaced hard drives <a href="https://en.wikipedia.org/wiki/Solid-state_drive" target="_blank" rel="noopener">(Wikipedia)</a></figcaption>
+  </figure>
 </section>
 
 <section id="nand">
@@ -52,28 +57,43 @@ import SSDSpeedChallenge from '../../components/SSDSpeedChallenge.jsx';
     with no power applied — this is what makes flash <strong>non-volatile</strong>.
   </p>
 
-  <div class="cd-diagram">
-    <div class="cd-layer">
-      <span class="cd-layer-label">Package (multiple dies)</span>
-      <div class="cd-layer-bar layer-label"></div>
+  <figure class="figure-placeholder">
+    <img src={`${import.meta.env.BASE_URL}images/floating-gate-cell.jpg`} alt="Cross-section diagram of a floating-gate transistor memory cell" class="figure-img figure-img-flash" />
+    <figcaption>Fig. Cross-section of a floating-gate transistor — the physical basis of every NAND cell <a href="https://en.wikipedia.org/wiki/Floating-gate_MOSFET" target="_blank" rel="noopener">(Wikipedia)</a></figcaption>
+  </figure>
+
+  <div class="nand-hierarchy">
+    <div class="nand-tier tier-package">
+      <div class="nand-tier-name">PACKAGE</div>
+      <div class="nand-tier-bar-wrap"><div class="nand-tier-bar"></div></div>
+      <div class="nand-tier-meta">multiple dies</div>
     </div>
-    <div class="cd-layer">
-      <span class="cd-layer-label">Die → Plane</span>
-      <div class="cd-layer-bar layer-lacquer"></div>
+    <div class="nand-tier tier-die">
+      <div class="nand-tier-name">DIE &rarr; PLANE</div>
+      <div class="nand-tier-bar-wrap"><div class="nand-tier-bar"></div></div>
+      <div class="nand-tier-meta">one silicon die</div>
     </div>
-    <div class="cd-layer">
-      <span class="cd-layer-label">Block (erase unit, ~128–256 pages)</span>
-      <div class="cd-layer-bar layer-reflect"></div>
+    <div class="nand-tier tier-block">
+      <div class="nand-tier-name">BLOCK</div>
+      <div class="nand-tier-bar-wrap"><div class="nand-tier-bar"></div></div>
+      <div class="nand-tier-meta">erase unit, ~128&ndash;256 pages</div>
     </div>
-    <div class="cd-layer">
-      <span class="cd-layer-label">Page (write unit, 4–16 KB)</span>
-      <div class="cd-layer-bar layer-pc"></div>
+    <div class="nand-tier tier-page">
+      <div class="nand-tier-name">PAGE</div>
+      <div class="nand-tier-bar-wrap"><div class="nand-tier-bar"></div></div>
+      <div class="nand-tier-meta">write unit, 4&ndash;16 KB</div>
     </div>
-    <div class="cd-layer">
-      <span class="cd-layer-label">Cell (floating-gate transistor)</span>
-      <div class="cd-layer-bar layer-laser"></div>
+    <div class="nand-tier tier-cell">
+      <div class="nand-tier-name">CELL</div>
+      <div class="nand-tier-bar-wrap"><div class="nand-tier-bar"></div></div>
+      <div class="nand-tier-meta">floating-gate transistor</div>
     </div>
   </div>
+  <p class="nand-caveat">
+    Bar widths are on a log scale to fit five orders of magnitude on one chart &mdash;
+    they show containment order (package &sup; die &sup; block &sup; page &sup; cell),
+    not literal proportional size.
+  </p>
 
   <p>
     Cells are organized into <strong>pages</strong> (the smallest unit that can be
@@ -82,14 +102,14 @@ import SSDSpeedChallenge from '../../components/SSDSpeedChallenge.jsx';
     bits per cell means finer voltage steps and a noisier read:
   </p>
   <ul>
-    <li><strong>SLC</strong> — 1 bit/cell, 2 voltage states, fastest and most durable.</li>
-    <li><strong>MLC</strong> — 2 bits/cell, 4 voltage states.</li>
-    <li><strong>TLC</strong> — 3 bits/cell, 8 voltage states, the mainstream consumer standard.</li>
-    <li><strong>QLC</strong> — 4 bits/cell, 16 voltage states, cheapest per gigabyte, shortest lifespan.</li>
+    <li><strong>SLC</strong> &mdash; 1 bit/cell, 2 voltage states, fastest and most durable.</li>
+    <li><strong>MLC</strong> &mdash; 2 bits/cell, 4 voltage states.</li>
+    <li><strong>TLC</strong> &mdash; 3 bits/cell, 8 voltage states, the mainstream consumer standard.</li>
+    <li><strong>QLC</strong> &mdash; 4 bits/cell, 16 voltage states, cheapest per gigabyte, shortest lifespan.</li>
   </ul>
   <p>
     NAND has one quirk that shapes everything above it: it can write to an empty
-    page, but it <strong>cannot overwrite</strong> a page directly — the whole block
+    page, but it <strong>cannot overwrite</strong> a page directly &mdash; the whole block
     must be erased first. An SSD controller works around this by writing updates to
     a fresh page elsewhere and marking the old one invalid, then later copying the
     still-valid pages out of a block and erasing it wholesale. This background
@@ -102,24 +122,49 @@ import SSDSpeedChallenge from '../../components/SSDSpeedChallenge.jsx';
   <p>
     Each erase cycle stresses the oxide layer around the floating gate a little
     more. Eventually a cell can no longer reliably hold a charge, so every NAND
-    cell has a finite budget of <strong>program/erase (P/E) cycles</strong> —
+    cell has a finite budget of <strong>program/erase (P/E) cycles</strong> &mdash;
     roughly 100,000 for SLC, down to a few hundred for QLC.
   </p>
+
+  <div class="wear-chart">
+    <div class="wear-row wear-slc">
+      <div class="wear-label">SLC</div>
+      <div class="wear-track"><div class="wear-fill"></div></div>
+      <div class="wear-val">~100,000 P/E cycles</div>
+    </div>
+    <div class="wear-row wear-mlc">
+      <div class="wear-label">MLC</div>
+      <div class="wear-track"><div class="wear-fill"></div></div>
+      <div class="wear-val">~3,000&ndash;10,000</div>
+    </div>
+    <div class="wear-row wear-tlc">
+      <div class="wear-label">TLC</div>
+      <div class="wear-track"><div class="wear-fill"></div></div>
+      <div class="wear-val">~1,000&ndash;3,000</div>
+    </div>
+    <div class="wear-row wear-qlc">
+      <div class="wear-label">QLC</div>
+      <div class="wear-track"><div class="wear-fill"></div></div>
+      <div class="wear-val">~100&ndash;300</div>
+    </div>
+  </div>
+  <p class="nand-caveat">Bars are log-scaled — QLC's real endurance is roughly 300&times; lower than SLC's, not just half as short as the bar might suggest at a glance.</p>
+
   <p>
-    If a drive always rewrote the same "hot" blocks — a swap file, a database log —
+    If a drive always rewrote the same "hot" blocks &mdash; a swap file, a database log &mdash;
     those blocks would wear out in weeks while the rest of the chip sat untouched.
-    <strong> Wear leveling</strong> algorithms prevent this by spreading writes
+    <strong>Wear leveling</strong> algorithms prevent this by spreading writes
     evenly across the whole chip:
   </p>
   <ul>
-    <li><strong>Dynamic wear leveling</strong> — new writes are steered toward the least-worn free blocks.</li>
-    <li><strong>Static wear leveling</strong> — even data that never changes is occasionally relocated, so its block re-enters the rotation instead of sitting idle forever.</li>
+    <li><strong>Dynamic wear leveling</strong> &mdash; new writes are steered toward the least-worn free blocks.</li>
+    <li><strong>Static wear leveling</strong> &mdash; even data that never changes is occasionally relocated, so its block re-enters the rotation instead of sitting idle forever.</li>
   </ul>
   <p>
     Drives also reserve a slice of raw capacity that the user never sees, called
-    <strong> over-provisioning</strong>, to give the controller room to juggle
+    <strong>over-provisioning</strong>, to give the controller room to juggle
     garbage collection and wear leveling without running out of free blocks. The
-    <strong> TRIM</strong> command lets the operating system tell the drive which
+    <strong>TRIM</strong> command lets the operating system tell the drive which
     pages are no longer in use, so the controller can erase them ahead of time
     instead of scrambling during a write.
   </p>
@@ -129,18 +174,24 @@ import SSDSpeedChallenge from '../../components/SSDSpeedChallenge.jsx';
   <h2>SATA vs. NVMe Interfaces</h2>
   <p>
     An SSD is only as fast as the road connecting it to the CPU. Early SSDs were
-    built into the 2.5" form factor and spoke <strong>SATA</strong> — a protocol
+    built into the 2.5" form factor and spoke <strong>SATA</strong> &mdash; a protocol
     and connector designed in 2003 for spinning platters. SATA III tops out around
     6 Gbps (about 550 MB/s after overhead), and its command layer, <strong>AHCI</strong>,
-    supports exactly one command queue, 32 commands deep — plenty for a mechanical
+    supports exactly one command queue, 32 commands deep &mdash; plenty for a mechanical
     drive that could barely keep that queue full, but a hard ceiling for flash.
   </p>
+
+  <figure class="figure-placeholder">
+    <img src={`${import.meta.env.BASE_URL}images/sata-vs-m2.jpg`} alt="Side-by-side comparison of a SATA SSD connector and an M.2 NVMe drive" class="figure-img figure-img-flash" />
+    <figcaption>Fig. SATA's cable-and-connector interface next to an M.2 NVMe stick that plugs directly into PCIe lanes <a href="https://en.wikipedia.org/wiki/M.2" target="_blank" rel="noopener">(Wikipedia)</a></figcaption>
+  </figure>
+
   <p>
     <strong>NVMe</strong> (Non-Volatile Memory Express) throws out that legacy path
     entirely. It talks straight to the CPU over <strong>PCIe lanes</strong> instead
     of a storage-specific bus, and its command set was designed from scratch around
     what flash can actually do: up to <strong>65,535 queues</strong>, each up to
-    <strong> 65,536 commands</strong> deep, so a modern multi-core CPU can issue
+    <strong>65,536 commands</strong> deep, so a modern multi-core CPU can issue
     requests to the drive in parallel instead of standing in one line.
   </p>
 
@@ -150,7 +201,7 @@ import SSDSpeedChallenge from '../../components/SSDSpeedChallenge.jsx';
         <th>Interface</th>
         <th>Bus</th>
         <th>Protocol</th>
-        <th>Queues × Depth</th>
+        <th>Queues &times; Depth</th>
         <th>Typical form factor</th>
         <th>Practical throughput</th>
       </tr>
@@ -160,7 +211,7 @@ import SSDSpeedChallenge from '../../components/SSDSpeedChallenge.jsx';
         <td>SATA III SSD</td>
         <td>SATA</td>
         <td>AHCI</td>
-        <td>1 × 32</td>
+        <td>1 &times; 32</td>
         <td>2.5&Prime;</td>
         <td>~550 MB/s</td>
       </tr>
@@ -168,7 +219,7 @@ import SSDSpeedChallenge from '../../components/SSDSpeedChallenge.jsx';
         <td>NVMe SSD (PCIe 3.0 x4)</td>
         <td>PCIe</td>
         <td>NVMe</td>
-        <td>65,535 × 65,536</td>
+        <td>65,535 &times; 65,536</td>
         <td>M.2 / U.2</td>
         <td>~3,500 MB/s</td>
       </tr>
@@ -176,7 +227,7 @@ import SSDSpeedChallenge from '../../components/SSDSpeedChallenge.jsx';
         <td>NVMe SSD (PCIe 4.0 x4)</td>
         <td>PCIe</td>
         <td>NVMe</td>
-        <td>65,535 × 65,536</td>
+        <td>65,535 &times; 65,536</td>
         <td>M.2 / U.2</td>
         <td>~7,000 MB/s</td>
       </tr>
@@ -184,7 +235,7 @@ import SSDSpeedChallenge from '../../components/SSDSpeedChallenge.jsx';
   </table>
 
   <p>
-    The gap isn't just bandwidth — it's overhead. Every AHCI command travels
+    The gap isn't just bandwidth &mdash; it's overhead. Every AHCI command travels
     through a driver stack built for disks that took milliseconds to respond. NVMe
     strips that stack down to the operations flash actually needs, cutting CPU
     cycles spent per command and letting drives fully exploit PCIe's lanes as
@@ -200,13 +251,13 @@ import SSDSpeedChallenge from '../../components/SSDSpeedChallenge.jsx';
   </p>
   <ul>
     <li>
-      <strong>Latency</strong> — the delay before a single request starts
+      <strong>Latency</strong> &mdash; the delay before a single request starts
       returning data. An HDD pays for a physical seek and rotational delay, often
       several milliseconds. Flash has no moving parts to wait for, so NVMe latency
       is typically measured in <strong>microseconds</strong>.
     </li>
     <li>
-      <strong>IOPS</strong> (Input/Output Operations Per Second) — how many
+      <strong>IOPS</strong> (Input/Output Operations Per Second) &mdash; how many
       individual read or write operations a drive can complete per second,
       especially with small, random requests. This is the metric that matters for
       databases, virtual machines, and boot times, where the workload is thousands
@@ -214,20 +265,39 @@ import SSDSpeedChallenge from '../../components/SSDSpeedChallenge.jsx';
     </li>
   </ul>
   <p>
-    A 7,200 RPM HDD manages roughly 100–200 random IOPS, limited by how fast its
+    A 7,200 RPM HDD manages roughly 100&ndash;200 random IOPS, limited by how fast its
     arm can physically move. A SATA SSD reaches tens of thousands. An NVMe drive,
-    freed from AHCI's single queue, can push past a million — not because flash
+    freed from AHCI's single queue, can push past a million &mdash; not because flash
     reads any single cell faster than that, but because thousands of requests can
     be in flight across its parallel queues at once.
   </p>
+
+  <div class="iops-chart">
+    <div class="iops-row iops-hdd">
+      <div class="iops-label">HDD</div>
+      <div class="iops-track"><div class="iops-fill"></div></div>
+      <div class="iops-val">~100&ndash;200 IOPS</div>
+    </div>
+    <div class="iops-row iops-sata">
+      <div class="iops-label">SATA SSD</div>
+      <div class="iops-track"><div class="iops-fill"></div></div>
+      <div class="iops-val">~50,000 IOPS</div>
+    </div>
+    <div class="iops-row iops-nvme">
+      <div class="iops-label">NVMe SSD</div>
+      <div class="iops-track"><div class="iops-fill"></div></div>
+      <div class="iops-val">1,000,000+ IOPS</div>
+    </div>
+  </div>
+  <p class="nand-caveat">Log-scaled again — NVMe's real advantage over a spinning HDD is on the order of 10,000&times;, not the ~7&times; the bar lengths alone would suggest.</p>
 </section>
 
 <section id="simulator">
   <h2>Interactive: SSD Speed Challenge</h2>
   <p>
-    Fire off a queue of random read requests and watch how each drive handles
-    them. The HDD's arm has to physically seek to each address in turn; the SSD
-    answers every request at once, straight from the NAND grid.
+    Pick a drive, then fire off a queue of random read requests and watch how it
+    handles them. The HDD's arm has to physically seek to each address in turn;
+    the SSD answers every request at once, straight from the NAND grid.
   </p>
 
   <SSDSpeedChallenge client:load />
