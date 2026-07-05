@@ -13,7 +13,7 @@ export default function Carousel({ baseUrl = '/' }) {
     { icon: ICONS.punch, label: 'Punch Card', title: 'THE ORIGIN:', sub: 'Punch Cards and Magnetic Drums', href: `${baseUrl}/fullcapacity/origin` },
     { icon: ICONS.hdd, label: 'HDD', title: 'THE DISK:', sub: 'Magnetic Storage and HDDs', href: `${baseUrl}/fullcapacity/disk` },
     { icon: ICONS.optical, label: 'Optical', title: 'THE OPTICAL AGE:', sub: 'CDs, DVDs, and Their Limits', href: `${baseUrl}/fullcapacity/optical` },
-    { icon: ICONS.flash, label: 'SSD / NVMe', title: 'THE FLASH:', sub: 'SSDs, NAND, and NVMe', href: `${baseUrl}flash` },
+    { icon: ICONS.flash, label: 'SSD / NVMe', title: 'THE FLASH:', sub: 'SSDs, NAND, and NVMe', href: `${baseUrl}/fullcapacity/flash` },
     { icon: ICONS.horizon, label: 'Cloud / DNA', title: 'THE HORIZON:', sub: 'Cloud, DNA, and Emerging Storage', href: `${baseUrl}/fullcapacity/horizon` },
   ];
 
