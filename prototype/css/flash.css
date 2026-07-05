@@ -432,12 +432,16 @@
   font-size: 0.68rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: transparent;
-  border: 1px solid rgba(170,170,204,0.4);
-  color: #ccc;
+  background: rgba(255,255,255,0.03) !important;
+  border: 1px solid rgba(170,170,204,0.3) !important;
+  color: #ccc !important;
   padding: 0.45rem 0.9rem;
   cursor: pointer;
   transition: all 0.15s;
+}
+#fireBtn:hover, #simReset:hover {
+  background: rgba(255,255,255,0.06) !important;
+  border-color: rgba(170,170,204,0.5) !important;
 }
 #fireBtn:disabled { cursor: not-allowed; opacity: 0.5; }
 #fireBtn:focus-visible, #simReset:focus-visible {
