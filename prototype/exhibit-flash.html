@@ -241,6 +241,132 @@
       outline: 2px solid currentColor;
       outline-offset: 2px;
     }
+
+    /* ============================================================
+       NAND physical hierarchy — nested containment diagram.
+       Replaces the old .cd-diagram (which was literally a CD/DVD
+       layer cross-section relabeled with NAND terms — the bar
+       widths never meant anything). This instead nests each level
+       inside the one that contains it: Package > Die/Plane > Block
+       > Page > Cell, so the visual matches the actual relationship
+       described in the text.
+       ============================================================ */
+    .nand-hierarchy {
+      display: flex;
+      justify-content: center;
+      margin: 2rem 0 1.75rem;
+    }
+    .nh-level {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border-radius: 10px;
+      padding: 1.4rem 1.4rem 1.6rem;
+      width: 100%;
+    }
+    .nh-tag {
+      font-family: var(--font-head);
+      font-size: 0.72rem;
+      letter-spacing: 2px;
+      padding: 0.2rem 0.7rem;
+      border-radius: 999px;
+      margin-bottom: 0.9rem;
+      white-space: nowrap;
+    }
+    .nh-sub {
+      font-size: 0.62rem;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin: -0.6rem 0 0.9rem;
+    }
+    .nh-package {
+      background: rgba(128, 0, 255, 0.08);
+      border: 1px solid rgba(128, 0, 255, 0.35);
+    }
+    .nh-package > .nh-tag { color: var(--accent-purple); border: 1px solid rgba(128,0,255,0.5); }
+    .nh-die {
+      background: rgba(0, 255, 255, 0.06);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      width: 82%;
+    }
+    .nh-die > .nh-tag { color: var(--accent-cyan); border: 1px solid rgba(0,255,255,0.45); }
+    .nh-block {
+      background: rgba(57, 255, 20, 0.06);
+      border: 1px solid rgba(57, 255, 20, 0.3);
+      width: 84%;
+    }
+    .nh-block > .nh-tag { color: var(--accent-green); border: 1px solid rgba(57,255,20,0.45); }
+    .nh-page {
+      background: rgba(255, 0, 255, 0.06);
+      border: 1px solid rgba(255, 0, 255, 0.3);
+      width: 86%;
+    }
+    .nh-page > .nh-tag { color: var(--accent-magenta); border: 1px solid rgba(255,0,255,0.45); }
+    .nh-cell {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px dashed rgba(255, 255, 255, 0.3);
+      width: 88%;
+      padding-bottom: 1.4rem;
+    }
+    .nh-cell > .nh-tag { color: var(--text); border: 1px solid rgba(255,255,255,0.4); }
+    .nh-cell > .nh-sub { margin-bottom: 0; }
+    @media (max-width: 640px) {
+      .nh-level { padding: 1rem 0.6rem 1.2rem; }
+      .nh-tag { font-size: 0.62rem; letter-spacing: 1px; }
+    }
+
+    /* ============================================================
+       Reusable horizontal bar-chart for quick numeric comparisons
+       (P/E cycle budgets, IOPS). Values below are on a log scale
+       since the real-world ranges span 2-4 orders of magnitude —
+       plotted linearly, the smaller bars would vanish to nothing.
+       ============================================================ */
+    .flash-barchart {
+      margin: 1.5rem 0 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+    .fbc-row {
+      display: grid;
+      grid-template-columns: 90px 1fr 96px;
+      align-items: center;
+      gap: 0.9rem;
+    }
+    .fbc-label {
+      font-family: var(--font-head);
+      font-size: 0.68rem;
+      letter-spacing: 1px;
+      color: var(--text);
+      text-align: right;
+    }
+    .fbc-track {
+      height: 14px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .fbc-fill {
+      height: 100%;
+      border-radius: 999px;
+    }
+    .fbc-value {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .flash-barchart-note {
+      font-size: 0.62rem;
+      color: rgba(170,170,204,0.4);
+      letter-spacing: 0.5px;
+      margin-top: -0.4rem;
+    }
+    @media (max-width: 640px) {
+      .fbc-row { grid-template-columns: 62px 1fr 74px; gap: 0.5rem; }
+      .fbc-label { font-size: 0.58rem; }
+      .fbc-value { font-size: 0.6rem; }
+    }
   </style>
 </head>
 <body>
@@ -309,26 +435,24 @@
             with no power applied — this is what makes flash <strong>non-volatile</strong>.
           </p>
 
-          <div class="cd-diagram">
-            <div class="cd-layer">
-              <span class="cd-layer-label">Package (multiple dies)</span>
-              <div class="cd-layer-bar layer-label"></div>
-            </div>
-            <div class="cd-layer">
-              <span class="cd-layer-label">Die &rarr; Plane</span>
-              <div class="cd-layer-bar layer-lacquer"></div>
-            </div>
-            <div class="cd-layer">
-              <span class="cd-layer-label">Block (erase unit, ~128&ndash;256 pages)</span>
-              <div class="cd-layer-bar layer-reflect"></div>
-            </div>
-            <div class="cd-layer">
-              <span class="cd-layer-label">Page (write unit, 4&ndash;16 KB)</span>
-              <div class="cd-layer-bar layer-pc"></div>
-            </div>
-            <div class="cd-layer">
-              <span class="cd-layer-label">Cell (floating-gate transistor)</span>
-              <div class="cd-layer-bar layer-laser"></div>
+          <div class="nand-hierarchy" role="img" aria-label="NAND physical hierarchy: a package contains multiple dies, each die is divided into planes, each plane into blocks, each block into pages, and each page into cells">
+            <div class="nh-level nh-package">
+              <span class="nh-tag">PACKAGE</span>
+              <div class="nh-level nh-die">
+                <span class="nh-tag">DIE &rarr; PLANE</span>
+                <div class="nh-level nh-block">
+                  <span class="nh-tag">BLOCK</span>
+                  <span class="nh-sub">erase unit &middot; ~128&ndash;256 pages</span>
+                  <div class="nh-level nh-page">
+                    <span class="nh-tag">PAGE</span>
+                    <span class="nh-sub">write unit &middot; 4&ndash;16 KB</span>
+                    <div class="nh-level nh-cell">
+                      <span class="nh-tag">CELL</span>
+                      <span class="nh-sub">floating-gate transistor</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -362,6 +486,31 @@
             cell has a finite budget of <strong>program/erase (P/E) cycles</strong> &mdash;
             roughly 100,000 for SLC, down to a few hundred for QLC.
           </p>
+
+          <div class="flash-barchart" role="img" aria-label="Approximate program/erase cycle budget by NAND type: SLC about 100,000, MLC about 10,000, TLC about 3,000, QLC about 500">
+            <div class="fbc-row">
+              <span class="fbc-label">SLC</span>
+              <div class="fbc-track"><div class="fbc-fill" style="width:100%; background:var(--accent-green);"></div></div>
+              <span class="fbc-value">~100,000</span>
+            </div>
+            <div class="fbc-row">
+              <span class="fbc-label">MLC</span>
+              <div class="fbc-track"><div class="fbc-fill" style="width:67%; background:var(--accent-cyan);"></div></div>
+              <span class="fbc-value">~10,000</span>
+            </div>
+            <div class="fbc-row">
+              <span class="fbc-label">TLC</span>
+              <div class="fbc-track"><div class="fbc-fill" style="width:49%; background:var(--accent-magenta);"></div></div>
+              <span class="fbc-value">~3,000</span>
+            </div>
+            <div class="fbc-row">
+              <span class="fbc-label">QLC</span>
+              <div class="fbc-track"><div class="fbc-fill" style="width:23%; background:var(--accent-purple);"></div></div>
+              <span class="fbc-value">~500</span>
+            </div>
+          </div>
+          <p class="flash-barchart-note">P/E cycles per cell, approximate figures, plotted on a log scale.</p>
+
           <p>
             If a drive always rewrote the same "hot" blocks &mdash; a swap file, a database log &mdash;
             those blocks would wear out in weeks while the rest of the chip sat untouched.
@@ -477,6 +626,25 @@
             reads any single cell faster than that, but because thousands of requests can
             be in flight across its parallel queues at once.
           </p>
+
+          <div class="flash-barchart" role="img" aria-label="Approximate random IOPS by drive type: HDD about 150, SATA SSD about 50,000, NVMe SSD over 1,000,000">
+            <div class="fbc-row">
+              <span class="fbc-label">HDD</span>
+              <div class="fbc-track"><div class="fbc-fill" style="width:5%; background:var(--accent-magenta);"></div></div>
+              <span class="fbc-value">~150</span>
+            </div>
+            <div class="fbc-row">
+              <span class="fbc-label">SATA SSD</span>
+              <div class="fbc-track"><div class="fbc-fill" style="width:68%; background:var(--accent-cyan);"></div></div>
+              <span class="fbc-value">~50,000</span>
+            </div>
+            <div class="fbc-row">
+              <span class="fbc-label">NVMe SSD</span>
+              <div class="fbc-track"><div class="fbc-fill" style="width:100%; background:var(--accent-green);"></div></div>
+              <span class="fbc-value">1,000,000+</span>
+            </div>
+          </div>
+          <p class="flash-barchart-note">Random 4K read IOPS, approximate figures, plotted on a log scale.</p>
         </section>
 
         <section id="simulator">
@@ -560,317 +728,6 @@
   </footer>
 
   <script src="js/main.js"></script>
-  <script>
-// exhibit-flash.js
-// Page logic for "The Flash" exhibit: TOC scroll-spy + SSD Speed Challenge.
-//
-// Everything lives inside ONE top-level IIFE. This is deliberate: if
-// js/main.js (loaded just before this file) already declares top-level
-// `const`/`let` bindings for nav/TOC handling — which it likely does, since
-// every exhibit page needs the same nav toggle + scroll-spy behavior — then
-// a second classic <script> re-declaring those same names at its own top
-// level throws `SyntaxError: Identifier '...' has already been declared'
-// and NOTHING in that script tag runs, including the whole simulator below.
-// Wrapping in a function gives every name here its own scope, so it can
-// never collide with globals from main.js.
-(function () {
-  'use strict';
-
-  /* ---------------------------------------------------------------
-   * TOC scroll-spy
-   * (Nav toggle is NOT duplicated here — main.js already owns
-   * navToggle/navLinks, including closing the menu on link click.
-   * Duplicating it here would attach a second click listener to the
-   * same button, so one click would fire both listeners and the
-   * open/closed toggle would cancel itself out.)
-   * --------------------------------------------------------------- */
-  const sections = document.querySelectorAll('section[id]');
-  const tocLinks = document.querySelectorAll('#tocList a');
-
-  if (sections.length && tocLinks.length && 'IntersectionObserver' in window) {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            tocLinks.forEach((a) => {
-              a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id);
-            });
-          }
-        });
-      },
-      { rootMargin: '-20% 0px -70% 0px' }
-    );
-    sections.forEach((s) => observer.observe(s));
-  }
-
-  /* ---------------------------------------------------------------
-   * SSD Speed Challenge
-   * --------------------------------------------------------------- */
-  const simRoot = document.getElementById('deviceList');
-  if (!simRoot) return; // simulator isn't on this page — nothing more to do
-
-  const ICONS = {
-    hdd: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="12" x2="2" y2="12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><line x1="6" y1="16" x2="6.01" y2="16"/><line x1="10" y1="16" x2="10.01" y2="16"/></svg>',
-    sata: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
-    nvme: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="15" x2="23" y2="15"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="15" x2="4" y2="15"/></svg>',
-  };
-
-  const DEVICES = {
-    hdd: {
-      label: 'HDD', sub: '7,200 RPM', accent: '#FF0080',
-      concurrency: 1, stepMs: 480,
-      latency: '~6 ms', iops: '~150', throughput: '~150 MB/s',
-      barPct: { speed: 12, latency: 95, iops: 4 },
-      blurb: 'One request at a time — the arm has to physically seek before each read.',
-      legend: 'One request serviced at a time (physical seek).',
-    },
-    sata: {
-      label: 'SATA SSD', sub: 'AHCI · 1 queue × 32', accent: '#00FFFF',
-      concurrency: 6, stepMs: 140,
-      latency: '~100 µs', iops: '~50,000', throughput: '~550 MB/s',
-      barPct: { speed: 55, latency: 15, iops: 45 },
-      blurb: 'No seek time, but AHCI still caps the drive to a single command queue.',
-      legend: 'No seek time, but capped to one AHCI queue, 32 commands deep.',
-    },
-    nvme: {
-      label: 'NVMe SSD', sub: 'PCIe · 65,535 queues', accent: '#39FF14',
-      concurrency: 16, stepMs: 70,
-      latency: '~20 µs', iops: '1,000,000+', throughput: '~7,000 MB/s',
-      barPct: { speed: 100, latency: 3, iops: 100 },
-      blurb: 'Thousands of queues in flight at once — requests barely wait at all.',
-      legend: 'Talks directly over PCIe with up to 65,535 parallel queues.',
-    },
-  };
-  const ORDER = ['hdd', 'sata', 'nvme'];
-  const QUEUE_SIZE = 16;
-
-  let deviceKey = 'nvme';
-  let running = false;
-  let timers = [];
-  let queue = [];
-  let cycles = 0;
-
-  const el = {
-    path: document.getElementById('ssdsimPath'),
-    reset: document.getElementById('simReset'),
-    deviceList: document.getElementById('deviceList'),
-    pathLine: document.getElementById('pathLine'),
-    pathDot: document.getElementById('pathDot'),
-    devIconBox: document.getElementById('devIconBox'),
-    devIconLabel: document.getElementById('devIconLabel'),
-    queueLabel: document.getElementById('queueLabel'),
-    fireBtn: document.getElementById('fireBtn'),
-    queueGrid: document.getElementById('queueGrid'),
-    statsRow: document.getElementById('statsRow'),
-    blurb: document.getElementById('blurb'),
-    legendList: document.getElementById('legendList'),
-  };
-
-  function randomAddr() {
-    const n = Math.floor(Math.random() * 0xffff);
-    return '0x' + n.toString(16).padStart(4, '0').toUpperCase();
-  }
-
-  function makeQueue() {
-    const q = [];
-    for (let i = 0; i < QUEUE_SIZE; i++) {
-      q.push({ id: i, addr: randomAddr(), status: 'queued' });
-    }
-    return q;
-  }
-
-  function clearTimers() {
-    timers.forEach(clearTimeout);
-    timers = [];
-  }
-
-  function renderDeviceList() {
-    el.deviceList.innerHTML = '';
-    ORDER.forEach((key) => {
-      const d = DEVICES[key];
-      const selected = key === deviceKey;
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'ssdsim-device-btn' + (selected ? ' active' : '');
-      btn.disabled = running;
-      btn.setAttribute('aria-pressed', selected ? 'true' : 'false');
-      btn.style.borderColor = selected ? d.accent : 'rgba(170,170,204,0.25)';
-      btn.style.color = selected ? d.accent : '#888';
-      btn.innerHTML = `<span>${ICONS[key]}</span><span class="dname">${d.label}</span><span class="dsub">${d.sub}</span>`;
-      btn.addEventListener('click', () => selectDevice(key));
-      el.deviceList.appendChild(btn);
-    });
-  }
-
-  function renderQueue() {
-    const d = DEVICES[deviceKey];
-    el.queueGrid.setAttribute(
-      'aria-label',
-      `${QUEUE_SIZE} pending read requests, ${
-        d.concurrency === 1 ? 'serviced one at a time' : `serviced ${d.concurrency} at a time`
-      }`
-    );
-    el.queueGrid.innerHTML = '';
-    queue.forEach((r) => {
-      const cell = document.createElement('div');
-      cell.className = 'ssdsim-queue-cell';
-      cell.title = r.addr;
-      if (r.status === 'done') {
-        cell.style.background = d.accent + '33';
-        cell.style.borderColor = d.accent;
-      } else if (r.status === 'active') {
-        cell.style.background = d.accent;
-        cell.style.borderColor = d.accent;
-        cell.style.color = '#000';
-        cell.textContent = '●';
-      } else {
-        cell.style.background = '';
-        cell.style.borderColor = '';
-        cell.style.color = '';
-      }
-      el.queueGrid.appendChild(cell);
-    });
-  }
-
-  function renderStats() {
-    const d = DEVICES[deviceKey];
-    const stats = [
-      { label: 'Access Speed', pct: d.barPct.speed, value: d.throughput },
-      { label: 'Latency', pct: d.barPct.latency, value: d.latency },
-      { label: 'IOPS', pct: d.barPct.iops, value: d.iops },
-    ];
-    el.statsRow.innerHTML = '';
-    stats.forEach((s) => {
-      const wrap = document.createElement('div');
-      wrap.className = 'ssdsim-stat';
-      wrap.innerHTML = `
-        <div class="ssdsim-stat-track"><div class="ssdsim-stat-fill" style="height:${Math.max(s.pct, 4)}%; background:${d.accent};"></div></div>
-        <span class="ssdsim-stat-name">${s.label}</span>
-        <span class="ssdsim-stat-value" style="color:${d.accent};">${s.value}</span>
-      `;
-      el.statsRow.appendChild(wrap);
-    });
-  }
-
-  function renderLegend() {
-    el.legendList.innerHTML = '';
-    ORDER.forEach((key) => {
-      const d = DEVICES[key];
-      const item = document.createElement('div');
-      item.className = 'ssdsim-legend-item';
-      item.innerHTML = `
-        <span class="ssdsim-legend-swatch" style="background:${d.accent};"></span>
-        <span><span class="ssdsim-legend-name" style="color:${d.accent};">${d.label}</span> — ${d.legend}</span>
-      `;
-      el.legendList.appendChild(item);
-    });
-  }
-
-  function renderChrome() {
-    const d = DEVICES[deviceKey];
-
-    el.devIconBox.style.borderColor = d.accent;
-    el.devIconBox.style.color = d.accent;
-    el.devIconBox.innerHTML = ICONS[deviceKey];
-    el.devIconLabel.textContent = d.label;
-    el.devIconLabel.style.color = d.accent;
-
-    el.pathLine.style.background = d.accent + '44';
-    el.pathDot.style.background = d.accent;
-    el.pathDot.classList.toggle('on', running);
-    // BUG FIX: this dot never moved before — only its opacity pulsed in
-    // place. Now its position along the CPU↔device wire tracks progress,
-    // matching the reference component.
-    el.pathDot.style.left = ((cycles * 37) % 90) + '%';
-
-    el.queueLabel.textContent = `Read Queue — ${
-      d.concurrency === 1 ? 'sequential' : d.concurrency + '-wide parallel'
-    }`;
-
-    // BUG FIX: fireBtn/simReset previously relied on undefined "btn-primary"/
-    // "btn-sm" classes and never picked up the device's accent color, so
-    // they looked like plain, unstyled default buttons. Style them directly,
-    // consistent with every other accented element in the widget.
-    el.fireBtn.disabled = running;
-    el.fireBtn.textContent = running ? 'Running…' : 'Fire Queue';
-    el.fireBtn.style.borderColor = d.accent;
-    el.fireBtn.style.color = running ? '#666' : d.accent;
-
-    el.reset.style.borderColor = 'rgba(170,170,204,0.4)';
-
-    el.blurb.textContent = d.blurb;
-    el.path.classList.toggle('running', running);
-  }
-
-  function renderAll() {
-    renderDeviceList();
-    renderChrome();
-    renderQueue();
-    renderStats();
-    renderLegend();
-  }
-
-  function selectDevice(key) {
-    if (running) return;
-    deviceKey = key;
-    queue = makeQueue();
-    cycles = 0;
-    renderAll();
-  }
-
-  function reset() {
-    clearTimers();
-    running = false;
-    deviceKey = 'nvme';
-    queue = makeQueue();
-    cycles = 0;
-    renderAll();
-  }
-
-  function runQueue() {
-    if (running) return;
-    clearTimers();
-    queue = makeQueue();
-    running = true;
-    cycles = 0;
-    renderAll();
-
-    const d = DEVICES[deviceKey];
-    let pending = queue.map((r) => r.id);
-
-    function runBatch() {
-      if (pending.length === 0) {
-        running = false;
-        renderChrome();
-        return;
-      }
-      const batch = pending.slice(0, d.concurrency);
-      pending = pending.slice(d.concurrency);
-      cycles += 1;
-
-      queue = queue.map((r) => (batch.includes(r.id) ? { ...r, status: 'active' } : r));
-      renderQueue();
-      el.pathDot.style.left = ((cycles * 37) % 90) + '%';
-
-      const t1 = setTimeout(() => {
-        queue = queue.map((r) => (batch.includes(r.id) ? { ...r, status: 'done' } : r));
-        renderQueue();
-        const t2 = setTimeout(runBatch, 90);
-        timers.push(t2);
-      }, d.stepMs);
-      timers.push(t1);
-    }
-
-    runBatch();
-  }
-
-  el.reset.addEventListener('click', reset);
-  el.fireBtn.addEventListener('click', runQueue);
-
-  queue = makeQueue();
-  renderAll();
-})();
-
-  </script>
+  <script src="js/flash.js"></script>
 </body>
 </html>
