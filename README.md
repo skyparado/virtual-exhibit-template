@@ -437,7 +437,19 @@ The source code, project files, and development history for the virtual exhibit 
 * **Code Documentation**: I used Claude to generate clear and explanatory inline comments throughout my code. This helped me keep track of complex logic during development cycles and left a clean and readable framework for my teammates to follow.  
 * **Review and Verification**: All AI-generated suggestions, code snippets, and explanations were thoroughly reviewed, tested locally, and manually modified before being integrated into the project. Content, grammar corrections, and technical terminology were independently cross-referenced with external sources to guarantee accuracy, consistency, and strict alignment with our project goals.
 
-## Section 7. REFERENCES
+## Section 7. TO-DO FOR FINAL SUBMISSION
+
+With all five exhibit pages, their interactive elements, and reference sections in place, the remaining work for final submission is focused on testing, polish, and consistency rather than new content or features. The following items still need to be addressed:
+
+* Test all five simulators on actual mobile devices, not just responsive/dev-tools emulation.  
+* Double-check the deployed GitHub Pages build renders correctly end-to-end.  
+* Check the mobile responsiveness of the site.   
+* Double-check if UI/UX needs improvements or revisions.  
+* Fix layout issues on mobile as some containers are not displaying/scaling correctly.  
+* Final proofread and consistency pass across all five exhibit pages before merging into the shared museum site.  
+* Consult the professor for areas of improvement.
+
+## Section 8. REFERENCES
  
 ### The Origin: Punch Cards and Magnetic Drums
  
@@ -491,15 +503,3 @@ The source code, project files, and development history for the virtual exhibit 
 - Reber, P. (2010). What Is the Memory Capacity of the Human Brain?. Scientific American. https://www.scientificamerican.com/article/what-is-the-memory-capacity/
 - Susnjara, S., & Smalley, I. (n.d.). What is a data center?. IBM. https://www.ibm.com/think/topics/data-centers
 - Susnjara, S., & Smalley, I. (n.d.). What is cloud architecture?. IBM. https://www.ibm.com/think/topics/cloud-architecture
-
-## Section 8. TO-DO FOR FINAL SUBMISSION
-
-With all five exhibit pages, their interactive elements, and reference sections in place, the remaining work for final submission is focused on testing, polish, and consistency rather than new content or features. The following items still need to be addressed:
-
-* Test all five simulators on actual mobile devices, not just responsive/dev-tools emulation.  
-* Double-check the deployed GitHub Pages build renders correctly end-to-end.  
-* Check the mobile responsiveness of the site.   
-* Double-check if UI/UX needs improvements or revisions.  
-* Fix layout issues on mobile as some containers are not displaying/scaling correctly.  
-* Final proofread and consistency pass across all five exhibit pages before merging into the shared museum site.  
-* Consult the professor for areas of improvement.
