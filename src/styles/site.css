@@ -29,9 +29,21 @@ body.theme-fullcapacity {
   background-image:
     radial-gradient(ellipse at 75% 10%, #4a0080 0%, transparent 55%),
     radial-gradient(ellipse at 10% 90%, #800040 0%, transparent 50%);
+  background-attachment: fixed;
   color: var(--text);
   font-family: var(--font-body);
   min-height: 100vh;
+}
+
+/* slow ambient drift of the background glows so the page is never fully still */
+@media (prefers-reduced-motion: no-preference) {
+  body.theme-fullcapacity {
+    animation: bgDrift 26s ease-in-out infinite alternate;
+  }
+  @keyframes bgDrift {
+    from { background-position: 0% 0%, 0% 0%; }
+    to   { background-position: 8% 5%, -6% -4%; }
+  }
 }
 
 /* title glitch — fires every ~7s via keyframes on .glitch-title */
@@ -130,15 +142,17 @@ body.theme-fullcapacity {
 .btn-ghost:hover { color: var(--accent-cyan); transform: translateX(3px); }
 
 .btn-outline {
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);   /* subtle fill so it reads as a real button, not a faint ghost */
   border-radius: 4px;
   font-size: 1rem;
 }
 .btn-outline:hover {
   border-color: var(--accent-green);
-  color: var(--accent-green);
-  box-shadow: 0 0 14px rgba(57, 255, 20, 0.22);
+  color: #eafff0;                /* keep the label near-white so it stays readable */
+  background: rgba(57, 255, 20, 0.12);
+  box-shadow: 0 0 14px rgba(57, 255, 20, 0.28);
 }
 .btn-outline:active { transform: scale(0.97); }
 
@@ -402,22 +416,58 @@ body.theme-fullcapacity {
   border-radius: 24px;
   padding: 14px;
 }
+.carousel-item.active > span { color: var(--accent-cyan); }
 
-.carousel-label {
-  font-family: var(--font-head);
-  font-size: 1rem;
-  color: var(--accent-cyan);
-  text-align: center;
-  letter-spacing: 1px;
-  margin-top: 0.2rem;
-  line-height: 1.6;
+/* the active icon gently floats + pulses so the row never looks frozen */
+@media (prefers-reduced-motion: no-preference) {
+  .carousel-item.active .carousel-icon { animation: iconAlive 3s ease-in-out infinite; }
+  @keyframes iconAlive {
+    0%, 100% { transform: translateY(0);    box-shadow: 0 0 22px rgba(0,255,255,0.28); }
+    50%      { transform: translateY(-8px); box-shadow: 0 0 36px rgba(0,255,255,0.55); }
+  }
 }
 
-.carousel-label small {
-  display: block;
-  color: var(--text-muted);
-  font-family: var(--font-body);
-  font-size: 0.88rem;
+/* details for the selected item, in a stable panel that cross-fades on change */
+.carousel-detail {
+  text-align: center;
+  margin-top: 1.75rem;
+  min-height: 128px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  animation: detailIn 0.45s cubic-bezier(0.16, 0.7, 0.3, 1);
+}
+@keyframes detailIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+.carousel-detail-title {
+  font-family: var(--font-head);
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  font-weight: normal;
+  color: var(--accent-green);
+  letter-spacing: 3px;
+  text-shadow: 0 0 16px rgba(57, 255, 20, 0.4);
+}
+.carousel-detail-sub { color: var(--text-muted); letter-spacing: 1px; font-size: 0.95rem; }
+.carousel-detail-btn { margin-top: 0.35rem; }
+
+.carousel-dots { display: flex; gap: 0.6rem; margin-top: 0.25rem; }
+.carousel-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all 0.25s ease;
+}
+.carousel-dot:hover { background: rgba(0, 255, 255, 0.5); }
+.carousel-dot.active {
+  background: var(--accent-cyan);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+  transform: scale(1.25);
 }
 
 .timeline-section {
@@ -804,6 +854,11 @@ body.theme-fullcapacity {
 
 .article-body strong { color: var(--text); }
 
+/* long reference URLs must wrap instead of blowing out the column on mobile */
+.article-body p,
+.article-body li,
+.article-body a { overflow-wrap: anywhere; }
+
 .article-body ul {
   list-style: none;
   display: flex;
@@ -860,6 +915,22 @@ body.theme-fullcapacity {
   font-weight: normal;
 }
 
+/* tables are wrapped by Footer.astro in .table-scroll. a min-width keeps the
+   columns from being crushed (which is what made "833 nm" split into "833 / nm"),
+   while long sentence cells still wrap normally. when the screen is narrower than
+   the min-width the wrapper just scrolls sideways instead of blowing out the page. */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 1.5rem 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,255,255,0.4) transparent;
+  border-radius: 6px;
+}
+.table-scroll .compare-table { margin: 0; min-width: 640px; }
+.table-scroll::-webkit-scrollbar { height: 8px; }
+.table-scroll::-webkit-scrollbar-thumb { background: rgba(0,255,255,0.35); border-radius: 8px; }
+
 /* the stacked layer diagram showing cd cross-section */
 .cd-diagram {
   display: flex;
@@ -869,6 +940,28 @@ body.theme-fullcapacity {
   border-radius: 8px;
   overflow: hidden;
   font-size: 1rem;
+  position: relative;
+}
+
+/* a red laser line sweeps up through the layers, like the beam reading the disc */
+@media (prefers-reduced-motion: no-preference) {
+  .cd-diagram::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #ff3c3c 30%, #ff3c3c 70%, transparent);
+    box-shadow: 0 0 12px #ff3c3c, 0 0 4px #fff;
+    animation: cdScan 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes cdScan {
+    0%, 100% { top: calc(100% - 12px); opacity: 0.15; }
+    12%      { opacity: 1; }
+    50%      { top: 4px; opacity: 1; }
+    88%      { opacity: 1; }
+  }
 }
 
 .cd-layer {
@@ -876,7 +969,13 @@ body.theme-fullcapacity {
   align-items: center;
   gap: 1rem;
   padding: 0.6rem 1rem;
+  transition: transform 0.2s ease, background 0.2s ease;
 }
+
+/* hovering a layer nudges it out and brightens its bar */
+.cd-layer:hover { transform: translateX(6px); background: rgba(255, 255, 255, 0.03); }
+.cd-layer:hover .cd-layer-bar { filter: brightness(1.5); }
+.cd-layer:hover .cd-layer-label { color: var(--accent-cyan); }
 
 .cd-layer-label {
   min-width: 160px;
@@ -1115,12 +1214,61 @@ body.theme-fullcapacity {
   .exhibit-page-wrap { grid-template-columns: 1fr; padding: 1.25rem; }
   .toc-sidebar { display: none; }
 
+  /* stop any stray wide child (diagram/table) from scrolling the whole page */
+  .exhibit-main { overflow-x: clip; }
+
   #discCanvas { max-width: 100%; }
   .sim-controls { flex-direction: column; align-items: flex-start; }
   .sim-input { width: 100%; }
 
-  .compare-table { font-size: 0.9rem; }
-  .compare-table th, .compare-table td { padding: 0.5rem 0.5rem; }
+}
+
+/* phones: a 7-column table can't fit, so each row becomes a labeled card.
+   the "Format:" style labels come from data-label attrs set in Footer.astro. */
+@media (max-width: 560px) {
+  .table-scroll { overflow-x: visible; }
+  .table-scroll .compare-table { min-width: 0; }
+  .compare-table { border: none; }
+  .compare-table thead { display: none; }
+  .compare-table tbody,
+  .compare-table tr,
+  .compare-table td { display: block; width: 100%; }
+  .compare-table tr {
+    border: 1px solid rgba(0, 255, 255, 0.18);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    padding: 0.35rem 0.85rem;
+    background: rgba(0, 0, 0, 0.28);
+  }
+  .compare-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1.25rem;
+    text-align: right;
+    white-space: normal;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 0.5rem 0;
+    font-size: 0.92rem;
+  }
+  .compare-table th { white-space: normal; }
+  .compare-table tr td:last-child { border-bottom: none; }
+  .compare-table td::before {
+    content: attr(data-label);
+    font-family: var(--font-head);
+    font-size: 0.68rem;
+    letter-spacing: 1px;
+    color: var(--accent-cyan);
+    text-align: left;
+    flex-shrink: 0;
+  }
+  .compare-table td:first-child {
+    color: var(--accent-green);
+    font-size: 1.05rem;
+    padding-top: 0.15rem;
+  }
+  .compare-table tr:hover td { background: transparent; }
 }
 
 @media (max-width: 480px) {

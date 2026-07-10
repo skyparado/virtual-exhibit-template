@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const ICONS = {
   punch: `<svg viewBox="0 0 60 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="54" height="38" rx="2" fill="#c8b84a" stroke="#9a8828" stroke-width="1"/><rect x="49" y="1" width="6" height="7" rx="1" fill="#9a8828"/><rect x="5" y="8" width="4" height="4" rx="1" fill="#3a2800"/><rect x="12" y="8" width="4" height="4" rx="1" fill="#3a2800"/><rect x="26" y="8" width="4" height="4" rx="1" fill="#3a2800"/><rect x="40" y="8" width="4" height="4" rx="1" fill="#3a2800"/><rect x="5" y="16" width="4" height="4" rx="1" fill="#3a2800"/><rect x="19" y="16" width="4" height="4" rx="1" fill="#3a2800"/><rect x="33" y="16" width="4" height="4" rx="1" fill="#3a2800"/><rect x="47" y="16" width="4" height="4" rx="1" fill="#3a2800"/><rect x="12" y="24" width="4" height="4" rx="1" fill="#3a2800"/><rect x="26" y="24" width="4" height="4" rx="1" fill="#3a2800"/><rect x="40" y="24" width="4" height="4" rx="1" fill="#3a2800"/><rect x="5" y="32" width="4" height="4" rx="1" fill="#3a2800"/><rect x="19" y="32" width="4" height="4" rx="1" fill="#3a2800"/><rect x="33" y="32" width="4" height="4" rx="1" fill="#3a2800"/></svg>`,
@@ -18,38 +18,75 @@ export default function Carousel({ baseUrl = '/' }) {
   ];
 
   const [activeIndex, setActiveIndex] = useState(2);
+  const [paused, setPaused] = useState(false);
   const total = exhibits.length;
+  const active = exhibits[activeIndex];
 
   const goPrev = () => setActiveIndex((i) => (i - 1 + total) % total);
   const goNext = () => setActiveIndex((i) => (i + 1) % total);
 
+  // auto-advance so the carousel feels alive; pauses while the user is
+  // interacting with it, and stays still for reduced-motion visitors
+  useEffect(() => {
+    if (paused) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const id = setInterval(() => setActiveIndex((i) => (i + 1) % total), 3500);
+    return () => clearInterval(id);
+  }, [paused, total]);
+
+  const onKeyDown = (e) => {
+    if (e.key === 'ArrowLeft') { e.preventDefault(); goPrev(); }
+    if (e.key === 'ArrowRight') { e.preventDefault(); goNext(); }
+  };
+
   return (
-    <section className="carousel-section">
+    <section
+      className="carousel-section"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocusCapture={() => setPaused(true)}
+      onBlurCapture={() => setPaused(false)}
+    >
       <p className="carousel-hint">Select a storage medium to explore</p>
+
       <div className="carousel-nav-wrap">
         <button className="carousel-nav" aria-label="Previous exhibit" onClick={goPrev}>&#10094;</button>
-        <div className="carousel">
+        <div className="carousel" role="listbox" aria-label="Storage media" tabIndex={0} onKeyDown={onKeyDown}>
           {exhibits.map((ex, idx) => (
             <div
               key={ex.title}
+              role="option"
+              aria-selected={idx === activeIndex}
               className={`carousel-item${idx === activeIndex ? ' active' : ''}`}
               onClick={() => setActiveIndex(idx)}
             >
               <div className="carousel-icon" dangerouslySetInnerHTML={{ __html: ex.icon }} />
               <span>{ex.label}</span>
-              {idx === activeIndex && (
-                <>
-                  <a href={ex.href} className="btn btn-select">Select</a>
-                  <div className="carousel-label">
-                    {ex.title}
-                    <small>{ex.sub}</small>
-                  </div>
-                </>
-              )}
             </div>
           ))}
         </div>
         <button className="carousel-nav" aria-label="Next exhibit" onClick={goNext}>&#10095;</button>
+      </div>
+
+      {/* details live in a stable panel below the row, so selecting never
+          shoves the icons around — it just cross-fades this card */}
+      <div className="carousel-detail" key={activeIndex}>
+        <h3 className="carousel-detail-title">{active.title}</h3>
+        <p className="carousel-detail-sub">{active.sub}</p>
+        <a href={active.href} className="btn btn-primary carousel-detail-btn">
+          Explore {active.label} &rarr;
+        </a>
+      </div>
+
+      <div className="carousel-dots">
+        {exhibits.map((ex, idx) => (
+          <button
+            key={ex.title}
+            className={`carousel-dot${idx === activeIndex ? ' active' : ''}`}
+            aria-label={`Go to ${ex.label}`}
+            onClick={() => setActiveIndex(idx)}
+          />
+        ))}
       </div>
     </section>
   );

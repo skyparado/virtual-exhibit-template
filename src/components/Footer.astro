@@ -42,6 +42,24 @@
     el.style.transitionDelay = 0.07 * i + 's';
   });
 
+  // wrap each table so it can scroll sideways when the screen is narrow,
+  // and copy the column headers onto the cells for the phone "card" view
+  document.querySelectorAll('.compare-table').forEach((table) => {
+    if (!table.closest('.table-scroll')) {
+      const wrap = document.createElement('div');
+      wrap.className = 'table-scroll';
+      table.parentNode.insertBefore(wrap, table);
+      wrap.appendChild(table);
+    }
+    const heads = [...table.querySelectorAll('thead th')].map((th) => th.textContent.trim());
+    if (!heads.length) return;
+    table.querySelectorAll('tbody tr').forEach((tr) => {
+      tr.querySelectorAll('td').forEach((td, i) => {
+        if (heads[i]) td.setAttribute('data-label', heads[i]);
+      });
+    });
+  });
+
   const revealEls = document.querySelectorAll('.reveal, .reveal-stagger, .timeline-scroll');
 
   if (reduced) {

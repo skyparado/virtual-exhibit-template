@@ -21,6 +21,11 @@ toc:
 ---
 
 import OpticalEncoder from '../../components/OpticalEncoder.jsx';
+import OpticalDiagram from '../../components/OpticalDiagram.astro';
+import WavelengthLab from '../../components/WavelengthLab.astro';
+import CapacityChart from '../../components/CapacityChart.astro';
+
+<OpticalDiagram />
 
 <section id="intro">
   <h2>Introduction</h2>
@@ -81,6 +86,8 @@ import OpticalEncoder from '../../components/OpticalEncoder.jsx';
     (red), and Blu-ray uses <strong>405 nm</strong> (violet) — that's why capacity jumps
     so dramatically across formats.
   </p>
+
+  <WavelengthLab />
 </section>
 
 <section id="pits-lands">
@@ -106,6 +113,8 @@ import OpticalEncoder from '../../components/OpticalEncoder.jsx';
 <section id="standards">
   <h2>CD vs. DVD vs. Blu-ray</h2>
   <p>Shorter wavelength = smaller pits = more data. Same disc, totally different capacity:</p>
+
+  <CapacityChart />
 
   <table class="compare-table">
     <thead>
