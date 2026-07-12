@@ -64,9 +64,17 @@
             price, it changed the shape of the memory hierarchy — closing the long-standing
             gap between fast, volatile RAM and slow, mechanical secondary storage.
           </p>
-          
+
+          <!--
+            IMAGE PLACEHOLDER
+            Path/filename to add:  images/early-ssd.jpg
+            Suggested content: a photo of an early/vintage solid-state
+            storage card or drive (e.g. a 1990s PCMCIA flash card, or a
+            teardown shot of an early SSD). Drop the file into images/
+            with this exact name to render it.
+          -->
           <figure class="figure-placeholder">
-            <img src="images/early-ssd.png" alt="Photo of an early solid-state flash storage card" class="figure-img figure-img-flash" />
+            <img src="images/early-ssd.png" alt="Photo of an early solid-state flash storage card" class="figure-img figure-img-flash" style="display:block; margin:0 auto; width:100%; max-width:700px; height:auto; border-radius:8px; border:1px solid rgba(255,255,255,0.08);" />
             <figcaption>Fig. Early solid-state flash storage, decades before SSDs replaced hard drives <a href="https://en.wikipedia.org/wiki/Solid-state_drive" target="_blank" rel="noopener">(Wikipedia)</a></figcaption>
           </figure>
         </section>
@@ -90,7 +98,7 @@
             with this exact name to render it.
           -->
           <figure class="figure-placeholder">
-            <img src="images/floating-gate-cell.jpg" alt="Cross-section diagram of a floating-gate transistor memory cell" class="figure-img figure-img-flash" />
+            <img src="images/floating-gate-cell.jpg" alt="Cross-section diagram of a floating-gate transistor memory cell" class="figure-img figure-img-flash" style="display:block; margin:0 auto; width:100%; max-width:700px; height:auto; border-radius:8px; border:1px solid rgba(255,255,255,0.08);" />
             <figcaption>Fig. Cross-section of a floating-gate transistor — the physical basis of every NAND cell <a href="https://en.wikipedia.org/wiki/Floating-gate_MOSFET" target="_blank" rel="noopener">(Wikipedia)</a></figcaption>
           </figure>
 
@@ -220,7 +228,7 @@
             images/ with this exact name to render it.
           -->
           <figure class="figure-placeholder">
-            <img src="images/sata-vs-m2.jpg" alt="Side-by-side comparison of a SATA SSD connector and an M.2 NVMe drive" class="figure-img figure-img-flash" />
+            <img src="images/sata-vs-m2.jpg" alt="Side-by-side comparison of a SATA SSD connector and an M.2 NVMe drive" class="figure-img figure-img-flash" style="display:block; margin:0 auto; width:100%; max-width:700px; height:auto; border-radius:8px; border:1px solid rgba(255,255,255,0.08);" />
             <figcaption>Fig. SATA's cable-and-connector interface next to an M.2 NVMe stick that plugs directly into PCIe lanes <a href="https://en.wikipedia.org/wiki/M.2" target="_blank" rel="noopener">(Wikipedia)</a></figcaption>
           </figure>
           <p>
@@ -332,9 +340,14 @@
         <section id="simulator">
           <h2>Interactive: SSD Speed Challenge</h2>
           <p>
-            Pick a drive, then fire off a queue of random read requests and watch how it
-            handles them. The HDD's arm has to physically seek to each address in turn;
-            the SSD answers every request at once, straight from the NAND grid.
+            Picture a computer that needs to read 16 different pieces of data from a
+            storage drive, all at once &mdash; this is a completely normal thing that
+            happens constantly, e.g. when a game loads or an app starts up. Each of the
+            16 squares below stands for one of those waiting read requests. Pick a
+            drive on the left, then press <strong>Send Requests</strong> to send all 16
+            at once and watch how differently each drive copes: an HDD's mechanical arm
+            can only fetch one piece of data at a time, while an NVMe SSD can pull several
+            at once. Fewer rounds and less total time both mean a faster drive.
           </p>
 
           <div class="sim-wrap">
@@ -360,10 +373,17 @@
 
                 <div class="ssdsim-queue-head">
                   <span class="ssdsim-queue-label" id="queueLabel">Read Queue</span>
-                  <button class="btn btn-primary btn-sm" id="fireBtn">Fire Queue</button>
+                  <button class="btn btn-primary btn-sm" id="fireBtn">Send Requests</button>
+                </div>
+                <div class="ssdsim-cell-legend">
+                  <span class="cell-legend-item"><span class="cell-swatch cell-waiting"></span> Waiting its turn</span>
+                  <span class="cell-legend-item"><span class="cell-swatch cell-reading"></span> Being read right now</span>
+                  <span class="cell-legend-item"><span class="cell-swatch cell-done"></span> Done</span>
                 </div>
                 <div class="ssdsim-queue-grid" id="queueGrid" role="img" aria-label="16 pending read requests"></div>
+                <p class="ssdsim-runstats" id="runStats" aria-live="polite"></p>
 
+                <p class="ssdsim-stats-caption">These numbers summarize why, in three ways:</p>
                 <div class="ssdsim-stats" id="statsRow"></div>
 
                 <p class="ssdsim-blurb" id="blurb"></p>
@@ -391,7 +411,7 @@
           <ul>
             <li>Micheloni, R., Marelli, A., &amp; Eshghi, K. (2013). <em>Inside Solid State Drives (SSDs).</em> Springer.</li>
             <li>NVM Express, Inc. (2021). <em>NVM Express Base Specification, Revision 1.4c.</em></li>
-            <li>Cai, Y., Haratsch, E. F., Mutlu, O., &amp; Mai, K. (2012). Error Patterns in MLC NAND Flash Memory. <em>Design, Automation &amp; Test in Europe (DATE).</em></li>
+            <li>Cai, Y., Haratsch, E. F., Mutlu, O., &amp; Mai, K. (2012). Error Patterns in MLC NAND Flash Memory. <em>Design, Automation &amp; Test in Europe.</em></li>
             <li>Serial ATA International Organization. (2013). <em>Serial ATA Revision 3.2 Specification.</em></li>
             <li>SanDisk Corporation. (1991). <em>First Commercial Solid-State Drive Announcement.</em> Company archives.</li>
           </ul>

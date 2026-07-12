@@ -47,6 +47,12 @@ function RotateCcwIcon({ size = 20, color, style }) {
 }
 
 // --- Device profiles, sourced from the article's own numbers ---
+// NOTE: NVMe's concurrency is deliberately kept below QUEUE_SIZE (16).
+// It used to be set to 16 — exactly equal to the queue size — which meant
+// the entire queue fired in a single batch and finished almost instantly.
+// Visually that looked like the widget just "flashed" once with nothing
+// to read. Dropping it to 8 keeps NVMe dramatically faster/wider than
+// HDD and SATA while still showing a readable 2-batch progression.
 const DEVICES = {
   hdd: {
     label: 'HDD', sub: '7,200 RPM', icon: HardDriveIcon, accent: '#FF0080',
@@ -66,7 +72,7 @@ const DEVICES = {
   },
   nvme: {
     label: 'NVMe SSD', sub: 'PCIe · 65,535 queues', icon: CpuIcon, accent: '#39FF14',
-    concurrency: 16, stepMs: 70,
+    concurrency: 8, stepMs: 70,
     latency: '~20 µs', iops: '1,000,000+', throughput: '~7,000 MB/s',
     barPct: { speed: 100, latency: 3, iops: 100 },
     blurb: 'Thousands of queues in flight at once — requests barely wait at all.',
@@ -76,6 +82,7 @@ const DEVICES = {
 
 const ORDER = ['hdd', 'sata', 'nvme'];
 const QUEUE_SIZE = 16;
+const READY_MSG = 'Press "Send Requests" to send 16 read requests.';
 
 function makeQueue() {
   return Array.from({ length: QUEUE_SIZE }, (_, i) => ({
@@ -90,6 +97,10 @@ export default function SSDSpeedChallenge() {
   const [queue, setQueue] = useState(makeQueue);
   const [running, setRunning] = useState(false);
   const [cycles, setCycles] = useState(0);
+  // runStats: the human-readable readout — the actual "information" the
+  // widget presents. Shows live batch progress while running, then a
+  // final plain-English summary once the queue finishes.
+  const [runStats, setRunStats] = useState(READY_MSG);
   const timers = useRef([]);
 
   const device = DEVICES[deviceKey];
@@ -105,6 +116,7 @@ export default function SSDSpeedChallenge() {
     setDeviceKey(key);
     setQueue(makeQueue());
     setCycles(0);
+    setRunStats(READY_MSG);
   };
 
   const reset = () => {
@@ -113,6 +125,7 @@ export default function SSDSpeedChallenge() {
     setDeviceKey('nvme');
     setQueue(makeQueue());
     setCycles(0);
+    setRunStats(READY_MSG);
   };
 
   const runQueue = useCallback(() => {
@@ -123,18 +136,28 @@ export default function SSDSpeedChallenge() {
     setCycles(0);
 
     const { concurrency, stepMs } = DEVICES[deviceKey];
+    const totalBatches = Math.ceil(QUEUE_SIZE / concurrency);
     let pending = fresh.map((r) => r.id);
     let batchIndex = 0;
+    let elapsed = 0;
+    const startTime = Date.now();
+
+    setRunStats(`Round 1 of ${totalBatches} · 0ms elapsed`);
 
     const runBatch = () => {
       if (pending.length === 0) {
         setRunning(false);
+        const total = Date.now() - startTime;
+        setRunStats(
+          `\u2713 All 16 requests done in ${total}ms, using ${totalBatches} round${totalBatches === 1 ? '' : 's'} of up to ${concurrency} at a time`
+        );
         return;
       }
       const batch = pending.slice(0, concurrency);
       pending = pending.slice(concurrency);
       batchIndex += 1;
       setCycles(batchIndex);
+      setRunStats(`Round ${batchIndex} of ${totalBatches} · ${elapsed}ms elapsed`);
 
       setQueue((prev) =>
         prev.map((r) => (batch.includes(r.id) ? { ...r, status: 'active' } : r))
@@ -144,6 +167,7 @@ export default function SSDSpeedChallenge() {
         setQueue((prev) =>
           prev.map((r) => (batch.includes(r.id) ? { ...r, status: 'done' } : r))
         );
+        elapsed += stepMs + 90;
         const t2 = setTimeout(runBatch, 90);
         timers.current.push(t2);
       }, stepMs);
@@ -194,6 +218,18 @@ export default function SSDSpeedChallenge() {
           <RotateCcwIcon size={12} /> Reset
         </button>
       </div>
+
+      <p
+        style={{
+          fontSize: '0.76rem',
+          color: 'rgba(170,170,204,0.75)',
+          lineHeight: 1.6,
+          margin: '0 0 1rem 0',
+        }}
+      >
+        Each of the 16 squares below is one waiting read request. Pick a drive, send
+        them all at once, and watch how many rounds it takes to clear the queue.
+      </p>
 
       <div
         style={{
@@ -292,7 +328,7 @@ export default function SSDSpeedChallenge() {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
               <span style={{ fontSize: '0.62rem', color: 'rgba(170,170,204,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                Read Queue — {device.concurrency === 1 ? 'sequential' : `${device.concurrency}-wide parallel`}
+                {QUEUE_SIZE} requests &mdash; {device.label} reads {device.concurrency === 1 ? '1 at a time' : `${device.concurrency} at a time`}
               </span>
               <button
                 onClick={runQueue}
@@ -300,9 +336,28 @@ export default function SSDSpeedChallenge() {
                 className="btn btn-outline btn-sm"
                 style={{ borderColor: device.accent, color: running ? '#666' : device.accent }}
               >
-                {running ? 'Running…' : 'Fire Queue'}
+                {running ? 'Sending…' : 'Send Requests'}
               </button>
             </div>
+
+            {/* Cell-state legend — spells out what the colors below mean,
+                since that was previously only visible via an invisible
+                hover tooltip. */}
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', fontSize: '0.62rem', color: 'rgba(170,170,204,0.6)', marginBottom: '0.6rem' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <span style={{ width: 10, height: 10, borderRadius: 2, display: 'inline-block', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(170,170,204,0.25)' }} />
+                Waiting its turn
+              </span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <span style={{ width: 10, height: 10, borderRadius: 2, display: 'inline-block', background: 'rgba(255,255,255,0.9)' }} />
+                Being read right now
+              </span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <span style={{ width: 10, height: 10, borderRadius: 2, display: 'inline-block', background: 'rgba(255,255,255,0.25)', border: '1px solid rgba(255,255,255,0.4)' }} />
+                Done
+              </span>
+            </div>
+
             <div
               style={{ display: 'grid', gridTemplateColumns: 'repeat(8, 1fr)', gap: '0.35rem' }}
               role="img"
@@ -334,7 +389,31 @@ export default function SSDSpeedChallenge() {
                 </div>
               ))}
             </div>
+
+            {/* Live/final results readout — this is the "information" the
+                widget presents, so it never just looks like an animation
+                with nothing to read. */}
+            <p
+              aria-live="polite"
+              style={{
+                fontFamily: "'Orbitron', 'Space Mono', monospace",
+                fontSize: '0.72rem',
+                letterSpacing: '0.5px',
+                color: '#aaaacc',
+                minHeight: '1.2rem',
+                margin: '0.5rem 0 0 0',
+                padding: '0.4rem 0.6rem',
+                background: 'rgba(255,255,255,0.03)',
+                borderLeft: '2px solid #00FFFF',
+              }}
+            >
+              {runStats}
+            </p>
           </div>
+
+          <p style={{ fontSize: '0.62rem', color: 'rgba(170,170,204,0.5)', letterSpacing: '0.5px', margin: '0.9rem 0 0.5rem 0' }}>
+            These numbers summarize why, in three ways:
+          </p>
 
           {/* Stats bars */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.8rem' }}>

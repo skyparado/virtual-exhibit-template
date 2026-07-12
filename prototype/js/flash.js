@@ -1,6 +1,6 @@
 /* ============================================================
-   flash.js — TOC scroll-spy + SSD Speed Challenge simulator
-   for exhibit-flash.html.
+   flash.js — TOC scroll-spy, SSD Speed Challenge simulator, and
+   scroll-triggered entrance animations for exhibit-flash.html.
    Matches the pattern used by horizon.js: a dedicated per-page
    script loaded after main.js, flat at the top level (no IIFE
    needed — none of the names below collide with anything in
@@ -49,7 +49,7 @@ const DEVICES = {
   },
   nvme: {
     label: 'NVMe SSD', sub: 'PCIe · 65,535 queues', accent: '#39FF14',
-    concurrency: 16, stepMs: 70,
+    concurrency: 8, stepMs: 70,
     latency: '~20 µs', iops: '1,000,000+', throughput: '~7,000 MB/s',
     barPct: { speed: 100, latency: 3, iops: 100 },
     blurb: 'Thousands of queues in flight at once — requests barely wait at all.',
@@ -79,6 +79,7 @@ const ssdEl = {
   statsRow: document.getElementById('statsRow'),
   blurb: document.getElementById('blurb'),
   legendList: document.getElementById('legendList'),
+  runStats: document.getElementById('runStats'),
 };
 
 function randomAddr() {
@@ -195,12 +196,12 @@ function renderChrome() {
   ssdEl.pathDot.classList.toggle('on', running);
   ssdEl.pathDot.style.left = ((cycles * 37) % 90) + '%';
 
-  ssdEl.queueLabel.textContent = `Read Queue — ${
-    d.concurrency === 1 ? 'sequential' : d.concurrency + '-wide parallel'
+  ssdEl.queueLabel.textContent = `${QUEUE_SIZE} requests — ${d.label} reads ${
+    d.concurrency === 1 ? '1 at a time' : d.concurrency + ' at a time'
   }`;
 
   ssdEl.fireBtn.disabled = running;
-  ssdEl.fireBtn.textContent = running ? 'Running…' : 'Fire Queue';
+  ssdEl.fireBtn.textContent = running ? 'Sending…' : 'Send Requests';
   ssdEl.fireBtn.style.borderColor = d.accent;
   ssdEl.fireBtn.style.color = running ? '#666' : d.accent;
 
@@ -224,6 +225,9 @@ function selectDevice(key) {
   queue = makeQueue();
   cycles = 0;
   renderAll();
+  if (ssdEl.runStats) {
+    ssdEl.runStats.textContent = 'Press "Fire Queue" to send 16 read requests.';
+  }
 }
 
 function resetSsd() {
@@ -233,6 +237,9 @@ function resetSsd() {
   queue = makeQueue();
   cycles = 0;
   renderAll();
+  if (ssdEl.runStats) {
+    ssdEl.runStats.textContent = 'Press "Fire Queue" to send 16 read requests.';
+  }
 }
 
 function runQueue() {
@@ -244,17 +251,32 @@ function runQueue() {
   renderAll();
 
   const d = DEVICES[deviceKey];
+  const totalBatches = Math.ceil(QUEUE_SIZE / d.concurrency);
   let pending = queue.map((r) => r.id);
+  let elapsed = 0;
+  const startTime = Date.now();
+
+  if (ssdEl.runStats) {
+    ssdEl.runStats.textContent = `Batch 1 of ${totalBatches} · 0ms elapsed`;
+  }
 
   function runBatch() {
     if (pending.length === 0) {
       running = false;
       renderChrome();
+      const total = Date.now() - startTime;
+      if (ssdEl.runStats) {
+        ssdEl.runStats.textContent = `\u2713 Completed in ${total}ms across ${totalBatches} batch${totalBatches === 1 ? '' : 'es'} of up to ${d.concurrency} request${d.concurrency === 1 ? '' : 's'} each`;
+      }
       return;
     }
     const batch = pending.slice(0, d.concurrency);
     pending = pending.slice(d.concurrency);
     cycles += 1;
+
+    if (ssdEl.runStats) {
+      ssdEl.runStats.textContent = `Batch ${cycles} of ${totalBatches} · ${elapsed}ms elapsed`;
+    }
 
     queue = queue.map((r) => (batch.includes(r.id) ? { ...r, status: 'active' } : r));
     renderQueue();
@@ -263,6 +285,7 @@ function runQueue() {
     const t1 = setTimeout(() => {
       queue = queue.map((r) => (batch.includes(r.id) ? { ...r, status: 'done' } : r));
       renderQueue();
+      elapsed += d.stepMs + 90;
       const t2 = setTimeout(runBatch, 90);
       timers.push(t2);
     }, d.stepMs);
@@ -277,7 +300,137 @@ function runQueue() {
 if (ssdEl.deviceList) {
   ssdEl.reset.addEventListener('click', resetSsd);
   ssdEl.fireBtn.addEventListener('click', runQueue);
+  if (ssdEl.runStats) {
+    ssdEl.runStats.textContent = 'Press "Fire Queue" to send 16 read requests.';
+  }
 
   queue = makeQueue();
   renderAll();
+}
+
+/* ---------------------------------------------------------------
+ * Scroll-triggered entrance animations
+ * (reading progress bar, content reveal-on-scroll, animated
+ * chart bar-fills). Kept below the simulator code in this same
+ * file per request, but every identifier here is deliberately
+ * distinct from everything above (prefersReduced, progress*,
+ * reveal*, BAR_WIDTH_BY_CLASS, barRows, barsByRow, barObserver)
+ * so nothing here can shadow or collide with the simulator's
+ * top-level declarations (ICONS, DEVICES, ORDER, QUEUE_SIZE,
+ * deviceKey, running, timers, queue, cycles, ssdEl, etc.).
+ * --------------------------------------------------------------- */
+
+const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---- 1. Reading progress bar ---- */
+const progressTrack = document.createElement('div');
+progressTrack.className = 'flashanim-progress-track';
+const progressFill = document.createElement('div');
+progressFill.className = 'flashanim-progress-fill';
+progressTrack.appendChild(progressFill);
+document.body.prepend(progressTrack);
+
+function updateScrollProgress() {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = docHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / docHeight) * 100)) : 0;
+  progressFill.style.width = pct + '%';
+}
+window.addEventListener('scroll', updateScrollProgress, { passive: true });
+window.addEventListener('resize', updateScrollProgress);
+updateScrollProgress();
+
+/* ---- 2. Scroll-reveal for content blocks ---- */
+const revealSelectors = [
+  '.article-body h2',
+  '.article-body > section > p',
+  '.article-body figure',
+  '.article-body .nand-hierarchy',
+  '.article-body .wear-chart',
+  '.article-body .iops-chart',
+  '.article-body .compare-table',
+  '.article-body .sim-wrap',
+  '#references li',
+].join(', ');
+
+const revealEls = Array.from(document.querySelectorAll(revealSelectors));
+const revealListItemEls = Array.from(document.querySelectorAll('.article-body ul li'));
+const revealTableRowEls = Array.from(document.querySelectorAll('.compare-table tbody tr'));
+const allRevealEls = revealEls.concat(revealListItemEls, revealTableRowEls);
+
+allRevealEls.forEach((el) => {
+  el.classList.add('flashanim-reveal');
+});
+
+if (prefersReduced) {
+  allRevealEls.forEach((el) => el.classList.add('flashanim-visible'));
+} else {
+  const revealObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        const siblings = Array.from(el.parentElement.children).filter((c) =>
+          c.classList.contains('flashanim-reveal')
+        );
+        const idx = siblings.indexOf(el);
+        el.style.transitionDelay = Math.min(idx, 6) * 70 + 'ms';
+        el.classList.add('flashanim-visible');
+        revealObserver.unobserve(el);
+      });
+    },
+    { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
+  );
+  allRevealEls.forEach((el) => revealObserver.observe(el));
+}
+
+/* ---- 3. Animated bar-fill charts ---- */
+const BAR_WIDTH_BY_CLASS = {
+  'tier-package': '100%',
+  'tier-die': '58%',
+  'tier-block': '22%',
+  'tier-page': '9%',
+  'tier-cell': '2%',
+  'wear-slc': '100%',
+  'wear-mlc': '74%',
+  'wear-tlc': '66%',
+  'wear-qlc': '46%',
+  'iops-hdd': '15%',
+  'iops-sata': '55%',
+  'iops-nvme': '100%',
+};
+
+const barRows = Array.from(document.querySelectorAll('.nand-tier, .wear-row, .iops-row'));
+
+const barsByRow = barRows
+  .map((row) => {
+    const bar = row.querySelector('.nand-tier-bar, .wear-fill, .iops-fill');
+    if (!bar) return null;
+    const key = Object.keys(BAR_WIDTH_BY_CLASS).find((k) => row.classList.contains(k));
+    if (!key) return null;
+    return { row, bar, target: BAR_WIDTH_BY_CLASS[key] };
+  })
+  .filter(Boolean);
+
+if (!prefersReduced) {
+  barsByRow.forEach(({ bar }) => {
+    bar.style.width = '0';
+  });
+
+  const barObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const match = barsByRow.find((b) => b.row === entry.target);
+        if (!match) return;
+        const groupRows = Array.from(entry.target.parentElement.children);
+        const idx = groupRows.indexOf(entry.target);
+        match.bar.style.transitionDelay = idx * 90 + 'ms';
+        match.bar.style.width = match.target;
+        barObserver.unobserve(entry.target);
+      });
+    },
+    { threshold: 0.4 }
+  );
+  barRows.forEach((row) => barObserver.observe(row));
 }

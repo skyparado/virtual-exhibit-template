@@ -4,6 +4,15 @@
    colors, .sim-wrap, .compare-table, .figure-placeholder, .btn*)
    comes from css/style.css; this file only adds the components
    unique to the Flash exhibit.
+
+   Why this file exists: the NAND section previously reused the
+   Optical exhibit's .cd-diagram component (built for a disc's
+   physical layers, which are all conceptually equal-weight) to
+   show Package → Die → Block → Page → Cell. Since that component
+   doesn't carry proportional meaning, its bars had no reason to
+   line up with anything — they just looked randomly sized. The
+   .nand-hierarchy component below replaces it with bars whose
+   widths are actually derived from each tier's relative capacity.
    ============================================================ */
 
 /* ---------- NAND hierarchy (Package → Die → Block → Page → Cell) ---------- */
@@ -432,16 +441,12 @@
   font-size: 0.68rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: rgba(255,255,255,0.03) !important;
-  border: 1px solid rgba(170,170,204,0.3) !important;
-  color: #ccc !important;
+  background: transparent;
+  border: 1px solid rgba(170,170,204,0.4);
+  color: #ccc;
   padding: 0.45rem 0.9rem;
   cursor: pointer;
   transition: all 0.15s;
-}
-#fireBtn:hover, #simReset:hover {
-  background: rgba(255,255,255,0.06) !important;
-  border-color: rgba(170,170,204,0.5) !important;
 }
 #fireBtn:disabled { cursor: not-allowed; opacity: 0.5; }
 #fireBtn:focus-visible, #simReset:focus-visible {
@@ -449,33 +454,110 @@
   outline-offset: 2px;
 }
 
-/* ---------- Figure centering & sizing for this page's figures ---------- */
-/* style.css defines .figure-placeholder generically, but doesn't
-   guarantee centering on its own (depends on the img's default
-   display). These rules make sure every figure on this page —
-   early-ssd, floating-gate-cell, sata-vs-m2 — is centered
-   regardless of what the base stylesheet does. */
-.figure-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  margin: 1.75rem auto;
-}
-
-.figure-placeholder .figure-img {
-  display: block;
-  margin: 0 auto;
-  max-width: 100%;
-  height: auto;
-}
-
+/* ---------- Figure width modifier for this page's figures ---------- */
 .figure-img-flash {
-  max-width: 600px;
-  width: 100%;
+  max-width: 700px;
 }
 
-.figure-placeholder figcaption {
-  margin-top: 0.6rem;
-  max-width: 600px;
+/* ---------- Live run stats readout (batch progress + final result) ---------- */
+.ssdsim-runstats {
+  font-family: var(--font-head);
+  font-size: 0.72rem;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  min-height: 1.2rem;
+  margin: 0.5rem 0 1rem 0;
+  padding: 0.4rem 0.6rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 2px solid var(--accent-cyan);
+}
+
+/* ---------- Cell-state legend (Waiting / Reading / Done) ---------- */
+.ssdsim-cell-legend {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.62rem;
+  color: rgba(170, 170, 204, 0.6);
+  margin-bottom: 0.6rem;
+}
+.cell-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.cell-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.cell-swatch.cell-waiting {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(170, 170, 204, 0.25);
+}
+.cell-swatch.cell-reading {
+  background: rgba(255, 255, 255, 0.9);
+}
+.cell-swatch.cell-done {
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* ---------- Stats caption ---------- */
+.ssdsim-stats-caption {
+  font-size: 0.62rem;
+  color: rgba(170, 170, 204, 0.5);
+  letter-spacing: 0.5px;
+  margin: 0.9rem 0 0.5rem 0;
+}
+
+/* ============================================================
+   flash-animate.js support styles
+   ============================================================ */
+
+/* ---------- Reading progress bar ---------- */
+.flashanim-progress-track {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.05);
+  z-index: 300;
+}
+.flashanim-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(
+    90deg,
+    var(--accent-cyan),
+    var(--accent-magenta),
+    var(--accent-green)
+  );
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+}
+
+/* ---------- Scroll-reveal entrance ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .flashanim-reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity 0.7s cubic-bezier(0.2, 0.7, 0.3, 1),
+      transform 0.7s cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+  .flashanim-reveal.flashanim-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Figure hover polish ---------- */
+.figure-img {
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+.figure-img:hover {
+  transform: scale(1.012);
+  box-shadow: 0 0 26px rgba(0, 255, 255, 0.18);
 }
