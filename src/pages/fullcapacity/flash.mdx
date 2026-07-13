@@ -299,9 +299,14 @@ import sataVsM2 from '../../assets/sata-vs-m2.jpg';
 <section id="simulator">
   <h2>Interactive: SSD Speed Challenge</h2>
   <p>
-    Pick a drive, then fire off a queue of random read requests and watch how it
-    handles them. The HDD's arm has to physically seek to each address in turn;
-    the SSD answers every request at once, straight from the NAND grid.
+    Picture a computer that needs to read 16 different pieces of data from a
+    storage drive, all at once &mdash; this is a completely normal thing that
+    happens constantly, e.g. when a game loads or an app starts up. Each of the
+    16 squares below stands for one of those waiting read requests. Pick a
+    drive on the left, then press <strong>Send Requests</strong> to send all 16
+    at once and watch how differently each drive copes: an HDD's mechanical arm
+    can only fetch one piece of data at a time, while an NVMe SSD can pull several
+    at once. Fewer rounds and less total time both mean a faster drive.
   </p>
 
   <SSDSpeedChallenge client:load />

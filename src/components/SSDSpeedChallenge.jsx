@@ -37,22 +37,7 @@ function ZapIcon({ size = 20, color, style }) {
   );
 }
 
-function RotateCcwIcon({ size = 20, color, style }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color || 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={style} aria-hidden="true">
-      <polyline points="1 4 1 10 7 10" />
-      <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
-    </svg>
-  );
-}
-
 // --- Device profiles, sourced from the article's own numbers ---
-// NOTE: NVMe's concurrency is deliberately kept below QUEUE_SIZE (16).
-// It used to be set to 16 — exactly equal to the queue size — which meant
-// the entire queue fired in a single batch and finished almost instantly.
-// Visually that looked like the widget just "flashed" once with nothing
-// to read. Dropping it to 8 keeps NVMe dramatically faster/wider than
-// HDD and SATA while still showing a readable 2-batch progression.
 const DEVICES = {
   hdd: {
     label: 'HDD', sub: '7,200 RPM', icon: HardDriveIcon, accent: '#FF0080',
@@ -84,10 +69,15 @@ const ORDER = ['hdd', 'sata', 'nvme'];
 const QUEUE_SIZE = 16;
 const READY_MSG = 'Press "Send Requests" to send 16 read requests.';
 
+function randomAddr() {
+  const n = Math.floor(Math.random() * 0xffff);
+  return '0x' + n.toString(16).padStart(4, '0').toUpperCase();
+}
+
 function makeQueue() {
   return Array.from({ length: QUEUE_SIZE }, (_, i) => ({
     id: i,
-    addr: '0x' + Math.floor(Math.random() * 0xffff).toString(16).padStart(4, '0').toUpperCase(),
+    addr: randomAddr(),
     status: 'queued', // queued | active | done
   }));
 }
@@ -97,9 +87,6 @@ export default function SSDSpeedChallenge() {
   const [queue, setQueue] = useState(makeQueue);
   const [running, setRunning] = useState(false);
   const [cycles, setCycles] = useState(0);
-  // runStats: the human-readable readout — the actual "information" the
-  // widget presents. Shows live batch progress while running, then a
-  // final plain-English summary once the queue finishes.
   const [runStats, setRunStats] = useState(READY_MSG);
   const timers = useRef([]);
 
@@ -129,6 +116,7 @@ export default function SSDSpeedChallenge() {
   };
 
   const runQueue = useCallback(() => {
+    if (running) return;
     clearTimers();
     const fresh = makeQueue();
     setQueue(fresh);
@@ -142,14 +130,14 @@ export default function SSDSpeedChallenge() {
     let elapsed = 0;
     const startTime = Date.now();
 
-    setRunStats(`Round 1 of ${totalBatches} · 0ms elapsed`);
+    setRunStats(`Batch 1 of ${totalBatches} · 0ms elapsed`);
 
     const runBatch = () => {
       if (pending.length === 0) {
         setRunning(false);
         const total = Date.now() - startTime;
         setRunStats(
-          `\u2713 All 16 requests done in ${total}ms, using ${totalBatches} round${totalBatches === 1 ? '' : 's'} of up to ${concurrency} at a time`
+          `✓ Completed in ${total}ms across ${totalBatches} batch${totalBatches === 1 ? '' : 'es'} of up to ${concurrency} request${concurrency === 1 ? '' : 's'} each`
         );
         return;
       }
@@ -157,7 +145,7 @@ export default function SSDSpeedChallenge() {
       pending = pending.slice(concurrency);
       batchIndex += 1;
       setCycles(batchIndex);
-      setRunStats(`Round ${batchIndex} of ${totalBatches} · ${elapsed}ms elapsed`);
+      setRunStats(`Batch ${batchIndex} of ${totalBatches} · ${elapsed}ms elapsed`);
 
       setQueue((prev) =>
         prev.map((r) => (batch.includes(r.id) ? { ...r, status: 'active' } : r))
@@ -175,75 +163,12 @@ export default function SSDSpeedChallenge() {
     };
 
     runBatch();
-  }, [deviceKey]);
-
-  // All layout below is plain inline styles — this project doesn't run
-  // Tailwind (confirmed: none of these utility classes exist anywhere in
-  // the deployed CSS), so no className here does anything useful except
-  // "sim-wrap" / "btn" / "btn-outline" / "btn-sm", which ARE real classes
-  // already defined site-wide and used by the other exhibits' simulators.
+  }, [deviceKey, running]);
 
   return (
-    <div
-      className="sim-wrap"
-      style={{ borderColor: device.accent, fontFamily: "'Space Mono', monospace" }}
-    >
-      {/* Title bar */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          paddingBottom: '0.75rem',
-          marginBottom: '1.25rem',
-          borderBottom: `2px solid ${device.accent}`,
-        }}
-      >
-        <span
-          style={{
-            fontSize: '0.85rem',
-            letterSpacing: '0.2em',
-            textTransform: 'uppercase',
-            color: device.accent,
-          }}
-        >
-          SSD Speed Challenge
-        </span>
-        <button
-          onClick={reset}
-          className="btn btn-outline btn-sm"
-          aria-label="Reset simulator to NVMe SSD"
-          style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}
-        >
-          <RotateCcwIcon size={12} /> Reset
-        </button>
-      </div>
-
-      <p
-        style={{
-          fontSize: '0.76rem',
-          color: 'rgba(170,170,204,0.75)',
-          lineHeight: 1.6,
-          margin: '0 0 1rem 0',
-        }}
-      >
-        Each of the 16 squares below is one waiting read request. Pick a drive, send
-        them all at once, and watch how many rounds it takes to clear the queue.
-      </p>
-
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '140px 1fr',
-          gap: '1.25rem',
-        }}
-      >
-        {/* Device selector */}
-        <div
-          style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
-          role="group"
-          aria-label="Storage device selector"
-        >
+    <div className="sim-wrap">
+      <div className="ssdsim-body">
+        <div className="ssdsim-devices" role="group" aria-label="Storage device selector">
           {ORDER.map((key) => {
             const d = DEVICES[key];
             const DIcon = d.icon;
@@ -251,250 +176,138 @@ export default function SSDSpeedChallenge() {
             return (
               <button
                 key={key}
-                onClick={() => selectDevice(key)}
+                type="button"
+                className={'ssdsim-device-btn' + (selected ? ' active' : '')}
                 disabled={running}
                 aria-pressed={selected}
                 style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '0.35rem',
-                  border: `1px solid ${selected ? d.accent : 'rgba(170,170,204,0.25)'}`,
-                  borderRadius: '4px',
-                  background: selected ? `${d.accent}1A` : 'transparent',
+                  borderColor: selected ? d.accent : 'rgba(170,170,204,0.25)',
                   color: selected ? d.accent : '#888',
-                  padding: '0.6rem 0.4rem',
-                  cursor: running ? 'not-allowed' : 'pointer',
-                  fontFamily: "'Space Mono', monospace",
-                  transition: 'all 0.15s',
                 }}
+                onClick={() => selectDevice(key)}
               >
-                <DIcon size={16} color={selected ? d.accent : '#888'} />
-                <span style={{ fontSize: '0.72rem', fontWeight: 700 }}>{d.label}</span>
-                <span style={{ fontSize: '0.6rem', color: 'rgba(170,170,204,0.5)' }}>{d.sub}</span>
+                <DIcon size={20} />
+                <span className="dname">{d.label}</span>
+                <span className="dsub">{d.sub}</span>
               </button>
             );
           })}
         </div>
 
-        {/* Main panel */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {/* Data path: CPU <-> device */}
+        <div>
+          <div className="ssdsim-path">
+            <div className="ssdsim-path-node">
+              <div className="ssdsim-path-box">
+                <CpuIcon size={20} color="rgba(200,200,220,0.8)" />
+              </div>
+              <span className="ssdsim-path-label">CPU</span>
+            </div>
+            <div className="ssdsim-path-line" style={{ background: `${device.accent}44` }}>
+              <div
+                className={'ssdsim-path-dot' + (running ? ' on' : '')}
+                style={{ background: device.accent, left: `${(cycles * 37) % 90}%` }}
+              />
+            </div>
+            <div className="ssdsim-path-node">
+              <div className="ssdsim-path-box" style={{ borderColor: device.accent, color: device.accent }}>
+                <Icon size={20} />
+              </div>
+              <span className="ssdsim-path-label" style={{ color: device.accent }}>{device.label}</span>
+            </div>
+          </div>
+
+          <div className="ssdsim-queue-head">
+            <span className="ssdsim-queue-label">
+              {QUEUE_SIZE} requests &mdash; {device.label} reads {device.concurrency === 1 ? '1 at a time' : `${device.concurrency} at a time`}
+            </span>
+            <button
+              type="button"
+              className="btn btn-primary btn-sm"
+              id="fireBtn"
+              disabled={running}
+              style={{ borderColor: device.accent, color: running ? '#666' : device.accent }}
+              onClick={runQueue}
+            >
+              {running ? 'Sending…' : 'Send Requests'}
+            </button>
+          </div>
+
+          <div className="ssdsim-cell-legend">
+            <span className="cell-legend-item"><span className="cell-swatch cell-waiting" /> Waiting its turn</span>
+            <span className="cell-legend-item"><span className="cell-swatch cell-reading" /> Being read right now</span>
+            <span className="cell-legend-item"><span className="cell-swatch cell-done" /> Done</span>
+          </div>
+
           <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(170,170,204,0.15)',
-              borderRadius: '4px',
-              padding: '0.9rem 1.1rem',
-            }}
+            className="ssdsim-queue-grid"
+            role="img"
+            aria-label={`${QUEUE_SIZE} pending read requests, ${device.concurrency === 1 ? 'serviced one at a time' : `serviced ${device.concurrency} at a time`}`}
           >
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.3rem' }}>
-              <div style={{ border: '1px solid rgba(170,170,204,0.4)', borderRadius: '4px', padding: '0.5rem' }}>
-                <CpuIcon size={22} color="rgba(200,200,220,0.8)" />
-              </div>
-              <span style={{ fontSize: '0.6rem', color: 'rgba(170,170,204,0.5)', textTransform: 'uppercase' }}>CPU</span>
-            </div>
-
-            <div style={{ flex: 1, margin: '0 0.8rem', height: '1px', position: 'relative', background: `${device.accent}44` }}>
-              {running && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: '-3px',
-                    height: '7px',
-                    width: '7px',
-                    borderRadius: '50%',
-                    background: device.accent,
-                    left: `${(cycles * 37) % 90}%`,
-                    transition: 'left 0.3s ease',
-                    animation: 'ssdsim-pulse 0.9s ease-in-out infinite alternate',
-                  }}
-                />
-              )}
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.3rem' }}>
-              <div style={{ border: `1px solid ${device.accent}`, borderRadius: '4px', padding: '0.5rem' }}>
-                <Icon size={22} color={device.accent} />
-              </div>
-              <span style={{ fontSize: '0.6rem', color: device.accent, textTransform: 'uppercase' }}>{device.label}</span>
-            </div>
-          </div>
-
-          {/* Request queue visualization */}
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-              <span style={{ fontSize: '0.62rem', color: 'rgba(170,170,204,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                {QUEUE_SIZE} requests &mdash; {device.label} reads {device.concurrency === 1 ? '1 at a time' : `${device.concurrency} at a time`}
-              </span>
-              <button
-                onClick={runQueue}
-                disabled={running}
-                className="btn btn-outline btn-sm"
-                style={{ borderColor: device.accent, color: running ? '#666' : device.accent }}
+            {queue.map((r) => (
+              <div
+                key={r.id}
+                className="ssdsim-queue-cell"
+                title={r.addr}
+                style={{
+                  background: r.status === 'done' ? `${device.accent}33` : r.status === 'active' ? device.accent : '',
+                  borderColor: r.status === 'done' || r.status === 'active' ? device.accent : '',
+                  color: r.status === 'active' ? '#000' : '',
+                }}
               >
-                {running ? 'Sending…' : 'Send Requests'}
-              </button>
-            </div>
-
-            {/* Cell-state legend — spells out what the colors below mean,
-                since that was previously only visible via an invisible
-                hover tooltip. */}
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', fontSize: '0.62rem', color: 'rgba(170,170,204,0.6)', marginBottom: '0.6rem' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                <span style={{ width: 10, height: 10, borderRadius: 2, display: 'inline-block', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(170,170,204,0.25)' }} />
-                Waiting its turn
-              </span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                <span style={{ width: 10, height: 10, borderRadius: 2, display: 'inline-block', background: 'rgba(255,255,255,0.9)' }} />
-                Being read right now
-              </span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                <span style={{ width: 10, height: 10, borderRadius: 2, display: 'inline-block', background: 'rgba(255,255,255,0.25)', border: '1px solid rgba(255,255,255,0.4)' }} />
-                Done
-              </span>
-            </div>
-
-            <div
-              style={{ display: 'grid', gridTemplateColumns: 'repeat(8, 1fr)', gap: '0.35rem' }}
-              role="img"
-              aria-label={`${QUEUE_SIZE} pending read requests, ${device.concurrency === 1 ? 'serviced one at a time' : `serviced ${device.concurrency} at a time`}`}
-            >
-              {queue.map((r) => (
-                <div
-                  key={r.id}
-                  style={{
-                    aspectRatio: '1',
-                    borderRadius: '2px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '8px',
-                    transition: 'all 0.15s',
-                    background:
-                      r.status === 'done'
-                        ? `${device.accent}33`
-                        : r.status === 'active'
-                        ? device.accent
-                        : 'rgba(255,255,255,0.03)',
-                    color: r.status === 'active' ? '#000' : '#555',
-                    border: `1px solid ${r.status === 'queued' ? 'rgba(170,170,204,0.15)' : device.accent}`,
-                  }}
-                  title={r.addr}
-                >
-                  {r.status === 'active' ? '●' : ''}
-                </div>
-              ))}
-            </div>
-
-            {/* Live/final results readout — this is the "information" the
-                widget presents, so it never just looks like an animation
-                with nothing to read. */}
-            <p
-              aria-live="polite"
-              style={{
-                fontFamily: "'Orbitron', 'Space Mono', monospace",
-                fontSize: '0.72rem',
-                letterSpacing: '0.5px',
-                color: '#aaaacc',
-                minHeight: '1.2rem',
-                margin: '0.5rem 0 0 0',
-                padding: '0.4rem 0.6rem',
-                background: 'rgba(255,255,255,0.03)',
-                borderLeft: '2px solid #00FFFF',
-              }}
-            >
-              {runStats}
-            </p>
+                {r.status === 'active' ? '●' : ''}
+              </div>
+            ))}
           </div>
 
-          <p style={{ fontSize: '0.62rem', color: 'rgba(170,170,204,0.5)', letterSpacing: '0.5px', margin: '0.9rem 0 0.5rem 0' }}>
-            These numbers summarize why, in three ways:
-          </p>
+          <p className="ssdsim-runstats" aria-live="polite">{runStats}</p>
 
-          {/* Stats bars */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.8rem' }}>
+          <p className="ssdsim-stats-caption">These numbers summarize why, in three ways:</p>
+          <div className="ssdsim-stats">
             {[
               { label: 'Access Speed', pct: device.barPct.speed, value: device.throughput },
               { label: 'Latency', pct: device.barPct.latency, value: device.latency },
               { label: 'IOPS', pct: device.barPct.iops, value: device.iops },
             ].map((stat) => (
-              <div key={stat.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
-                <div
-                  style={{
-                    width: '100%',
-                    height: '70px',
-                    background: 'rgba(255,255,255,0.03)',
-                    display: 'flex',
-                    alignItems: 'flex-end',
-                    overflow: 'hidden',
-                  }}
-                >
+              <div className="ssdsim-stat" key={stat.label}>
+                <div className="ssdsim-stat-track">
                   <div
-                    style={{
-                      width: '100%',
-                      height: `${Math.max(stat.pct, 4)}%`,
-                      background: device.accent,
-                      transition: 'height 0.5s ease-out',
-                    }}
+                    className="ssdsim-stat-fill"
+                    style={{ height: `${Math.max(stat.pct, 4)}%`, background: device.accent }}
                   />
                 </div>
-                <span style={{ fontSize: '0.6rem', color: 'rgba(170,170,204,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                  {stat.label}
-                </span>
-                <span style={{ fontSize: '0.68rem', fontWeight: 700, color: device.accent }}>{stat.value}</span>
+                <span className="ssdsim-stat-name">{stat.label}</span>
+                <span className="ssdsim-stat-value" style={{ color: device.accent }}>{stat.value}</span>
               </div>
             ))}
           </div>
 
-          <p
-            style={{
-              fontSize: '0.78rem',
-              color: 'rgba(170,170,204,0.7)',
-              lineHeight: 1.6,
-              borderTop: '1px solid rgba(170,170,204,0.15)',
-              paddingTop: '0.9rem',
-              margin: 0,
-            }}
-          >
-            {device.blurb}
-          </p>
+          <p className="ssdsim-blurb">{device.blurb}</p>
 
-          {/* Legend: explains each interface's communication method */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', borderTop: '1px solid rgba(170,170,204,0.15)', paddingTop: '0.9rem' }}>
+          <div className="ssdsim-legend">
             {ORDER.map((key) => {
               const d = DEVICES[key];
               return (
-                <div key={key} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
-                  <span style={{ marginTop: '3px', width: '8px', height: '8px', borderRadius: '2px', background: d.accent, flexShrink: 0 }} />
-                  <span style={{ fontSize: '0.68rem', color: 'rgba(170,170,204,0.6)', lineHeight: 1.5 }}>
-                    <span style={{ fontWeight: 700, color: d.accent }}>{d.label}</span> — {d.legend}
-                  </span>
+                <div className="ssdsim-legend-item" key={key}>
+                  <span className="ssdsim-legend-swatch" style={{ background: d.accent }} />
+                  <span><span className="ssdsim-legend-name" style={{ color: d.accent }}>{d.label}</span> — {d.legend}</span>
                 </div>
               );
             })}
           </div>
 
-          <p style={{ fontSize: '0.62rem', color: 'rgba(170,170,204,0.35)', lineHeight: 1.5, margin: 0 }}>
-            <span style={{ fontWeight: 700, color: 'rgba(170,170,204,0.5)' }}>Simplified model:</span> concurrency and
-            per-request timing above are illustrative, scaled from each interface&rsquo;s real queue
-            depth and typical latency — not a cycle-accurate simulation of controller firmware.
+          <p className="ssdsim-caveat">
+            <strong>Simplified model:</strong> concurrency and per-request timing above are
+            illustrative, scaled from each interface&rsquo;s real queue depth and typical
+            latency — not a cycle-accurate simulation of controller firmware.
           </p>
         </div>
       </div>
 
-      <style>{`
-        @keyframes ssdsim-pulse {
-          from { opacity: 0.4; }
-          to   { opacity: 1; }
-        }
-        @media (max-width: 640px) {
-          .sim-wrap > div { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
+      <div className="sim-actions">
+        <button type="button" className="btn btn-outline btn-sm" id="simReset" aria-label="Reset simulator to NVMe SSD" onClick={reset}>
+          Reset
+        </button>
+      </div>
     </div>
   );
 }

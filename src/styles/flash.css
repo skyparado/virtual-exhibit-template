@@ -445,6 +445,60 @@
   outline-offset: 2px;
 }
 
+/* ---------- Live run stats readout (batch progress + final result) ---------- */
+.ssdsim-runstats {
+  font-family: var(--font-head);
+  font-size: 0.72rem;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  min-height: 1.2rem;
+  margin: 0.5rem 0 1rem 0;
+  padding: 0.4rem 0.6rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 2px solid var(--accent-cyan);
+}
+
+/* ---------- Cell-state legend (Waiting / Reading / Done) ---------- */
+.ssdsim-cell-legend {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.62rem;
+  color: rgba(170, 170, 204, 0.6);
+  margin-bottom: 0.6rem;
+}
+.cell-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.cell-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.cell-swatch.cell-waiting {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(170, 170, 204, 0.25);
+}
+.cell-swatch.cell-reading {
+  background: rgba(255, 255, 255, 0.9);
+}
+.cell-swatch.cell-done {
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* ---------- Stats caption ---------- */
+.ssdsim-stats-caption {
+  font-size: 0.62rem;
+  color: rgba(170, 170, 204, 0.5);
+  letter-spacing: 0.5px;
+  margin: 0.9rem 0 0.5rem 0;
+}
+
 /* ---------- Figure centering & sizing for this page's figures ---------- */
 /* style.css defines .figure-placeholder generically, but doesn't
    guarantee centering on its own (depends on the img's default
