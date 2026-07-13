@@ -3,10 +3,10 @@ const { isHome = false } = Astro.props;
 const baseUrl = import.meta.env.BASE_URL;
 const currentPath = Astro.url.pathname;
 
-const homeHref = `${baseUrl}/fullcapacity`;
+const homeHref = `${baseUrl}/S01_Group7_fullcapacity`;
 const mainHref = baseUrl;
 const exploreHref = isHome ? '#exhibits' : `${homeHref}#exhibits`;
-const aboutHref = `${baseUrl}/fullcapacity/about`;
+const aboutHref = `${baseUrl}/S01_Group7_fullcapacity/about`;
 
 const isAboutActive = currentPath.replace(/\/$/, '') === aboutHref.replace(/\/$/, '');
 ---
