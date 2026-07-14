@@ -32,7 +32,7 @@
 
 The deployed version of the virtual exhibit can be accessed through the following link:
 
-[https://skyparado.github.io/virtual-exhibit-template/fullcapacity/](https://skyparado.github.io/virtual-exhibit-template/fullcapacity/)
+[https://skyparado.github.io/virtual-exhibit-template/S01_Group7_fullcapacity/](https://skyparado.github.io/virtual-exhibit-template/S01_Group7_fullcapacity/)
 
 ### Github Repository Link
 
