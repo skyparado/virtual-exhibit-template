@@ -139,8 +139,39 @@
   box-shadow: 0 0 0 #0c0e16, 0 2px 3px rgba(0,0,0,0.4);
 }
  
-@media (max-width: 700px) {
-  .tw-key { width: 34px; height: 34px; font-size: 0.7rem; }
-  .tw-key.tw-wide { width: 52px; font-size: 0.5rem; }
-  .tw-row { gap: 0.3rem; }
+@media (max-width: 480px) {
+  .typewriter {
+    padding: 1rem 0.4rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tw-row {
+    gap: 0.15rem;
+  }
+
+  .tw-indent-1,
+  .tw-indent-2,
+  .tw-indent-3 {
+    margin-left: 0;
+  }
+
+  .tw-key {
+    width: 26px;
+    height: 26px;
+    font-size: 0.5rem;
+    border-width: 1px;
+  }
+
+  .tw-key.tw-wide {
+    width: 38px;
+    font-size: 0.38rem;
+  }
+
+  .tw-top { font-size: 0.42rem; }
+  .tw-bot { font-size: 0.55rem; }
+
+  .tw-spacebar {
+    height: 24px;
+  }
 }
