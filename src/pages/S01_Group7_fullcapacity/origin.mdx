@@ -27,6 +27,7 @@ toc:
 import '../../styles/origin.css';
 import PunchCardSimulator from '../../components/PunchCardSimulator.jsx';
 import ImageSlideshow from '../../components/ImageSlideshow.jsx';
+import { BatchProcessingAnimation, SequentialAccessAnimation } from '../../components/BatchAndSequentialAnimations.jsx'
 import punch from '../../assets/punch.png';
 import train from '../../assets/train.png';
 import magneticDrums from '../../assets/magnetic-drums.png';
@@ -94,6 +95,7 @@ import drumsHistory from '../../assets/drums-history.jpg';
     while magnetic drums stored the information during processing. Once loaded, the computer executed each job
     continuously in order, improving efficiency and reducing manual operation.
   </p>
+  <BatchProcessingAnimation client:visible />
 </section>
 
 <section id="sequential-data-access">
@@ -103,6 +105,7 @@ import drumsHistory from '../../assets/drums-history.jpg';
     cards and magnetic drums required earlier records to be read first before the desired information could be
     reached. This process made data access slower compared to modern random-access storage systems.
   </p>
+  <SequentialAccessAnimation client:visible />
 </section>
 
 <section id="simulator">
@@ -121,7 +124,7 @@ import drumsHistory from '../../assets/drums-history.jpg';
   <p style="text-align: justify;">
     Early technologies such as punch cards and magnetic drums laid the foundations of digital data storage by
     introducing methods for encoding, storing, and retrieving information.
-    <br /><br />
+    <br />
     These systems established basic storage principles that later evolved into:
   </p>
   <ul>
