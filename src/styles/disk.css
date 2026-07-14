@@ -728,14 +728,3 @@
 @media (max-width: 600px) {
   .mem-pyramid-tier { font-size: 0.62rem; height: 38px; }
 }
-
-#resetBtn {
-  background: var(--accent-green);
-  color: #000;
-  border-color: var(--accent-green);
-}
-#resetBtn:hover {
-  background: var(--accent-green);
-  color: #000;
-  opacity: 0.85;
-}
