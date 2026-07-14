@@ -263,6 +263,7 @@ body.theme-fullcapacity {
 }
 
 .hdd-arm-g {
+  transform-box: view-box;
   transform-origin: 266px 50px;
   animation: armSweep 5s ease-in-out infinite;
 }
