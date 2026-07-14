@@ -102,3 +102,77 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
     }
   });
 });
+
+/* ── Shared scroll-reveal + reading progress (used by all exhibits) ── */
+function initScrollReveal(extraSelectors = []) {
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hasArticle = document.querySelector('.article-body');
+
+  // Progress bar — only on exhibit pages
+  if (hasArticle && !document.querySelector('.fc-progress-track')) {
+    const track = document.createElement('div');
+    track.className = 'fc-progress-track';
+    const fill = document.createElement('div');
+    fill.className = 'fc-progress-fill';
+    track.appendChild(fill);
+    document.body.prepend(track);
+
+    function updateProgress() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / docHeight) * 100)) : 0;
+      fill.style.width = pct + '%';
+    }
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    window.addEventListener('resize', updateProgress);
+    updateProgress();
+  }
+
+  if (!hasArticle) return;
+
+  const baseSelectors = [
+    '.article-body h2',
+    '.article-body h3',
+    '.article-body > section > p',
+    '.article-body figure',
+    '.article-body table',
+    '#references li',
+  ];
+  const selectors = baseSelectors.concat(extraSelectors).join(', ');
+
+  const revealEls    = Array.from(document.querySelectorAll(selectors));
+  const listItemEls  = Array.from(document.querySelectorAll('.article-body ul li'));
+  const tableRowEls  = Array.from(document.querySelectorAll('.article-body table tbody tr'));
+  const allEls       = revealEls.concat(listItemEls, tableRowEls);
+
+  allEls.forEach(el => el.classList.add('fc-reveal'));
+
+  if (prefersReduced) {
+    allEls.forEach(el => el.classList.add('fc-reveal-visible'));
+    return;
+  }
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      const siblings = Array.from(el.parentElement.children).filter(c => c.classList.contains('fc-reveal'));
+      const idx = siblings.indexOf(el);
+      el.style.transitionDelay = Math.min(idx, 6) * 70 + 'ms';
+      el.classList.add('fc-reveal-visible');
+      observer.unobserve(el);
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+
+  allEls.forEach(el => observer.observe(el));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initScrollReveal([
+    '.nand-hierarchy', '.wear-chart', '.iops-chart', '.compare-table', '.sim-wrap',
+    '.mem-hierarchy', '.mem-pyramid', '.density-chart', '.hdd-assembly', '.component-grid',
+    '.access-compare', '.hdd-sim-wrap', '.cd-diagram', '.tree-diagram', '.scale-diagram',
+    '.arch-strip', '.keytech-row', '.orbit-banner', '.dna-diagram', '.neuro-stage',
+    '.fact-box', '.punch-sim-wrap',
+  ]);
+});

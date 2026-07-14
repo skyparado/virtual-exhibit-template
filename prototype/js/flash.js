@@ -322,68 +322,6 @@ if (ssdEl.deviceList) {
 
 const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* ---- 1. Reading progress bar ---- */
-const progressTrack = document.createElement('div');
-progressTrack.className = 'flashanim-progress-track';
-const progressFill = document.createElement('div');
-progressFill.className = 'flashanim-progress-fill';
-progressTrack.appendChild(progressFill);
-document.body.prepend(progressTrack);
-
-function updateScrollProgress() {
-  const scrollTop = window.scrollY;
-  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-  const pct = docHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / docHeight) * 100)) : 0;
-  progressFill.style.width = pct + '%';
-}
-window.addEventListener('scroll', updateScrollProgress, { passive: true });
-window.addEventListener('resize', updateScrollProgress);
-updateScrollProgress();
-
-/* ---- 2. Scroll-reveal for content blocks ---- */
-const revealSelectors = [
-  '.article-body h2',
-  '.article-body > section > p',
-  '.article-body figure',
-  '.article-body .nand-hierarchy',
-  '.article-body .wear-chart',
-  '.article-body .iops-chart',
-  '.article-body .compare-table',
-  '.article-body .sim-wrap',
-  '#references li',
-].join(', ');
-
-const revealEls = Array.from(document.querySelectorAll(revealSelectors));
-const revealListItemEls = Array.from(document.querySelectorAll('.article-body ul li'));
-const revealTableRowEls = Array.from(document.querySelectorAll('.compare-table tbody tr'));
-const allRevealEls = revealEls.concat(revealListItemEls, revealTableRowEls);
-
-allRevealEls.forEach((el) => {
-  el.classList.add('flashanim-reveal');
-});
-
-if (prefersReduced) {
-  allRevealEls.forEach((el) => el.classList.add('flashanim-visible'));
-} else {
-  const revealObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        const el = entry.target;
-        const siblings = Array.from(el.parentElement.children).filter((c) =>
-          c.classList.contains('flashanim-reveal')
-        );
-        const idx = siblings.indexOf(el);
-        el.style.transitionDelay = Math.min(idx, 6) * 70 + 'ms';
-        el.classList.add('flashanim-visible');
-        revealObserver.unobserve(el);
-      });
-    },
-    { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
-  );
-  allRevealEls.forEach((el) => revealObserver.observe(el));
-}
-
 /* ---- 3. Animated bar-fill charts ---- */
 const BAR_WIDTH_BY_CLASS = {
   'tier-package': '100%',

@@ -120,7 +120,7 @@
           <figure class="figure-placeholder">
             <img src="images/PMR.png" alt="Diagrams of longitudinal and perpendicular magnetic storage structures" class="figure-img figure-img-pmr" />
             <figcaption>
-              Fig. 1 Diagrams of (a) longitudinal and (b) perpendicular magnetic storage structures
+              Fig. 1. Diagrams of (a) longitudinal and (b) perpendicular magnetic storage structures.
             </figcaption>
           </figure>
         </section>
@@ -129,12 +129,29 @@
         <section id="hdd-anatomy">
           <h2>Key Components of an HDD</h2>
 
-          <figure class="figure-placeholder">
-            <img src="images/hdd-components.jpg" alt="Diagram of a hard disk drive's internal components" class="figure-img figure-img-hdd" />
-            <figcaption>
-              Source: <a href="https://itpartsupply.com/blog/what-is-a-hard-disk-drive-actuator/" target="_blank" rel="noopener">itpartsupply.com</a>
-            </figcaption>
-          </figure>
+          <div class="hdd-assembly">
+            <div class="hdd-assembly-visual">
+              <div class="hdd-assembly-platter">
+                <div class="hdd-assembly-track t1"></div>
+                <div class="hdd-assembly-track t2"></div>
+                <div class="hdd-assembly-track t3"></div>
+                <div class="hdd-assembly-hub"></div>
+              </div>
+              <div class="hdd-assembly-arm">
+                <div class="hdd-assembly-head"></div>
+              </div>
+              <div class="hdd-assembly-pivot"></div>
+            </div>
+            <div class="hdd-assembly-legend">
+              <div class="hal-item"><span class="hal-dot dot-cyan"></span>Platter &mdash; the spinning magnetic storage surface</div>
+              <div class="hal-item"><span class="hal-dot dot-purple"></span>Spindle motor &mdash; keeps the platter rotating at constant speed</div>
+              <div class="hal-item"><span class="hal-dot dot-green"></span>Actuator arm &mdash; swings the head across the platter</div>
+              <div class="hal-item"><span class="hal-dot dot-magenta"></span>Read/write head &mdash; encodes and detects magnetic bits</div>
+            </div>
+          </div>
+          <p class="figure-caption-text">
+            Fig. 2. Simplified schematic of the platter, spindle, actuator arm, and read/write head assembly inside an HDD (animated).
+          </p>
 
           <h3>Platters</h3>
           <p style="text-align:justify;">
@@ -190,48 +207,48 @@
             (Sankar et al., 2008).
           </p>
 
-          <h3>Table of HDD Internal Components</h3>
-          <table class="compare-table" style="margin-top:1.25rem;">
-            <thead>
-              <tr>
-                <th>Component</th>
-                <th>Function</th>
-                <th>Key metric (modern drive)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Platters</td>
-                <td>Magnetic storage surface</td>
-                <td>2–8 per drive</td>
-              </tr>
-              <tr>
-                <td>Spindle motor</td>
-                <td>Rotates platters at constant speed</td>
-                <td>5,400 – 15,000 RPM</td>
-              </tr>
-              <tr>
-                <td>Read/Write heads</td>
-                <td>Encode and detect magnetic fields</td>
-                <td>~3–5 nm flying height</td>
-              </tr>
-              <tr>
-                <td>Actuator arm</td>
-                <td>Positions heads over correct track</td>
-                <td>8–12 ms average seek time</td>
-              </tr>
-              <tr>
-                <td>Voice-coil actuator</td>
-                <td>Drives precise arm movement</td>
-                <td>&lt; 1 ms track-to-track</td>
-              </tr>
-              <tr>
-                <td>Cache buffer (DRAM)</td>
-                <td>Buffers incoming/outgoing data</td>
-                <td>32–256 MB on-board</td>
-              </tr>
-            </tbody>
-          </table>
+          <h3>HDD Component Specifications</h3>
+          <div class="component-grid">
+            <div class="component-card" style="--i:0;">
+              <span class="cc-icon">&#128191;</span>
+              <div class="cc-name">PLATTERS</div>
+              <div class="cc-func">Magnetic storage surface</div>
+              <span class="cc-metric">2&ndash;8 per drive</span>
+            </div>
+            <div class="component-card" style="--i:1;">
+              <span class="cc-icon">&#127760;</span>
+              <div class="cc-name">SPINDLE MOTOR</div>
+              <div class="cc-func">Rotates platters at constant speed</div>
+              <span class="cc-metric">5,400&ndash;15,000 RPM</span>
+            </div>
+            <div class="component-card" style="--i:2;">
+              <span class="cc-icon">&#128999;</span>
+              <div class="cc-name">READ/WRITE HEADS</div>
+              <div class="cc-func">Encode and detect magnetic fields</div>
+              <span class="cc-metric">~3&ndash;5 nm flying height</span>
+            </div>
+            <div class="component-card" style="--i:3;">
+              <span class="cc-icon">&#129438;</span>
+              <div class="cc-name">ACTUATOR ARM</div>
+              <div class="cc-func">Positions heads over correct track</div>
+              <span class="cc-metric">8&ndash;12 ms avg. seek time</span>
+            </div>
+            <div class="component-card" style="--i:4;">
+              <span class="cc-icon">⚙️</span>
+              <div class="cc-name">VOICE-COIL ACTUATOR</div>
+              <div class="cc-func">Drives precise arm movement</div>
+              <span class="cc-metric">&lt; 1 ms track-to-track</span>
+            </div>
+            <div class="component-card" style="--i:5;">
+              <span class="cc-icon">&#128190;</span>
+              <div class="cc-name">CACHE BUFFER (DRAM)</div>
+              <div class="cc-func">Buffers incoming/outgoing data</div>
+              <span class="cc-metric">32&ndash;256 MB on-board</span>
+            </div>
+          </div>
+          <p class="figure-caption-text">
+            Fig. 3. The six primary internal components of a modern hard disk drive and their typical specifications.
+          </p>
         </section>
 
         <!-- ── ACCESS TYPES ───────────────────────────────────────── -->
@@ -273,6 +290,38 @@
             seek time and rotational latency is called disk latency, which is typically 5–10 ms
             (Stanford University, n.d.).
           </p>
+
+          <div class="access-compare">
+            <div class="access-row seq">
+              <span class="access-row-label">SEQUENTIAL</span>
+              <div class="access-blocks">
+                <div class="access-block">1</div>
+                <div class="access-block">2</div>
+                <div class="access-block">3</div>
+                <div class="access-block">4</div>
+                <div class="access-block">5</div>
+                <div class="access-block">6</div>
+                <div class="access-block">7</div>
+                <div class="access-block">8</div>
+              </div>
+            </div>
+            <div class="access-row rand">
+              <span class="access-row-label">RANDOM</span>
+              <div class="access-blocks">
+                <div class="access-block">1</div>
+                <div class="access-block">2</div>
+                <div class="access-block">3</div>
+                <div class="access-block">4</div>
+                <div class="access-block">5</div>
+                <div class="access-block">6</div>
+                <div class="access-block">7</div>
+                <div class="access-block">8</div>
+              </div>
+            </div>
+          </div>
+          <p class="figure-caption-text">
+            Fig. 4. Sequential access reads blocks strictly in order, while random access can jump directly to any block &mdash; the capability that set the HDD apart from magnetic tape.
+          </p>
         </section>
 
         <!-- ── AREAL DENSITY ──────────────────────────────────────── -->
@@ -297,48 +346,48 @@
           <div class="density-chart">
             <div class="density-row">
               <span class="density-year">1956</span>
-              <div class="density-track"><div class="density-fill" style="width:0.5%"></div></div>
+              <div class="density-track"><div class="density-fill" style="--i:0; --w:0.5%;"></div></div>
               <span class="density-val">0.002 Mb/in²</span>
             </div>
             <div class="density-row">
               <span class="density-year">1970</span>
-              <div class="density-track"><div class="density-fill" style="width:1%"></div></div>
+              <div class="density-track"><div class="density-fill" style="--i:1; --w:1%;"></div></div>
               <span class="density-val">0.1 Mb/in²</span>
             </div>
             <div class="density-row">
               <span class="density-year">1980</span>
-              <div class="density-track"><div class="density-fill" style="width:2%"></div></div>
+              <div class="density-track"><div class="density-fill" style="--i:2; --w:2%;"></div></div>
               <span class="density-val">7 Mb/in²</span>
             </div>
             <div class="density-row">
               <span class="density-year">1990</span>
-              <div class="density-track"><div class="density-fill" style="width:6%"></div></div>
+              <div class="density-track"><div class="density-fill" style="--i:3; --w:6%;"></div></div>
               <span class="density-val">100 Mb/in²</span>
             </div>
             <div class="density-row">
               <span class="density-year">2000</span>
-              <div class="density-track"><div class="density-fill" style="width:22%"></div></div>
+              <div class="density-track"><div class="density-fill" style="--i:4; --w:22%;"></div></div>
               <span class="density-val">10,000 Mb/in²</span>
             </div>
             <div class="density-row">
               <span class="density-year">2005</span>
-              <div class="density-track"><div class="density-fill" style="width:44%"></div></div>
+              <div class="density-track"><div class="density-fill" style="--i:5; --w:44%;"></div></div>
               <span class="density-val">130,000 Mb/in²</span>
             </div>
             <div class="density-row">
               <span class="density-year">2015</span>
-              <div class="density-track"><div class="density-fill" style="width:68%"></div></div>
+              <div class="density-track"><div class="density-fill" style="--i:6; --w:68%;"></div></div>
               <span class="density-val">850,000 Mb/in²</span>
             </div>
             <div class="density-row">
               <span class="density-year">2023</span>
-              <div class="density-track"><div class="density-fill" style="width:100%"></div></div>
+              <div class="density-track"><div class="density-fill" style="--i:7; --w:100%;"></div></div>
               <span class="density-val">&gt;1,500,000 Mb/in²</span>
             </div>
           </div>
 
           <p style="text-align:justify; margin-top:0.75rem; font-size:0.82rem; color:rgba(170,170,204,0.55); font-style:italic;">
-            Figure Caption. Areal density figures are approximate, compiled from industry data.
+            Fig. 5. Areal density growth from 1956 to 2023 (approximate, compiled from industry data).
             The logarithmic nature of this growth means even the smallest early incremental steps
             represent monumental engineering achievements.
           </p>
@@ -366,12 +415,16 @@
             and spatial locality).
           </p>
 
-          <figure class="figure-placeholder">
-            <img src="images/memory-hierarchy.png" alt="Pyramid diagram of the computer memory storage hierarchy" class="figure-img figure-img-mem" />
-            <figcaption>
-              Source: <a href="https://www.shutterstock.com/image-vector/hierarchy-storage-memory-computer-2024777099" target="_blank" rel="noopener">shutterstock.com</a>
-            </figcaption>
-          </figure>
+          <div class="mem-pyramid">
+            <div class="mem-pyramid-tier tier-reg">REGISTERS</div>
+            <div class="mem-pyramid-tier tier-cache">L1 / L2 / L3 CACHE</div>
+            <div class="mem-pyramid-tier tier-dram">DRAM (RAM)</div>
+            <div class="mem-pyramid-tier tier-hdd">HDD &mdash; you are here</div>
+            <div class="mem-pyramid-tier tier-tape">TAPE / ARCHIVE</div>
+          </div>
+          <p class="figure-caption-text">
+            Fig. 6. The memory hierarchy pyramid, stacking tier by tier &mdash; speed and cost decrease while capacity increases moving from the registers at the apex down to tape at the base.
+          </p>
 
           <p style="text-align:justify;">
             Faster storage is more expensive per byte and therefore smaller; slower storage is
@@ -407,6 +460,9 @@
               <span class="mem-tier-meta">seconds · PBs</span>
             </div>
           </div>
+          <p class="figure-caption-text">
+            Fig. 7. Relative access latency and capacity across memory hierarchy tiers, from registers to tape &mdash; bar length represents relative latency.
+          </p>
 
           <p style="text-align:justify;">
             Because the HDD is orders of magnitude slower than DRAM but orders of magnitude
