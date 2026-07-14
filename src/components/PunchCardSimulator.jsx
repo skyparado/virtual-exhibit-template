@@ -148,12 +148,11 @@ export default function PunchCardSimulator() {
     const active = shiftLock || shiftHeld;
     let charToAdd = baseChar;
 
-    if (active) {
-      if (shiftChar) {
-        charToAdd = shiftChar;
-      } else if (/[a-z]/.test(baseChar)) {
-        charToAdd = baseChar.toUpperCase();
-      }
+    if (/[a-z]/.test(baseChar)) {
+      // Letters have no lowercase encoding — always uppercase, shift or not
+      charToAdd = baseChar.toUpperCase();
+    } else if (active && shiftChar) {
+      charToAdd = shiftChar;
     }
 
     setBuffer((b) => (b.length < MAX_COLS ? b + charToAdd : b));
@@ -162,7 +161,7 @@ export default function PunchCardSimulator() {
     if (shiftHeld && !shiftLock) {
       setShiftHeld(false);
     }
-  }
+}
 
   function pressBackspace() {
     setBuffer((b) => b.slice(0, -1));
