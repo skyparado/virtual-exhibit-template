@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 const DATA_TYPES = {
   photos: {
@@ -132,6 +133,7 @@ function verdictFor(score) {
 
 export default function DataDestinationSimulator() {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [dataType, setDataType] = useState('photos');
   const [tech, setTech] = useState('cloud');
   const [phase, setPhase] = useState('idle');
@@ -161,6 +163,8 @@ export default function DataDestinationSimulator() {
   }, [open]);
 
   useEffect(() => () => clearTimers(), []);
+
+  useEffect(() => { setMounted(true); }, []);
 
   const resetToUnrun = () => {
     clearTimers();
@@ -260,10 +264,11 @@ export default function DataDestinationSimulator() {
         </div>
       </div>
 
-      <div
-        className={`sim-overlay${open ? ' is-open' : ''}`}
-        onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
-      >
+      {mounted && createPortal(
+        <div
+          className={`sim-overlay${open ? ' is-open' : ''}`}
+          onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
+        >
         <div className="sim-modal" role="dialog" aria-modal="true" aria-label="Data Storage Destination Simulator">
           <div className="sim-modal-header">
             <div className="sim-modal-title">
@@ -449,7 +454,9 @@ export default function DataDestinationSimulator() {
             </div>
           </div>
         </div>
-      </div>
+        </div>,
+        document.body
+      )}
     </>
   );
 }
