@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
-export default function HddSimulator() {
+function HddSimulatorContent() {
   const canvasRef = useRef(null);
   const writeBtnRef = useRef(null);
   const readBtnRef = useRef(null);
@@ -463,5 +464,65 @@ export default function HddSimulator() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function HddSimulator() {
+  const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    document.body.classList.add('sim-locked');
+    const onKey = (e) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.body.classList.remove('sim-locked');
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  return (
+    <>
+      <div className="sim-launch-card">
+        <div className="sim-launch-icon">💿</div>
+        <h3>Seek, Write, Read</h3>
+        <p>
+          Enter a short string, pick a track and spindle speed, then watch the actuator arm
+          seek across the platter while bits are written or read — complete with estimated
+          seek time, rotational latency, and transfer time.
+        </p>
+        <button className="sim-launch-btn" onClick={() => setOpen(true)}>▶ Launch Simulator</button>
+        <div className="sim-launch-tags">
+          <span className="sim-launch-tag">🦾 Actuator arm</span>
+          <span className="sim-launch-tag">⏱️ Seek time</span>
+          <span className="sim-launch-tag">🌀 Rotational latency</span>
+          <span className="sim-launch-tag">📊 Access comparison</span>
+        </div>
+      </div>
+
+      {mounted && createPortal(
+        <div
+          className={`sim-overlay${open ? ' is-open' : ''}`}
+          onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
+        >
+          <div className="sim-modal" role="dialog" aria-modal="true" aria-label="HDD Read/Write Simulator">
+            <div className="sim-modal-header">
+              <div className="sim-modal-title">
+                <span className="sim-modal-title-icon">💿</span> HDD Read/Write Simulator
+              </div>
+              <button className="sim-modal-close" onClick={() => setOpen(false)} aria-label="Close simulator">✕</button>
+            </div>
+
+            <div className="sim-modal-body">
+              {open && <HddSimulatorContent />}
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+    </>
   );
 }

@@ -25,6 +25,7 @@ toc:
 ---
 
 import '../../styles/disk.css';
+import '../../styles/horizon-simulator.css';
 import HddSimulator from '../../components/HddSimulator.jsx';
 import pmr from '../../assets/PMR.png';
 
@@ -452,9 +453,9 @@ import pmr from '../../assets/PMR.png';
 <section id="simulator">
   <h2>Interactive: HDD Read/Write Simulator</h2>
   <p style="text-align:justify;">
-    Use the simulator below to observe how a hard disk drive seeks, writes, and reads
-    data. Enter a short string, choose an operation, and watch the actuator arm position
-    the read/write head over the correct track while the platter spins.
+    Launch the simulator to observe how a hard disk drive seeks, writes, and reads
+    data. Enter a short string, choose a track and spindle speed, and watch the actuator
+    arm position the read/write head over the correct track while the platter spins.
   </p>
 
   <HddSimulator client:load />
