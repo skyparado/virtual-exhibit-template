@@ -199,6 +199,37 @@
             <li><strong>Dynamic wear leveling</strong> &mdash; new writes are steered toward the least-worn free blocks.</li>
             <li><strong>Static wear leveling</strong> &mdash; even data that never changes is occasionally relocated, so its block re-enters the rotation instead of sitting idle forever.</li>
           </ul>
+
+          <!--Added this section-->
+
+          <figure class="wearanim-figure" id="wearAnimFigure">
+            <figcaption class="wearanim-caption-top">Fig. Same 40 writes, two strategies — watch which blocks wear out</figcaption>
+            <div class="wearanim-wrap">
+              <div class="wearanim-panel" data-mode="hot">
+                <div class="wearanim-panel-head">
+                  <span class="wearanim-panel-title">No Wear Leveling</span>
+                  <span class="wearanim-panel-stat"><span class="wearanim-dead-count">0</span> blocks dead</span>
+                </div>
+                <div class="wearanim-grid" data-grid="hot"></div>
+              </div>
+              <div class="wearanim-panel" data-mode="leveled">
+                <div class="wearanim-panel-head">
+                  <span class="wearanim-panel-title">With Wear Leveling</span>
+                  <span class="wearanim-panel-stat"><span class="wearanim-dead-count">0</span> blocks dead</span>
+                </div>
+                <div class="wearanim-grid" data-grid="leveled"></div>
+              </div>
+            </div>
+            <div class="wearanim-legend">
+              <span class="wearanim-legend-item"><span class="wearanim-swatch wearanim-swatch-cool"></span>Fresh</span>
+              <span class="wearanim-legend-item"><span class="wearanim-swatch wearanim-swatch-warm"></span>Wearing</span>
+              <span class="wearanim-legend-item"><span class="wearanim-swatch wearanim-swatch-hot"></span>Near limit</span>
+              <span class="wearanim-legend-item"><span class="wearanim-swatch wearanim-swatch-dead"></span>Dead cell</span>
+            </div>
+            <p class="wearanim-status" id="wearAnimStatus" aria-live="polite">Scroll here to run 40 simulated writes…</p>
+          </figure>
+
+          <!--End of addition to this section-->
           <p>
             Drives also reserve a slice of raw capacity that the user never sees, called
             <strong>over-provisioning</strong>, to give the controller room to juggle

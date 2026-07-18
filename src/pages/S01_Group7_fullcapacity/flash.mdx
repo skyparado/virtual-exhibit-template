@@ -24,6 +24,7 @@ toc:
 
 import '../../styles/flash.css';
 import SSDSpeedChallenge from '../../components/SSDSpeedChallenge.jsx';
+import WearLevelingAnimation from '../../components/WearLevelingAnimation.jsx';
 import earlySsd from '../../assets/early-ssd.png';
 import floatingGateCell from '../../assets/floating-gate-cell.jpg';
 import sataVsM2 from '../../assets/sata-vs-m2.jpg';
@@ -164,6 +165,9 @@ import sataVsM2 from '../../assets/sata-vs-m2.jpg';
     <li><strong>Dynamic wear leveling</strong> &mdash; new writes are steered toward the least-worn free blocks.</li>
     <li><strong>Static wear leveling</strong> &mdash; even data that never changes is occasionally relocated, so its block re-enters the rotation instead of sitting idle forever.</li>
   </ul>
+
+  <WearLevelingAnimation client:visible />
+
   <p>
     Drives also reserve a slice of raw capacity that the user never sees, called
     <strong>over-provisioning</strong>, to give the controller room to juggle
