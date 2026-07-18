@@ -716,3 +716,116 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================================
+   Additions for NandHierarchyFlow.jsx and CellVoltageDiagram.jsx
+   Append this block to the end of flash.css.
+   ============================================================ */
+
+/* ---------- NAND hierarchy: auto-cycling active tier ---------- */
+.nand-tier-bar {
+  transition: width 0.6s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+}
+
+.nand-tier.is-active .nand-tier-name {
+  text-shadow: 0 0 10px currentColor;
+}
+
+.nand-tier.is-active .nand-tier-bar {
+  opacity: 1;
+}
+
+.nand-tier.tier-package.is-active .nand-tier-bar { box-shadow: 0 0 14px rgba(128, 0, 255, 0.65); }
+.nand-tier.tier-die.is-active .nand-tier-bar     { box-shadow: 0 0 14px rgba(255, 0, 255, 0.65); }
+.nand-tier.tier-block.is-active .nand-tier-bar   { box-shadow: 0 0 14px rgba(0, 255, 255, 0.65); }
+.nand-tier.tier-page.is-active .nand-tier-bar    { box-shadow: 0 0 14px rgba(57, 255, 20, 0.65); }
+.nand-tier.tier-cell.is-active .nand-tier-bar    { box-shadow: 0 0 14px rgba(255, 255, 255, 0.65); }
+
+.nand-tier.is-active {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* ---------- Cell voltage diagram (SLC/MLC/TLC/QLC) ---------- */
+.cellvolt-wrap {
+  margin: 1.75rem 0;
+  padding: 1.75rem 1.5rem;
+  background: rgba(10, 0, 20, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+}
+
+.cellvolt-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.cellvolt-card {
+  text-align: center;
+  padding: 1rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.cellvolt-card.is-active {
+  transform: translateY(-4px);
+}
+
+.cellvolt-name {
+  font-family: var(--font-head);
+  font-size: 0.8rem;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+  transition: color 0.3s ease;
+}
+
+.cellvolt-states {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 3px;
+  min-height: 32px;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+
+.cellvolt-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cellvolt-card.is-active .cellvolt-dot {
+  animation: cellvoltBlink 1.6s ease-in-out infinite;
+}
+
+@keyframes cellvoltBlink {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.cellvolt-bits {
+  font-size: 0.68rem;
+  color: rgba(170, 170, 204, 0.6);
+  letter-spacing: 0.4px;
+}
+
+.cellvolt-caption {
+  text-align: center;
+  margin-top: 1.1rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.3px;
+  min-height: 1.4rem;
+  transition: color 0.3s ease;
+}
+
+@media (max-width: 640px) {
+  .cellvolt-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
