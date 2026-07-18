@@ -347,6 +347,7 @@ function HddSimulatorContent() {
       transferIdx = 0;
       targetAngle = ARM_MAX;
       readBtn.disabled = true;
+      dataInput.value = '';
 
       statSeek.textContent = '—';
       statLat.textContent = '—';
