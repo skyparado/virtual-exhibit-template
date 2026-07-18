@@ -563,10 +563,7 @@
 }
 
 /* ============================================================
-   Append this block to the END of css/flash.css
-   Styles for the "Wear Leveling in Action" animation
-   (js/flash-wear-anim.js). Uses the same CSS variables and
-   accent colors already defined in css/style.css.
+   Wear Leveling animation (WearLevelingAnimation.jsx)
    ============================================================ */
 
 .wearanim-figure {
@@ -631,14 +628,36 @@
   transition: background 0.25s ease, border-color 0.25s ease, transform 0.15s ease;
 }
 
-.wearanim-cell.state-cool { background: rgba(0, 255, 255, 0.08); border-color: rgba(0, 255, 255, 0.2); }
-.wearanim-cell.state-warm { background: rgba(255, 238, 0, 0.28); border-color: rgba(255, 238, 0, 0.4); }
-.wearanim-cell.state-hot  { background: rgba(255, 140, 0, 0.45); border-color: rgba(255, 140, 0, 0.6); }
-.wearanim-cell.state-critical { background: rgba(255, 0, 128, 0.55); border-color: rgba(255, 0, 128, 0.75); }
+.wearanim-cell.state-cool {
+  background: rgba(0, 255, 255, 0.08);
+  border-color: rgba(0, 255, 255, 0.2);
+}
+
+.wearanim-cell.state-warm {
+  background: rgba(255, 238, 0, 0.28);
+  border-color: rgba(255, 238, 0, 0.4);
+}
+
+.wearanim-cell.state-hot {
+  background: rgba(255, 140, 0, 0.45);
+  border-color: rgba(255, 140, 0, 0.6);
+}
+
+.wearanim-cell.state-critical {
+  background: rgba(255, 0, 128, 0.55);
+  border-color: rgba(255, 0, 128, 0.75);
+}
+
 .wearanim-cell.state-dead {
   background: rgba(60, 60, 70, 0.6);
   border-color: rgba(170, 170, 204, 0.25);
-  background-image: linear-gradient(45deg, transparent 45%, rgba(255,0,128,0.5) 45%, rgba(255,0,128,0.5) 55%, transparent 55%);
+  background-image: linear-gradient(
+    45deg,
+    transparent 45%,
+    rgba(255, 0, 128, 0.5) 45%,
+    rgba(255, 0, 128, 0.5) 55%,
+    transparent 55%
+  );
 }
 
 .wearanim-cell.is-writing {
@@ -655,7 +674,11 @@
   color: rgba(170, 170, 204, 0.6);
 }
 
-.wearanim-legend-item { display: flex; align-items: center; gap: 0.35rem; }
+.wearanim-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
 
 .wearanim-swatch {
   width: 10px;
@@ -663,6 +686,7 @@
   border-radius: 2px;
   display: inline-block;
 }
+
 .wearanim-swatch-cool { background: rgba(0, 255, 255, 0.35); }
 .wearanim-swatch-warm { background: rgba(255, 238, 0, 0.5); }
 .wearanim-swatch-hot { background: rgba(255, 140, 0, 0.6); }
@@ -682,8 +706,13 @@
   cursor: pointer;
   color: var(--accent-cyan);
 }
-.wearanim-status.wearanim-replayable:hover { text-decoration: underline; }
+
+.wearanim-status.wearanim-replayable:hover {
+  text-decoration: underline;
+}
 
 @media (max-width: 640px) {
-  .wearanim-wrap { grid-template-columns: 1fr; }
+  .wearanim-wrap {
+    grid-template-columns: 1fr;
+  }
 }

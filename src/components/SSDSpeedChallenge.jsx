@@ -1,4 +1,5 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 // Small inline icon components — no external icon package needed.
 function CpuIcon({ size = 20, color, style }) {
@@ -83,6 +84,9 @@ function makeQueue() {
 }
 
 export default function SSDSpeedChallenge() {
+  const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
   const [deviceKey, setDeviceKey] = useState('nvme');
   const [queue, setQueue] = useState(makeQueue);
   const [running, setRunning] = useState(false);
@@ -97,6 +101,28 @@ export default function SSDSpeedChallenge() {
     timers.current.forEach(clearTimeout);
     timers.current = [];
   };
+
+  useEffect(() => { setMounted(true); }, []);
+
+  // Same lifecycle pattern as the horizon simulator: lock body scroll
+  // and wire Escape-to-close while open; stop any in-flight run when
+  // the modal closes (including on unmount).
+  useEffect(() => {
+    if (!open) {
+      clearTimers();
+      setRunning(false);
+      return;
+    }
+    document.body.classList.add('sim-locked');
+    const onKey = (e) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.body.classList.remove('sim-locked');
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  useEffect(() => () => clearTimers(), []);
 
   const selectDevice = (key) => {
     if (running) return;
@@ -166,148 +192,183 @@ export default function SSDSpeedChallenge() {
   }, [deviceKey, running]);
 
   return (
-    <div className="sim-wrap">
-      <div className="ssdsim-body">
-        <div className="ssdsim-devices" role="group" aria-label="Storage device selector">
-          {ORDER.map((key) => {
-            const d = DEVICES[key];
-            const DIcon = d.icon;
-            const selected = key === deviceKey;
-            return (
-              <button
-                key={key}
-                type="button"
-                className={'ssdsim-device-btn' + (selected ? ' active' : '')}
-                disabled={running}
-                aria-pressed={selected}
-                style={{
-                  borderColor: selected ? d.accent : 'rgba(170,170,204,0.25)',
-                  color: selected ? d.accent : '#888',
-                }}
-                onClick={() => selectDevice(key)}
-              >
-                <DIcon size={20} />
-                <span className="dname">{d.label}</span>
-                <span className="dsub">{d.sub}</span>
-              </button>
-            );
-          })}
+    <>
+      <div className="sim-launch-card">
+        <div className="sim-launch-icon">⚡</div>
+        <h3>Race the Read Queue</h3>
+        <p>
+          Send 16 read requests at once and watch an HDD's mechanical arm crawl through
+          them one at a time while an NVMe SSD pulls several at once. Fewer batches and
+          less total time both mean a faster drive.
+        </p>
+        <button className="sim-launch-btn" onClick={() => setOpen(true)}>▶ Launch Simulator</button>
+        <div className="sim-launch-tags">
+          <span className="sim-launch-tag">💽 HDD</span>
+          <span className="sim-launch-tag">🔷 SATA SSD</span>
+          <span className="sim-launch-tag">⚡ NVMe SSD</span>
         </div>
+      </div>
 
-        <div>
-          <div className="ssdsim-path">
-            <div className="ssdsim-path-node">
-              <div className="ssdsim-path-box">
-                <CpuIcon size={20} color="rgba(200,200,220,0.8)" />
+      {mounted && createPortal(
+        <div
+          className={`sim-overlay${open ? ' is-open' : ''}`}
+          onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
+        >
+          <div className="sim-modal" role="dialog" aria-modal="true" aria-label="SSD Speed Challenge">
+            <div className="sim-modal-header">
+              <div className="sim-modal-title">
+                <span className="sim-modal-title-icon">⚡</span> SSD Speed Challenge
               </div>
-              <span className="ssdsim-path-label">CPU</span>
+              <button className="sim-modal-close" onClick={() => setOpen(false)} aria-label="Close simulator">✕</button>
             </div>
-            <div className="ssdsim-path-line" style={{ background: `${device.accent}44` }}>
-              <div
-                className={'ssdsim-path-dot' + (running ? ' on' : '')}
-                style={{ background: device.accent, left: `${(cycles * 37) % 90}%` }}
-              />
-            </div>
-            <div className="ssdsim-path-node">
-              <div className="ssdsim-path-box" style={{ borderColor: device.accent, color: device.accent }}>
-                <Icon size={20} />
-              </div>
-              <span className="ssdsim-path-label" style={{ color: device.accent }}>{device.label}</span>
-            </div>
-          </div>
 
-          <div className="ssdsim-queue-head">
-            <span className="ssdsim-queue-label">
-              {QUEUE_SIZE} requests &mdash; {device.label} reads {device.concurrency === 1 ? '1 at a time' : `${device.concurrency} at a time`}
-            </span>
-            <button
-              type="button"
-              className="btn btn-primary btn-sm"
-              id="fireBtn"
-              disabled={running}
-              style={{ borderColor: device.accent, color: running ? '#666' : device.accent }}
-              onClick={runQueue}
-            >
-              {running ? 'Sending…' : 'Send Requests'}
-            </button>
-          </div>
+            <div className="sim-modal-body">
+              <div className="ssdsim-body">
+                <div className="ssdsim-devices" role="group" aria-label="Storage device selector">
+                  {ORDER.map((key) => {
+                    const d = DEVICES[key];
+                    const DIcon = d.icon;
+                    const selected = key === deviceKey;
+                    return (
+                      <button
+                        key={key}
+                        type="button"
+                        className={'ssdsim-device-btn' + (selected ? ' active' : '')}
+                        disabled={running}
+                        aria-pressed={selected}
+                        style={{
+                          borderColor: selected ? d.accent : 'rgba(170,170,204,0.25)',
+                          color: selected ? d.accent : '#888',
+                        }}
+                        onClick={() => selectDevice(key)}
+                      >
+                        <DIcon size={20} />
+                        <span className="dname">{d.label}</span>
+                        <span className="dsub">{d.sub}</span>
+                      </button>
+                    );
+                  })}
+                </div>
 
-          <div className="ssdsim-cell-legend">
-            <span className="cell-legend-item"><span className="cell-swatch cell-waiting" /> Waiting its turn</span>
-            <span className="cell-legend-item"><span className="cell-swatch cell-reading" /> Being read right now</span>
-            <span className="cell-legend-item"><span className="cell-swatch cell-done" /> Done</span>
-          </div>
+                <div>
+                  <div className="ssdsim-path">
+                    <div className="ssdsim-path-node">
+                      <div className="ssdsim-path-box">
+                        <CpuIcon size={20} color="rgba(200,200,220,0.8)" />
+                      </div>
+                      <span className="ssdsim-path-label">CPU</span>
+                    </div>
+                    <div className="ssdsim-path-line" style={{ background: `${device.accent}44` }}>
+                      <div
+                        className={'ssdsim-path-dot' + (running ? ' on' : '')}
+                        style={{ background: device.accent, left: `${(cycles * 37) % 90}%` }}
+                      />
+                    </div>
+                    <div className="ssdsim-path-node">
+                      <div className="ssdsim-path-box" style={{ borderColor: device.accent, color: device.accent }}>
+                        <Icon size={20} />
+                      </div>
+                      <span className="ssdsim-path-label" style={{ color: device.accent }}>{device.label}</span>
+                    </div>
+                  </div>
 
-          <div
-            className="ssdsim-queue-grid"
-            role="img"
-            aria-label={`${QUEUE_SIZE} pending read requests, ${device.concurrency === 1 ? 'serviced one at a time' : `serviced ${device.concurrency} at a time`}`}
-          >
-            {queue.map((r) => (
-              <div
-                key={r.id}
-                className="ssdsim-queue-cell"
-                title={r.addr}
-                style={{
-                  background: r.status === 'done' ? `${device.accent}33` : r.status === 'active' ? device.accent : '',
-                  borderColor: r.status === 'done' || r.status === 'active' ? device.accent : '',
-                  color: r.status === 'active' ? '#000' : '',
-                }}
-              >
-                {r.status === 'active' ? '●' : ''}
-              </div>
-            ))}
-          </div>
+                  <div className="ssdsim-queue-head">
+                    <span className="ssdsim-queue-label">
+                      {QUEUE_SIZE} requests &mdash; {device.label} reads {device.concurrency === 1 ? '1 at a time' : `${device.concurrency} at a time`}
+                    </span>
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-sm"
+                      id="fireBtn"
+                      disabled={running}
+                      style={{ borderColor: device.accent, color: running ? '#666' : device.accent }}
+                      onClick={runQueue}
+                    >
+                      {running ? 'Sending…' : 'Send Requests'}
+                    </button>
+                  </div>
 
-          <p className="ssdsim-runstats" aria-live="polite">{runStats}</p>
+                  <div className="ssdsim-cell-legend">
+                    <span className="cell-legend-item"><span className="cell-swatch cell-waiting" /> Waiting its turn</span>
+                    <span className="cell-legend-item"><span className="cell-swatch cell-reading" /> Being read right now</span>
+                    <span className="cell-legend-item"><span className="cell-swatch cell-done" /> Done</span>
+                  </div>
 
-          <p className="ssdsim-stats-caption">These numbers summarize why, in three ways:</p>
-          <div className="ssdsim-stats">
-            {[
-              { label: 'Access Speed', pct: device.barPct.speed, value: device.throughput },
-              { label: 'Latency', pct: device.barPct.latency, value: device.latency },
-              { label: 'IOPS', pct: device.barPct.iops, value: device.iops },
-            ].map((stat) => (
-              <div className="ssdsim-stat" key={stat.label}>
-                <div className="ssdsim-stat-track">
                   <div
-                    className="ssdsim-stat-fill"
-                    style={{ height: `${Math.max(stat.pct, 4)}%`, background: device.accent }}
-                  />
+                    className="ssdsim-queue-grid"
+                    role="img"
+                    aria-label={`${QUEUE_SIZE} pending read requests, ${device.concurrency === 1 ? 'serviced one at a time' : `serviced ${device.concurrency} at a time`}`}
+                  >
+                    {queue.map((r) => (
+                      <div
+                        key={r.id}
+                        className="ssdsim-queue-cell"
+                        title={r.addr}
+                        style={{
+                          background: r.status === 'done' ? `${device.accent}33` : r.status === 'active' ? device.accent : '',
+                          borderColor: r.status === 'done' || r.status === 'active' ? device.accent : '',
+                          color: r.status === 'active' ? '#000' : '',
+                        }}
+                      >
+                        {r.status === 'active' ? '●' : ''}
+                      </div>
+                    ))}
+                  </div>
+
+                  <p className="ssdsim-runstats" aria-live="polite">{runStats}</p>
+
+                  <p className="ssdsim-stats-caption">These numbers summarize why, in three ways:</p>
+                  <div className="ssdsim-stats">
+                    {[
+                      { label: 'Access Speed', pct: device.barPct.speed, value: device.throughput },
+                      { label: 'Latency', pct: device.barPct.latency, value: device.latency },
+                      { label: 'IOPS', pct: device.barPct.iops, value: device.iops },
+                    ].map((stat) => (
+                      <div className="ssdsim-stat" key={stat.label}>
+                        <div className="ssdsim-stat-track">
+                          <div
+                            className="ssdsim-stat-fill"
+                            style={{ height: `${Math.max(stat.pct, 4)}%`, background: device.accent }}
+                          />
+                        </div>
+                        <span className="ssdsim-stat-name">{stat.label}</span>
+                        <span className="ssdsim-stat-value" style={{ color: device.accent }}>{stat.value}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <p className="ssdsim-blurb">{device.blurb}</p>
+
+                  <div className="ssdsim-legend">
+                    {ORDER.map((key) => {
+                      const d = DEVICES[key];
+                      return (
+                        <div className="ssdsim-legend-item" key={key}>
+                          <span className="ssdsim-legend-swatch" style={{ background: d.accent }} />
+                          <span><span className="ssdsim-legend-name" style={{ color: d.accent }}>{d.label}</span> — {d.legend}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <p className="ssdsim-caveat">
+                    <strong>Simplified model:</strong> concurrency and per-request timing above are
+                    illustrative, scaled from each interface&rsquo;s real queue depth and typical
+                    latency — not a cycle-accurate simulation of controller firmware.
+                  </p>
                 </div>
-                <span className="ssdsim-stat-name">{stat.label}</span>
-                <span className="ssdsim-stat-value" style={{ color: device.accent }}>{stat.value}</span>
               </div>
-            ))}
+
+              <div className="sim-actions">
+                <button type="button" className="btn btn-outline btn-sm" id="simReset" aria-label="Reset simulator to NVMe SSD" onClick={reset}>
+                  Reset
+                </button>
+              </div>
+            </div>
           </div>
-
-          <p className="ssdsim-blurb">{device.blurb}</p>
-
-          <div className="ssdsim-legend">
-            {ORDER.map((key) => {
-              const d = DEVICES[key];
-              return (
-                <div className="ssdsim-legend-item" key={key}>
-                  <span className="ssdsim-legend-swatch" style={{ background: d.accent }} />
-                  <span><span className="ssdsim-legend-name" style={{ color: d.accent }}>{d.label}</span> — {d.legend}</span>
-                </div>
-              );
-            })}
-          </div>
-
-          <p className="ssdsim-caveat">
-            <strong>Simplified model:</strong> concurrency and per-request timing above are
-            illustrative, scaled from each interface&rsquo;s real queue depth and typical
-            latency — not a cycle-accurate simulation of controller firmware.
-          </p>
-        </div>
-      </div>
-
-      <div className="sim-actions">
-        <button type="button" className="btn btn-outline btn-sm" id="simReset" aria-label="Reset simulator to NVMe SSD" onClick={reset}>
-          Reset
-        </button>
-      </div>
-    </div>
+        </div>,
+        document.body
+      )}
+    </>
   );
 }

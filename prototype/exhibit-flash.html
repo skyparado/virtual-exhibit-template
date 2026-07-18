@@ -8,6 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/flash.css" />
+  <link rel="stylesheet" href="css/horizon-simulator.css" />
 
 </head>
 <body>
@@ -65,14 +66,6 @@
             gap between fast, volatile RAM and slow, mechanical secondary storage.
           </p>
 
-          <!--
-            IMAGE PLACEHOLDER
-            Path/filename to add:  images/early-ssd.jpg
-            Suggested content: a photo of an early/vintage solid-state
-            storage card or drive (e.g. a 1990s PCMCIA flash card, or a
-            teardown shot of an early SSD). Drop the file into images/
-            with this exact name to render it.
-          -->
           <figure class="figure-placeholder">
             <img src="images/early-ssd.png" alt="Photo of an early solid-state flash storage card" class="figure-img figure-img-flash" style="display:block; margin:0 auto; width:100%; max-width:700px; height:auto; border-radius:8px; border:1px solid rgba(255,255,255,0.08);" />
             <figcaption>Fig. Early solid-state flash storage, decades before SSDs replaced hard drives <a href="https://en.wikipedia.org/wiki/Solid-state_drive" target="_blank" rel="noopener">(Wikipedia)</a></figcaption>
@@ -89,14 +82,6 @@
             with no power applied — this is what makes flash <strong>non-volatile</strong>.
           </p>
 
-          <!--
-            IMAGE PLACEHOLDER
-            Path/filename to add:  images/floating-gate-cell.png
-            Suggested content: a labeled cross-section diagram of a
-            floating-gate transistor (control gate / floating gate /
-            tunnel oxide / source / drain). Drop the file into images/
-            with this exact name to render it.
-          -->
           <figure class="figure-placeholder">
             <img src="images/floating-gate-cell.jpg" alt="Cross-section diagram of a floating-gate transistor memory cell" class="figure-img figure-img-flash" style="display:block; margin:0 auto; width:100%; max-width:700px; height:auto; border-radius:8px; border:1px solid rgba(255,255,255,0.08);" />
             <figcaption>Fig. Cross-section of a floating-gate transistor — the physical basis of every NAND cell <a href="https://en.wikipedia.org/wiki/Floating-gate_MOSFET" target="_blank" rel="noopener">(Wikipedia)</a></figcaption>
@@ -199,37 +184,6 @@
             <li><strong>Dynamic wear leveling</strong> &mdash; new writes are steered toward the least-worn free blocks.</li>
             <li><strong>Static wear leveling</strong> &mdash; even data that never changes is occasionally relocated, so its block re-enters the rotation instead of sitting idle forever.</li>
           </ul>
-
-          <!--Added this section-->
-
-          <figure class="wearanim-figure" id="wearAnimFigure">
-            <figcaption class="wearanim-caption-top">Fig. Same 40 writes, two strategies — watch which blocks wear out</figcaption>
-            <div class="wearanim-wrap">
-              <div class="wearanim-panel" data-mode="hot">
-                <div class="wearanim-panel-head">
-                  <span class="wearanim-panel-title">No Wear Leveling</span>
-                  <span class="wearanim-panel-stat"><span class="wearanim-dead-count">0</span> blocks dead</span>
-                </div>
-                <div class="wearanim-grid" data-grid="hot"></div>
-              </div>
-              <div class="wearanim-panel" data-mode="leveled">
-                <div class="wearanim-panel-head">
-                  <span class="wearanim-panel-title">With Wear Leveling</span>
-                  <span class="wearanim-panel-stat"><span class="wearanim-dead-count">0</span> blocks dead</span>
-                </div>
-                <div class="wearanim-grid" data-grid="leveled"></div>
-              </div>
-            </div>
-            <div class="wearanim-legend">
-              <span class="wearanim-legend-item"><span class="wearanim-swatch wearanim-swatch-cool"></span>Fresh</span>
-              <span class="wearanim-legend-item"><span class="wearanim-swatch wearanim-swatch-warm"></span>Wearing</span>
-              <span class="wearanim-legend-item"><span class="wearanim-swatch wearanim-swatch-hot"></span>Near limit</span>
-              <span class="wearanim-legend-item"><span class="wearanim-swatch wearanim-swatch-dead"></span>Dead cell</span>
-            </div>
-            <p class="wearanim-status" id="wearAnimStatus" aria-live="polite">Scroll here to run 40 simulated writes…</p>
-          </figure>
-
-          <!--End of addition to this section-->
           <p>
             Drives also reserve a slice of raw capacity that the user never sees, called
             <strong>over-provisioning</strong>, to give the controller room to juggle
@@ -251,13 +205,6 @@
             drive that could barely keep that queue full, but a hard ceiling for flash.
           </p>
 
-          <!--
-            IMAGE PLACEHOLDER
-            Path/filename to add:  images/sata-vs-m2.jpg
-            Suggested content: a side-by-side photo comparing a 2.5" SATA
-            SSD connector/cable and an M.2 NVMe stick. Drop the file into
-            images/ with this exact name to render it.
-          -->
           <figure class="figure-placeholder">
             <img src="images/sata-vs-m2.jpg" alt="Side-by-side comparison of a SATA SSD connector and an M.2 NVMe drive" class="figure-img figure-img-flash" style="display:block; margin:0 auto; width:100%; max-width:700px; height:auto; border-radius:8px; border:1px solid rgba(255,255,255,0.08);" />
             <figcaption>Fig. SATA's cable-and-connector interface next to an M.2 NVMe stick that plugs directly into PCIe lanes <a href="https://en.wikipedia.org/wiki/M.2" target="_blank" rel="noopener">(Wikipedia)</a></figcaption>
@@ -373,66 +320,24 @@
           <p>
             Picture a computer that needs to read 16 different pieces of data from a
             storage drive, all at once &mdash; this is a completely normal thing that
-            happens constantly, e.g. when a game loads or an app starts up. Each of the
-            16 squares below stands for one of those waiting read requests. Pick a
-            drive on the left, then press <strong>Send Requests</strong> to send all 16
-            at once and watch how differently each drive copes: an HDD's mechanical arm
-            can only fetch one piece of data at a time, while an NVMe SSD can pull several
-            at once. Fewer rounds and less total time both mean a faster drive.
+            happens constantly, e.g. when a game loads or an app starts up. Pick a drive,
+            fire the requests, and watch how differently an HDD, SATA SSD, and NVMe SSD
+            cope with the exact same workload.
           </p>
 
-          <div class="sim-wrap">
-            <div class="ssdsim-body">
-              <div class="ssdsim-devices" id="deviceList" role="group" aria-label="Storage device selector"></div>
-
-              <div>
-                <div class="ssdsim-path" id="ssdsimPath">
-                  <div class="ssdsim-path-node">
-                    <div class="ssdsim-path-box">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(200,200,220,0.8)" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="15" x2="23" y2="15"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="15" x2="4" y2="15"/></svg>
-                    </div>
-                    <span class="ssdsim-path-label">CPU</span>
-                  </div>
-                  <div class="ssdsim-path-line" id="pathLine">
-                    <div class="ssdsim-path-dot" id="pathDot"></div>
-                  </div>
-                  <div class="ssdsim-path-node">
-                    <div class="ssdsim-path-box" id="devIconBox"></div>
-                    <span class="ssdsim-path-label" id="devIconLabel"></span>
-                  </div>
-                </div>
-
-                <div class="ssdsim-queue-head">
-                  <span class="ssdsim-queue-label" id="queueLabel">Read Queue</span>
-                  <button class="btn btn-primary btn-sm" id="fireBtn">Send Requests</button>
-                </div>
-                <div class="ssdsim-cell-legend">
-                  <span class="cell-legend-item"><span class="cell-swatch cell-waiting"></span> Waiting its turn</span>
-                  <span class="cell-legend-item"><span class="cell-swatch cell-reading"></span> Being read right now</span>
-                  <span class="cell-legend-item"><span class="cell-swatch cell-done"></span> Done</span>
-                </div>
-                <div class="ssdsim-queue-grid" id="queueGrid" role="img" aria-label="16 pending read requests"></div>
-                <p class="ssdsim-runstats" id="runStats" aria-live="polite"></p>
-
-                <p class="ssdsim-stats-caption">These numbers summarize why, in three ways:</p>
-                <div class="ssdsim-stats" id="statsRow"></div>
-
-                <p class="ssdsim-blurb" id="blurb"></p>
-
-                <!-- Legend: explains each interface's communication method,
-                     built from the same DEVICES data as the JSX version. -->
-                <div class="ssdsim-legend" id="legendList"></div>
-
-                <p class="ssdsim-caveat">
-                  <strong>Simplified model:</strong> concurrency and per-request timing above
-                  are illustrative, scaled from each interface's real queue depth and typical
-                  latency &mdash; not a cycle-accurate simulation of controller firmware.
-                </p>
-              </div>
-            </div>
-
-            <div class="sim-actions">
-              <button class="btn btn-outline btn-sm" id="simReset" aria-label="Reset simulator to NVMe SSD">Reset</button>
+          <div class="sim-launch-card">
+            <div class="sim-launch-icon">⚡</div>
+            <h3>Race the Read Queue</h3>
+            <p>
+              Send 16 read requests at once and watch an HDD's mechanical arm crawl through
+              them one at a time while an NVMe SSD pulls several at once. Fewer batches and
+              less total time both mean a faster drive.
+            </p>
+            <button class="sim-launch-btn" id="simLaunchBtn">▶ Launch Simulator</button>
+            <div class="sim-launch-tags">
+              <span class="sim-launch-tag">💽 HDD</span>
+              <span class="sim-launch-tag">🔷 SATA SSD</span>
+              <span class="sim-launch-tag">⚡ NVMe SSD</span>
             </div>
           </div>
         </section>

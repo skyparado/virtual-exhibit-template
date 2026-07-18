@@ -23,8 +23,8 @@ toc:
 ---
 
 import '../../styles/flash.css';
+import '../../styles/horizon-simulator.css';
 import SSDSpeedChallenge from '../../components/SSDSpeedChallenge.jsx';
-import WearLevelingAnimation from '../../components/WearLevelingAnimation.jsx';
 import earlySsd from '../../assets/early-ssd.png';
 import floatingGateCell from '../../assets/floating-gate-cell.jpg';
 import sataVsM2 from '../../assets/sata-vs-m2.jpg';
@@ -166,8 +166,6 @@ import sataVsM2 from '../../assets/sata-vs-m2.jpg';
     <li><strong>Static wear leveling</strong> &mdash; even data that never changes is occasionally relocated, so its block re-enters the rotation instead of sitting idle forever.</li>
   </ul>
 
-  <WearLevelingAnimation client:visible />
-
   <p>
     Drives also reserve a slice of raw capacity that the user never sees, called
     <strong>over-provisioning</strong>, to give the controller room to juggle
@@ -305,12 +303,9 @@ import sataVsM2 from '../../assets/sata-vs-m2.jpg';
   <p>
     Picture a computer that needs to read 16 different pieces of data from a
     storage drive, all at once &mdash; this is a completely normal thing that
-    happens constantly, e.g. when a game loads or an app starts up. Each of the
-    16 squares below stands for one of those waiting read requests. Pick a
-    drive on the left, then press <strong>Send Requests</strong> to send all 16
-    at once and watch how differently each drive copes: an HDD's mechanical arm
-    can only fetch one piece of data at a time, while an NVMe SSD can pull several
-    at once. Fewer rounds and less total time both mean a faster drive.
+    happens constantly, e.g. when a game loads or an app starts up. Pick a drive,
+    fire the requests, and watch how differently an HDD, SATA SSD, and NVMe SSD
+    cope with the exact same workload.
   </p>
 
   <SSDSpeedChallenge client:load />
