@@ -244,7 +244,7 @@ body.theme-fullcapacity {
 /* CSS HDD Visual */
 .hero-visual {
   position: relative;
-  height: 440px;
+  min-height: 46vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -257,7 +257,7 @@ body.theme-fullcapacity {
 
 .hdd-svg {
   width: 100%;
-  max-width: 340px;
+  max-width: 35vh;
   height: auto;
   filter: drop-shadow(0 0 24px rgba(57,255,20,0.12)) drop-shadow(0 0 60px rgba(128,0,255,0.2));
 }
@@ -277,11 +277,12 @@ body.theme-fullcapacity {
 
 .spec-tag {
   font-family: var(--font-head);
-  font-size: 1rem;
+  font-size: 1.2rem;
   color: var(--accent-green);
   border: 1px solid rgba(57,255,20,0.35);
-  padding: 0.25rem 0.75rem;
+  padding: 0.4rem 0.85rem;
   letter-spacing: 1px;
+  line-height: 1.5;
   text-align: center;
   background: rgba(0,0,0,0.4);
 }
