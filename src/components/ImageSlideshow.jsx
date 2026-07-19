@@ -25,8 +25,8 @@ export default function ImageSlideshow({ images, alt = '' }) {
       style={{
         position: 'relative',
         width: '100%',
-        maxWidth: '520px',
-        height: '340px',
+        maxWidth: '640px',
+        height: '420px',
         overflow: 'hidden',
         borderRadius: '8px',
         margin: '1.5rem auto',
