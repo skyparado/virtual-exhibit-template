@@ -1,189 +1,242 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 
-/* ============================================================
-   WearLevelingAnimation.jsx
-   "Wear Leveling in Action" — two 24-block grids simulating 40
-   writes each: one panel always hits 3 fixed "hot" blocks (no
-   wear leveling), the other rotates writes round-robin across
-   all blocks (wear leveling). Meant to be used with
-   client:visible so it plays once the figure scrolls into view.
-   Independent of SSDSpeedChallenge — no shared state or DOM.
-   ============================================================ */
+const GRID_COLS = 8;
+const GRID_ROWS = 2;
+const N = GRID_COLS * GRID_ROWS;
+const WRITE_COUNT = 7;
 
-const TOTAL_BLOCKS = 24;
-const TOTAL_WRITES = 40;
-const DEAD_THRESHOLD = 8;
-const TICK_MS = 140;
-const HOT_INDICES = [5, 11, 17];
+const HEAT_STYLES = [
+  { bg: 'rgba(0,255,255,0.10)', border: 'rgba(0,255,255,0.3)' },   // cool
+  { bg: 'rgba(255,238,0,0.22)', border: 'rgba(255,238,0,0.4)' },   // warm
+  { bg: 'rgba(255,140,0,0.30)', border: 'rgba(255,140,0,0.5)' },   // hot
+  { bg: 'rgba(255,0,128,0.35)', border: 'rgba(255,0,128,0.55)' },  // critical
+];
 
-function makeBlocks() {
-  return Array.from({ length: TOTAL_BLOCKS }, () => ({ heat: 0, dead: false }));
-}
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-function stateForHeat(heat, dead) {
-  if (dead) return "dead";
-  if (heat === 0) return "cool";
-  if (heat <= 3) return "warm";
-  if (heat <= 6) return "hot";
-  return "critical";
-}
+const wrapStyle = {
+  position: 'relative',
+  margin: '1.75rem auto',
+  maxWidth: '620px',
+  padding: '1.75rem 1.75rem 1.5rem',
+  background: 'radial-gradient(ellipse at 50% 0%, rgba(0,255,255,0.06), transparent 60%), rgba(10,0,20,0.85)',
+  border: '1px solid rgba(255,255,255,0.14)',
+  borderRadius: '10px',
+};
 
-function applyWrite(blocks, idx) {
-  const cell = blocks[idx];
-  if (cell.dead) return blocks;
-  const next = blocks.slice();
-  const heat = cell.heat + 1;
-  next[idx] = { heat, dead: heat >= DEAD_THRESHOLD };
-  return next;
-}
+const headerStyle = {
+  textAlign: 'center',
+  fontFamily: 'var(--font-head)',
+  fontSize: '0.68rem',
+  letterSpacing: '2.5px',
+  color: 'rgba(170,170,204,0.6)',
+  textTransform: 'uppercase',
+  marginBottom: '0.4rem',
+};
+
+const phaseBadgeStyle = (color) => ({
+  textAlign: 'center',
+  fontFamily: 'var(--font-head)',
+  fontSize: '0.78rem',
+  letterSpacing: '1px',
+  color,
+  marginBottom: '1.1rem',
+  transition: 'color 0.3s ease',
+});
 
 export default function WearLevelingAnimation() {
-  const [hotBlocks, setHotBlocks] = useState(makeBlocks);
-  const [levBlocks, setLevBlocks] = useState(makeBlocks);
-  const [lastHotIdx, setLastHotIdx] = useState(-1);
-  const [lastLevIdx, setLastLevIdx] = useState(-1);
-  const [status, setStatus] = useState("Scroll here to run 40 simulated writes…");
-  const [done, setDone] = useState(false);
-
-  const runningRef = useRef(false);
-  const hasRunRef = useRef(false);
-
-  function finish(hot, lev) {
-    const hotDead = hot.filter((c) => c.dead).length;
-    const levDead = lev.filter((c) => c.dead).length;
-    setStatus(
-      `Done — ${hotDead} blocks dead without wear leveling vs. ${levDead} with it. Click to replay.`
-    );
-    setDone(true);
-    setLastHotIdx(-1);
-    setLastLevIdx(-1);
-  }
-
-  function runOnce(instant) {
-    if (runningRef.current) return;
-    runningRef.current = true;
-    setDone(false);
-
-    let hot = makeBlocks();
-    let lev = makeBlocks();
-
-    if (instant) {
-      for (let t = 0; t < TOTAL_WRITES; t++) {
-        const hotIdx = HOT_INDICES[Math.floor(Math.random() * HOT_INDICES.length)];
-        hot = applyWrite(hot, hotIdx);
-        lev = applyWrite(lev, t % TOTAL_BLOCKS);
-      }
-      setHotBlocks(hot);
-      setLevBlocks(lev);
-      finish(hot, lev);
-      runningRef.current = false;
-      return;
-    }
-
-    let tick = 0;
-    setStatus("Simulating writes…");
-    const interval = setInterval(() => {
-      tick++;
-      const hotIdx = HOT_INDICES[Math.floor(Math.random() * HOT_INDICES.length)];
-      const levIdx = (tick - 1) % TOTAL_BLOCKS;
-      hot = applyWrite(hot, hotIdx);
-      lev = applyWrite(lev, levIdx);
-      setHotBlocks(hot);
-      setLevBlocks(lev);
-      setLastHotIdx(hotIdx);
-      setLastLevIdx(levIdx);
-      setStatus(`Write ${tick} of ${TOTAL_WRITES}…`);
-      if (tick >= TOTAL_WRITES) {
-        clearInterval(interval);
-        runningRef.current = false;
-        finish(hot, lev);
-      }
-    }, TICK_MS);
-  }
+  const [grid, setGrid] = useState(Array(N).fill(0));
+  const [highlightIndex, setHighlightIndex] = useState(null);
+  const [idleIndex, setIdleIndex] = useState(null);
+  const [iconCell, setIconCell] = useState(null);
+  const [phase, setPhase] = useState('dynamic');
+  const [running, setRunning] = useState(false);
+  const containerRef = useRef(null);
 
   useEffect(() => {
-    if (hasRunRef.current) return;
-    hasRunRef.current = true;
-    runOnce(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setRunning(entry.isIntersecting),
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
   }, []);
 
-  function handleReplay() {
-    if (runningRef.current) return;
-    setHotBlocks(makeBlocks());
-    setLevBlocks(makeBlocks());
-    runOnce(false);
-  }
+  useEffect(() => {
+    if (!running) return;
+    let cancelled = false;
 
-  const hotDeadCount = hotBlocks.filter((c) => c.dead).length;
-  const levDeadCount = levBlocks.filter((c) => c.dead).length;
+    async function runLoop() {
+      while (!cancelled) {
+        setGrid(Array(N).fill(0));
+        setHighlightIndex(null);
+        setIdleIndex(null);
+        setIconCell(null);
+        setPhase('dynamic');
+        await wait(500);
+        if (cancelled) return;
+
+        let g = Array(N).fill(0);
+        for (let w = 0; w < WRITE_COUNT; w++) {
+          if (cancelled) return;
+          const minHeat = Math.min(...g);
+          const candidates = g.map((h, i) => i).filter((i) => g[i] === minHeat);
+          const target = candidates[Math.floor(Math.random() * candidates.length)];
+
+          setHighlightIndex(target);
+          await wait(280);
+          if (cancelled) return;
+
+          g = g.map((h, i) => (i === target ? Math.min(h + 1, 3) : h));
+          setGrid([...g]);
+          await wait(220);
+          if (cancelled) return;
+
+          setHighlightIndex(null);
+          await wait(160);
+          if (cancelled) return;
+        }
+
+        const zeroCells = g.map((h, i) => i).filter((i) => g[i] === 0);
+        if (zeroCells.length < 2) continue;
+
+        const shuffled = [...zeroCells].sort(() => Math.random() - 0.5);
+        const idleIdx = shuffled[0];
+        const destIdx = shuffled[1];
+
+        setPhase('static');
+        setIdleIndex(idleIdx);
+        setIconCell(idleIdx);
+        await wait(1000);
+        if (cancelled) return;
+
+        setIconCell(destIdx);
+        await wait(750);
+        if (cancelled) return;
+
+        g = g.map((h, i) => (i === idleIdx ? 1 : h));
+        setGrid([...g]);
+        setIdleIndex(null);
+        await wait(1300);
+        if (cancelled) return;
+
+        setIconCell(null);
+        await wait(600);
+      }
+    }
+
+    runLoop();
+    return () => {
+      cancelled = true;
+    };
+  }, [running]);
+
+  const isDynamic = phase === 'dynamic';
 
   return (
-    <figure className="wearanim-figure">
-      <figcaption className="wearanim-caption-top">
-        Fig. Same 40 writes, two strategies — watch which blocks wear out
-      </figcaption>
-      <div className="wearanim-wrap">
-        <div className="wearanim-panel">
-          <div className="wearanim-panel-head">
-            <span className="wearanim-panel-title">No Wear Leveling</span>
-            <span className="wearanim-panel-stat">
-              <span className="wearanim-dead-count">{hotDeadCount}</span> blocks dead
-            </span>
-          </div>
-          <div className="wearanim-grid">
-            {hotBlocks.map((cell, i) => (
-              <div
-                key={i}
-                className={
-                  `wearanim-cell state-${stateForHeat(cell.heat, cell.dead)}` +
-                  (i === lastHotIdx ? " is-writing" : "")
-                }
-              />
-            ))}
-          </div>
-        </div>
-        <div className="wearanim-panel">
-          <div className="wearanim-panel-head">
-            <span className="wearanim-panel-title">With Wear Leveling</span>
-            <span className="wearanim-panel-stat">
-              <span className="wearanim-dead-count">{levDeadCount}</span> blocks dead
-            </span>
-          </div>
-          <div className="wearanim-grid">
-            {levBlocks.map((cell, i) => (
-              <div
-                key={i}
-                className={
-                  `wearanim-cell state-${stateForHeat(cell.heat, cell.dead)}` +
-                  (i === lastLevIdx ? " is-writing" : "")
-                }
-              />
-            ))}
-          </div>
-        </div>
+    <div style={wrapStyle} ref={containerRef}>
+      <style>{`
+        @keyframes idlePulseRing {
+          0%, 100% { box-shadow: 0 0 0 1px rgba(255,255,255,0.5), 0 0 6px rgba(255,255,255,0.35); }
+          50%      { box-shadow: 0 0 0 1px rgba(255,255,255,0.9), 0 0 12px rgba(255,255,255,0.6); }
+        }
+      `}</style>
+
+      <div style={headerStyle}>WEAR LEVELING</div>
+      <div style={phaseBadgeStyle(isDynamic ? '#00FFFF' : '#39FF14')}>
+        {isDynamic ? 'DYNAMIC — steering writes to the coolest block' : 'STATIC — relocating an untouched block'}
       </div>
-      <div className="wearanim-legend">
-        <span className="wearanim-legend-item">
-          <span className="wearanim-swatch wearanim-swatch-cool"></span>Fresh
-        </span>
-        <span className="wearanim-legend-item">
-          <span className="wearanim-swatch wearanim-swatch-warm"></span>Wearing
-        </span>
-        <span className="wearanim-legend-item">
-          <span className="wearanim-swatch wearanim-swatch-hot"></span>Near limit
-        </span>
-        <span className="wearanim-legend-item">
-          <span className="wearanim-swatch wearanim-swatch-dead"></span>Dead cell
-        </span>
-      </div>
-      <p
-        className={`wearanim-status${done ? " wearanim-replayable" : ""}`}
-        onClick={done ? handleReplay : undefined}
-        aria-live="polite"
+
+      <div
+        style={{
+          position: 'relative',
+          display: 'grid',
+          gridTemplateColumns: `repeat(${GRID_COLS}, 1fr)`,
+          gridTemplateRows: `repeat(${GRID_ROWS}, 1fr)`,
+          gap: '6px',
+          height: '110px',
+        }}
       >
-        {status}
+        {grid.map((heat, i) => {
+          const style = HEAT_STYLES[heat];
+          const isHighlighted = i === highlightIndex;
+          const isIdle = i === idleIndex;
+          return (
+            <div
+              key={i}
+              style={{
+                borderRadius: '3px',
+                background: style.bg,
+                border: `1px solid ${style.border}`,
+                transition: 'background 0.3s ease, border-color 0.3s ease, transform 0.2s ease',
+                transform: isHighlighted ? 'scale(1.12)' : 'scale(1)',
+                boxShadow: isHighlighted ? '0 0 10px rgba(255,255,255,0.6)' : 'none',
+                animation: isIdle ? 'idlePulseRing 1.1s ease-in-out infinite' : 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '0.55rem',
+                color: 'rgba(255,255,255,0.7)',
+                fontFamily: 'var(--font-head)',
+                letterSpacing: '0.5px',
+              }}
+            >
+              {isIdle ? 'IDLE' : ''}
+            </div>
+          );
+        })}
+
+        {iconCell !== null && (
+          <div
+            style={{
+              position: 'absolute',
+              left: `${((iconCell % GRID_COLS) + 0.5) * (100 / GRID_COLS)}%`,
+              top: `${(Math.floor(iconCell / GRID_COLS) + 0.5) * (100 / GRID_ROWS)}%`,
+              transform: 'translate(-50%, -50%)',
+              transition: 'left 0.7s ease, top 0.7s ease',
+              fontSize: '1rem',
+              pointerEvents: 'none',
+            }}
+          >
+            📄
+          </div>
+        )}
+      </div>
+
+      <p
+        style={{
+          textAlign: 'center',
+          marginTop: '1.1rem',
+          fontSize: '0.78rem',
+          lineHeight: 1.6,
+          color: 'rgba(170,170,204,0.75)',
+          minHeight: '2.6rem',
+        }}
+      >
+        {isDynamic
+          ? 'Dynamic wear leveling — new writes are steered toward the least-worn free blocks.'
+          : 'Static wear leveling — even data that never changes is occasionally relocated, so its block re-enters the rotation instead of sitting idle forever.'}
       </p>
-    </figure>
+
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '1rem',
+          flexWrap: 'wrap',
+          marginTop: '0.6rem',
+          fontSize: '0.62rem',
+          color: 'rgba(170,170,204,0.55)',
+        }}
+      >
+        <span>🟦 cool</span>
+        <span>🟨 warm</span>
+        <span>🟧 hot</span>
+        <span>🟥 critical</span>
+        <span>📄 relocated data</span>
+      </div>
+    </div>
   );
 }

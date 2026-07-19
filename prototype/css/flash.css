@@ -459,6 +459,18 @@
   max-width: 700px;
 }
 
+.figure-placeholder figcaption {
+  text-align: center;
+}
+
+.article-body .figure-placeholder figcaption {
+  text-align: center;
+}
+
+.figure-placeholder figcaption {
+  text-align: center !important;
+}
+
 /* ---------- Live run stats readout (batch progress + final result) ---------- */
 .ssdsim-runstats {
   font-family: var(--font-head);

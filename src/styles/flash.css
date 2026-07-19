@@ -505,11 +505,19 @@
    display). These rules make sure every figure on this page —
    early-ssd, floating-gate-cell, sata-vs-m2 — is centered
    regardless of what the base stylesheet does. */
+.figure-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .figure-img-flash {
   max-width: 600px;
+  width: 100%;
 }
 
 .figure-placeholder figcaption {
-  margin-top: 0.6rem;
+  margin: 0.6rem 0 0;
   max-width: 600px;
+  text-align: center;
 }

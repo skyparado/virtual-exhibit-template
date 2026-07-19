@@ -82,7 +82,8 @@ export default function FloatingGateAnimation() {
       ref={containerRef}
       style={{
         position: 'relative',
-        margin: '1.75rem 0',
+        margin: '1.75rem auto',
+        maxWidth: '500px',     
         padding: '1.6rem 1.5rem 1.5rem',
         background: 'radial-gradient(ellipse at 50% 0%, rgba(0,255,255,0.05), transparent 60%), rgba(10,0,20,0.85)',
         border: '1px solid rgba(255,255,255,0.14)',
