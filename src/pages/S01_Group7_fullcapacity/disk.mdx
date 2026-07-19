@@ -28,6 +28,8 @@ import '../../styles/disk.css';
 import '../../styles/horizon-simulator.css';
 import HddSimulator from '../../components/HddSimulator.jsx';
 import pmr from '../../assets/PMR.png';
+import MagneticWriteDiagram from '../../components/MagneticWriteDiagram.jsx';
+import MagneticReadDiagram from '../../components/MagneticReadDiagram.jsx';
 
 <section id="intro">
   <h2>Introduction</h2>
@@ -74,6 +76,13 @@ import pmr from '../../assets/PMR.png';
     transitions on the trailing edge (Heidmann &amp; Taratorin, 2011).
   </p>
 
+  <figure class="figure-placeholder">
+    <MagneticWriteDiagram client:visible />
+    <figcaption>
+      <strong>Fig. 1.</strong> The write pole imprints magnetization transitions onto the medium as it moves beneath it, flipping polarity as the write current reverses.
+    </figcaption>
+  </figure>
+
   <h3>Reading Data</h3>
   <p style="text-align:justify;">
     The read process uses a sensitive multilayer element (TMR or GMR sensor) placed
@@ -83,6 +92,13 @@ import pmr from '../../assets/PMR.png';
     transformed into playback voltage by read channel electronics, enabling data
     detection and recovery (Heidmann &amp; Taratorin, 2011).
   </p>
+
+  <figure class="figure-placeholder">
+    <MagneticReadDiagram client:visible />
+    <figcaption>
+      <strong>Fig. 2.</strong> A shielded TMR/GMR sensor detects the recorded transitions as they pass beneath it, and the resulting resistance changes are read out as a voltage signal.
+    </figcaption>
+  </figure>
 
   <h3>Perpendicular Magnetic Recording (PMR)</h3>
   <p style="text-align:justify;">
@@ -99,7 +115,7 @@ import pmr from '../../assets/PMR.png';
   <figure class="figure-placeholder">
     <img src={pmr.src} alt="Diagrams of longitudinal and perpendicular magnetic storage structures" class="figure-img figure-img-pmr" />
     <figcaption>
-      <strong>Fig. 1.</strong> Diagrams of (a) longitudinal and (b) perpendicular magnetic storage structures.
+      <strong>Fig. 3.</strong> Diagrams of (a) longitudinal and (b) perpendicular magnetic storage structures.
     </figcaption>
   </figure>
 </section>
@@ -140,7 +156,7 @@ import pmr from '../../assets/PMR.png';
     </div>
   </div>
   <p class="figure-caption-text">
-    <strong>Fig. 2.</strong> Simplified schematic of the platter, spindle, actuator arm, and read/write head assembly inside an HDD (animated).
+    <strong>Fig. 4.</strong> Simplified schematic of the platter, spindle, actuator arm, and read/write head assembly inside an HDD (animated).
   </p>
 
   <h3>Platters</h3>
@@ -237,7 +253,7 @@ import pmr from '../../assets/PMR.png';
     </div>
   </div>
   <p class="figure-caption-text">
-    <strong>Fig. 3.</strong> The six primary internal components of a modern hard disk drive and their typical specifications.
+    <strong>Fig. 5.</strong> The six primary internal components of a modern hard disk drive and their typical specifications.
   </p>
 </section>
 
@@ -309,7 +325,7 @@ import pmr from '../../assets/PMR.png';
     </div>
   </div>
   <p class="figure-caption-text">
-    <strong>Fig. 4.</strong> Sequential access reads blocks strictly in order, while random access can jump directly to any block — the capability that set the HDD apart from magnetic tape.
+    <strong>Fig. 6.</strong> Sequential access reads blocks strictly in order, while random access can jump directly to any block — the capability that set the HDD apart from magnetic tape.
   </p>
 </section>
 
@@ -375,7 +391,7 @@ import pmr from '../../assets/PMR.png';
   </div>
 
   <p class="figure-caption-text">
-    <strong>Fig. 5.</strong> Areal density growth from 1956 to 2023 (approximate, compiled from industry data).
+    <strong>Fig. 7.</strong> Areal density growth from 1956 to 2023 (approximate, compiled from industry data).
     The logarithmic nature of this growth means even the smallest early incremental steps
     represent monumental engineering achievements.
   </p>
@@ -410,7 +426,7 @@ import pmr from '../../assets/PMR.png';
     <div class="mem-pyramid-tier tier-tape">TAPE / ARCHIVE</div>
   </div>
   <p class="figure-caption-text">
-    <strong>Fig. 6.</strong> The memory hierarchy pyramid, stacking tier by tier — speed and cost decrease while capacity increases moving from the registers at the apex down to tape at the base.
+    <strong>Fig. 8.</strong> The memory hierarchy pyramid, stacking tier by tier — speed and cost decrease while capacity increases moving from the registers at the apex down to tape at the base.
   </p>
 
   <p style="text-align:justify;">
@@ -448,7 +464,7 @@ import pmr from '../../assets/PMR.png';
     </div>
   </div>
   <p class="figure-caption-text">
-    <strong>Fig. 7.</strong> Relative access latency and capacity across memory hierarchy tiers, from registers to tape — bar length represents relative latency.
+    <strong>Fig. 9.</strong> Relative access latency and capacity across memory hierarchy tiers, from registers to tape — bar length represents relative latency.
   </p>
 
   <p style="text-align:justify;">

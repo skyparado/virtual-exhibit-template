@@ -424,8 +424,9 @@
   position: absolute;
   inset: 45%;
   border-radius: 50%;
-  background: linear-gradient(145deg, #aaa, #444);
-  border: 1px solid #888;
+  background: linear-gradient(145deg, #c9a3ff, #6b3fa0);
+  border: 1px solid #c9a3ff;
+  box-shadow: 0 0 10px rgba(201, 163, 255, 0.5);
 }
 
 .hdd-assembly-pivot {
