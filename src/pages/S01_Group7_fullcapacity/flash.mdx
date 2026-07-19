@@ -32,6 +32,9 @@ import floatingGateCell from '../../assets/floating-gate-cell.jpg';
 import sataVsM2 from '../../assets/sata-vs-m2.jpg';
 import WearLevelingFlow from '../../components/WearLevelingFlow.jsx';
 import BusSpeedRace from '../../components/BusSpeedRace.jsx';
+import IopsGaugeCluster from '../../components/IopsGaugeCluster.jsx';
+import InterfacePathDiagram from '../../components/InterfacePathDiagram.jsx';
+import FloatingGateAnimation from '../../components/FloatingGateAnimation.jsx';
 
 <section id="intro">
   <h2>Introduction</h2>
@@ -66,10 +69,7 @@ import BusSpeedRace from '../../components/BusSpeedRace.jsx';
     with no power applied — this is what makes flash <strong>non-volatile</strong>.
   </p>
 
-  <figure class="figure-placeholder">
-    <img src={floatingGateCell.src} alt="Cross-section diagram of a floating-gate transistor memory cell" class="figure-img figure-img-flash" />
-    <figcaption>Fig. Cross-section of a floating-gate transistor — the physical basis of every NAND cell <a href="https://en.wikipedia.org/wiki/Floating-gate_MOSFET" target="_blank" rel="noopener">(Wikipedia)</a></figcaption>
-  </figure>
+  <FloatingGateAnimation client:visible />
 
   <NandHierarchyFlow client:visible />
   <p class="nand-caveat">
@@ -140,10 +140,7 @@ import BusSpeedRace from '../../components/BusSpeedRace.jsx';
     drive that could barely keep that queue full, but a hard ceiling for flash.
   </p>
 
-  <figure class="figure-placeholder">
-    <img src={sataVsM2.src} alt="Side-by-side comparison of a SATA SSD connector and an M.2 NVMe drive" class="figure-img figure-img-flash" />
-    <figcaption>Fig. SATA's cable-and-connector interface next to an M.2 NVMe stick that plugs directly into PCIe lanes <a href="https://en.wikipedia.org/wiki/M.2" target="_blank" rel="noopener">(Wikipedia)</a></figcaption>
-  </figure>
+  <InterfacePathDiagram />
 
   <p>
     <strong>NVMe</strong> (Non-Volatile Memory Express) throws out that legacy path
@@ -194,23 +191,7 @@ import BusSpeedRace from '../../components/BusSpeedRace.jsx';
     be in flight across its parallel queues at once.
   </p>
 
-  <div class="iops-chart">
-    <div class="iops-row iops-hdd">
-      <div class="iops-label">HDD</div>
-      <div class="iops-track"><div class="iops-fill"></div></div>
-      <div class="iops-val">~100&ndash;200 IOPS</div>
-    </div>
-    <div class="iops-row iops-sata">
-      <div class="iops-label">SATA SSD</div>
-      <div class="iops-track"><div class="iops-fill"></div></div>
-      <div class="iops-val">~50,000 IOPS</div>
-    </div>
-    <div class="iops-row iops-nvme">
-      <div class="iops-label">NVMe SSD</div>
-      <div class="iops-track"><div class="iops-fill"></div></div>
-      <div class="iops-val">1,000,000+ IOPS</div>
-    </div>
-  </div>
+  <IopsGaugeCluster client:visible />
   <p class="nand-caveat">Log-scaled again — NVMe's real advantage over a spinning HDD is on the order of 10,000&times;, not the ~7&times; the bar lengths alone would suggest.</p>
 </section>
 
