@@ -30,6 +30,8 @@ import CellVoltageDiagram from '../../components/CellVoltageDiagram.jsx';
 import earlySsd from '../../assets/early-ssd.png';
 import floatingGateCell from '../../assets/floating-gate-cell.jpg';
 import sataVsM2 from '../../assets/sata-vs-m2.jpg';
+import WearLevelingFlow from '../../components/WearLevelingFlow.jsx';
+import BusSpeedRace from '../../components/BusSpeedRace.jsx';
 
 <section id="intro">
   <h2>Introduction</h2>
@@ -102,28 +104,8 @@ import sataVsM2 from '../../assets/sata-vs-m2.jpg';
     roughly 100,000 for SLC, down to a few hundred for QLC.
   </p>
 
-  <div class="wear-chart">
-    <div class="wear-row wear-slc">
-      <div class="wear-label">SLC</div>
-      <div class="wear-track"><div class="wear-fill"></div></div>
-      <div class="wear-val">~100,000 P/E cycles</div>
-    </div>
-    <div class="wear-row wear-mlc">
-      <div class="wear-label">MLC</div>
-      <div class="wear-track"><div class="wear-fill"></div></div>
-      <div class="wear-val">~3,000&ndash;10,000</div>
-    </div>
-    <div class="wear-row wear-tlc">
-      <div class="wear-label">TLC</div>
-      <div class="wear-track"><div class="wear-fill"></div></div>
-      <div class="wear-val">~1,000&ndash;3,000</div>
-    </div>
-    <div class="wear-row wear-qlc">
-      <div class="wear-label">QLC</div>
-      <div class="wear-track"><div class="wear-fill"></div></div>
-      <div class="wear-val">~100&ndash;300</div>
-    </div>
-  </div>
+  <WearLevelingFlow client:visible />
+
   <p class="nand-caveat">Bars are log-scaled — QLC's real endurance is roughly 300&times; lower than SLC's, not just half as short as the bar might suggest at a glance.</p>
 
   <p>
@@ -172,44 +154,7 @@ import sataVsM2 from '../../assets/sata-vs-m2.jpg';
     requests to the drive in parallel instead of standing in one line.
   </p>
 
-  <table class="compare-table">
-    <thead>
-      <tr>
-        <th>Interface</th>
-        <th>Bus</th>
-        <th>Protocol</th>
-        <th>Queues &times; Depth</th>
-        <th>Typical form factor</th>
-        <th>Practical throughput</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>SATA III SSD</td>
-        <td>SATA</td>
-        <td>AHCI</td>
-        <td>1 &times; 32</td>
-        <td>2.5&Prime;</td>
-        <td>~550 MB/s</td>
-      </tr>
-      <tr>
-        <td>NVMe SSD (PCIe 3.0 x4)</td>
-        <td>PCIe</td>
-        <td>NVMe</td>
-        <td>65,535 &times; 65,536</td>
-        <td>M.2 / U.2</td>
-        <td>~3,500 MB/s</td>
-      </tr>
-      <tr>
-        <td>NVMe SSD (PCIe 4.0 x4)</td>
-        <td>PCIe</td>
-        <td>NVMe</td>
-        <td>65,535 &times; 65,536</td>
-        <td>M.2 / U.2</td>
-        <td>~7,000 MB/s</td>
-      </tr>
-    </tbody>
-  </table>
+  <BusSpeedRace client:visible />
 
   <p>
     The gap isn't just bandwidth &mdash; it's overhead. Every AHCI command travels
