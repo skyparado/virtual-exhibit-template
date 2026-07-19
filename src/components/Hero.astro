@@ -65,6 +65,16 @@ const baseUrl = import.meta.env.BASE_URL;
         <polygon points="266,50 258,118 274,118" fill="#1a2a1a" stroke="rgba(57,255,20,0.4)" stroke-width="0.8"></polygon>
         <line x1="266" y1="50" x2="172" y2="118" stroke="#39FF14" stroke-width="2" stroke-linecap="round" opacity="0.85"></line>
         <rect x="164" y="112" width="16" height="9" rx="2.5" fill="#39FF14" filter="url(#headGlow)"></rect>
+        <animateTransform
+          attributeName="transform"
+          type="rotate"
+          values="-20 266 50; 14 266 50; -20 266 50"
+          dur="5s"
+          calcMode="spline"
+          keySplines="0.42 0 0.58 1; 0.42 0 0.58 1"
+          keyTimes="0; 0.5; 1"
+          repeatCount="indefinite"
+        ></animateTransform>
       </g>
 
       <rect x="252" y="60" width="28" height="140" rx="2" fill="#0a1a0a" stroke="#1a3a1a" stroke-width="0.5" opacity="0.7"></rect>

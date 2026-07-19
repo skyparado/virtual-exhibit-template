@@ -21,11 +21,29 @@ export default function ImageSlideshow({ images, alt = '' }) {
   }, [images.length]);
 
   return (
-    <div style={{ position: 'relative', width: '100%', overflow: 'hidden', borderRadius: '8px', margin: '1.5rem 0' }}>
+    <div
+      style={{
+        position: 'relative',
+        width: '100%',
+        maxWidth: '640px',
+        height: '420px',
+        overflow: 'hidden',
+        borderRadius: '8px',
+        margin: '1.5rem auto',
+        background: 'rgba(0,0,0,0.35)',
+      }}
+    >
       <img
         src={images[index]}
         alt={alt}
-        style={{ width: '100%', display: 'block', opacity: visible ? 1 : 0, transition: 'opacity 0.2s ease-in-out' }}
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'contain',
+          display: 'block',
+          opacity: visible ? 1 : 0,
+          transition: 'opacity 0.2s ease-in-out',
+        }}
       />
     </div>
   );

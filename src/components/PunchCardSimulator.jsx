@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 const ROW_LABELS = ['12', '11', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 const MAX_COLS = 40;
@@ -25,6 +26,9 @@ function charToRows(ch) {
 }
 
 export default function PunchCardSimulator() {
+  const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
   const frameRef = useRef(null);
   const canvasRef = useRef(null);
   const bufferRef = useRef('');
@@ -37,12 +41,31 @@ export default function PunchCardSimulator() {
     bufferRef.current = buffer;
   }, [buffer]);
 
+  useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    document.body.classList.add('sim-locked');
+    const onKey = (e) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.body.classList.remove('sim-locked');
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  // Redraw once the modal opens, since the canvas has zero size while hidden
+  useEffect(() => {
+    if (open) requestAnimationFrame(() => drawCard(bufferRef.current));
+  }, [open]);
+
   function getW() {
     return canvasRef.current.parentElement.clientWidth || 900;
   }
 
   function drawCard(text) {
     const canvas = canvasRef.current;
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     const DPR = window.devicePixelRatio || 1;
     const W = getW();
@@ -127,17 +150,16 @@ export default function PunchCardSimulator() {
   }
 
   useEffect(() => {
-    drawCard(buffer);
+    if (open) drawCard(buffer);
   }, [buffer]);
 
   useEffect(() => {
     function handleResize() {
-      drawCard(bufferRef.current);
+      if (open) drawCard(bufferRef.current);
     }
     window.addEventListener('resize', handleResize);
-    requestAnimationFrame(handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [open]);
 
   function flashKey(id) {
     setPressedKey(id);
@@ -189,101 +211,138 @@ export default function PunchCardSimulator() {
   const isPressed = (id) => (pressedKey === id ? ' tw-pressed' : '');
 
   return (
-    <div className="punch-sim-wrap">
-      <div className="punch-card-frame" ref={frameRef}>
-        <div className="punch-card-titlebar">TEXT-TO-PUNCH CARD SIMULATOR</div>
-        <canvas ref={canvasRef} id="punchCanvas" width="900" height="220" aria-label="Punch card visualization" />
-      </div>
-
-      <div className="punch-output" id="punchOutput">{outputText}</div>
-
-      <div className="typewriter">
-        <div className="tw-row">
-          <button className={`tw-key${isPressed('1')}`} onClick={() => pressChar('1', '1', '!')}><span className="tw-top">!</span><span className="tw-bot">1</span></button>
-          <button className={`tw-key${isPressed('2')}`} onClick={() => pressChar('2', '2', '"')}><span className="tw-top">&quot;</span><span className="tw-bot">2</span></button>
-          <button className={`tw-key${isPressed('3')}`} onClick={() => pressChar('3', '3', '#')}><span className="tw-top">#</span><span className="tw-bot">3</span></button>
-          <button className={`tw-key${isPressed('4')}`} onClick={() => pressChar('4', '4', '$')}><span className="tw-top">$</span><span className="tw-bot">4</span></button>
-          <button className={`tw-key${isPressed('5')}`} onClick={() => pressChar('5', '5', '%')}><span className="tw-top">%</span><span className="tw-bot">5</span></button>
-          <button className={`tw-key${isPressed('6')}`} onClick={() => pressChar('6', '6', '-')}><span className="tw-top">-</span><span className="tw-bot">6</span></button>
-          <button className={`tw-key${isPressed('7')}`} onClick={() => pressChar('7', '7', '+')}><span className="tw-top">+</span><span className="tw-bot">7</span></button>
-          <button className={`tw-key${isPressed('8')}`} onClick={() => pressChar('8', '8', '8')}><span className="tw-top">&nbsp;</span><span className="tw-bot">8</span></button>
-          <button className={`tw-key${isPressed('9')}`} onClick={() => pressChar('9', '9', '(')}><span className="tw-top">(</span><span className="tw-bot">9</span></button>
-          <button className={`tw-key${isPressed('0')}`} onClick={() => pressChar('0', '0', ')')}><span className="tw-top">)</span><span className="tw-bot">0</span></button>
-          <button className={`tw-key tw-wide${isPressed('backspace')}`} onClick={pressBackspace}><span className="tw-bot">BACK<br />SPACE</span></button>
-        </div>
-
-        <div className="tw-row tw-indent-1">
-          <button className={`tw-key${isPressed('q')}`} onClick={() => pressChar('q', 'q')}>Q</button>
-          <button className={`tw-key${isPressed('w')}`} onClick={() => pressChar('w', 'w')}>W</button>
-          <button className={`tw-key${isPressed('e')}`} onClick={() => pressChar('e', 'e')}>E</button>
-          <button className={`tw-key${isPressed('r')}`} onClick={() => pressChar('r', 'r')}>R</button>
-          <button className={`tw-key${isPressed('t')}`} onClick={() => pressChar('t', 't')}>T</button>
-          <button className={`tw-key${isPressed('y')}`} onClick={() => pressChar('y', 'y')}>Y</button>
-          <button className={`tw-key${isPressed('u')}`} onClick={() => pressChar('u', 'u')}>U</button>
-          <button className={`tw-key${isPressed('i')}`} onClick={() => pressChar('i', 'i')}>I</button>
-          <button className={`tw-key${isPressed('o')}`} onClick={() => pressChar('o', 'o')}>O</button>
-          <button className={`tw-key${isPressed('p')}`} onClick={() => pressChar('p', 'p')}>P</button>
-          <button className={`tw-key${isPressed('.')}`} onClick={() => pressChar('.', '.', ':')}><span className="tw-top">:</span><span className="tw-bot">.</span></button>
-        </div>
-
-        <div className="tw-row tw-indent-2">
-          <button className={`tw-key tw-wide${shiftLock ? ' tw-active' : ''}${isPressed('shiftlock')}`} onClick={pressShiftLock}><span className="tw-bot">SHIFT<br />LOCK</span></button>
-          <button className={`tw-key${isPressed('a')}`} onClick={() => pressChar('a', 'a')}>A</button>
-          <button className={`tw-key${isPressed('s')}`} onClick={() => pressChar('s', 's')}>S</button>
-          <button className={`tw-key${isPressed('d')}`} onClick={() => pressChar('d', 'd')}>D</button>
-          <button className={`tw-key${isPressed('f')}`} onClick={() => pressChar('f', 'f')}>F</button>
-          <button className={`tw-key${isPressed('g')}`} onClick={() => pressChar('g', 'g')}>G</button>
-          <button className={`tw-key${isPressed('h')}`} onClick={() => pressChar('h', 'h')}>H</button>
-          <button className={`tw-key${isPressed('j')}`} onClick={() => pressChar('j', 'j')}>J</button>
-          <button className={`tw-key${isPressed('k')}`} onClick={() => pressChar('k', 'k')}>K</button>
-          <button className={`tw-key${isPressed('l')}`} onClick={() => pressChar('l', 'l')}>L</button>
-          <button className={`tw-key${isPressed(';')}`} onClick={() => pressChar(';', ';', ':')}><span className="tw-top">:</span><span className="tw-bot">;</span></button>
-        </div>
-
-        <div className="tw-row tw-indent-3">
-          <button className={`tw-key tw-wide${shiftHeld ? ' tw-active' : ''}${isPressed('shiftL')}`} onClick={() => pressShift('shiftL')}><span className="tw-bot">SHIFT<br />KEY</span></button>
-          <button className={`tw-key${isPressed('z')}`} onClick={() => pressChar('z', 'z')}>Z</button>
-          <button className={`tw-key${isPressed('x')}`} onClick={() => pressChar('x', 'x')}>X</button>
-          <button className={`tw-key${isPressed('c')}`} onClick={() => pressChar('c', 'c')}>C</button>
-          <button className={`tw-key${isPressed('v')}`} onClick={() => pressChar('v', 'v')}>V</button>
-          <button className={`tw-key${isPressed('b')}`} onClick={() => pressChar('b', 'b')}>B</button>
-          <button className={`tw-key${isPressed('n')}`} onClick={() => pressChar('n', 'n')}>N</button>
-          <button className={`tw-key${isPressed('m')}`} onClick={() => pressChar('m', 'm')}>M</button>
-          <button className={`tw-key${isPressed(',')}`} onClick={() => pressChar(',', ',', '?')}><span className="tw-top">?</span><span className="tw-bot">,</span></button>
-          <button className={`tw-key tw-wide${shiftHeld ? ' tw-active' : ''}${isPressed('shiftR')}`} onClick={() => pressShift('shiftR')}><span className="tw-bot">SHIFT<br />KEY</span></button>
-        </div>
-
-        <div className="tw-row tw-spacerow">
-          <button className="tw-spacebar" aria-label="Space" onClick={() => pressChar('space', ' ')} />
+    <>
+      <div className="sim-launch-card">
+        <div className="sim-launch-icon">🕳️</div>
+        <h3>Type It. Punch It.</h3>
+        <p>
+          Use a virtual 1928-standard typewriter keyboard to "type" onto an IBM-style
+          punch card. Every keystroke is encoded live using Hollerith Code — the same
+          row/column hole pattern early computers actually read.
+        </p>
+        <button className="sim-launch-btn" onClick={() => setOpen(true)}>▶ Launch Simulator</button>
+        <div className="sim-launch-tags">
+          <span className="sim-launch-tag">⌨️ Typewriter</span>
+          <span className="sim-launch-tag">🕳️ Hollerith Code</span>
+          <span className="sim-launch-tag">🗂️ Punch Card</span>
         </div>
       </div>
 
-      <div className="sim-legend">
-        <div className="sim-legend-item">
-          <div className="legend-swatch" style={{ background: '#111128', border: '1px solid #333' }} />
-          <span>Punched hole</span>
-        </div>
-        <div className="sim-legend-item">
-          <div className="legend-swatch" style={{ background: '#3a3520', border: '1px solid #554' }} />
-          <span>Unpunched position</span>
-        </div>
-      </div>
+      {mounted && createPortal(
+        <div
+          className={`sim-overlay${open ? ' is-open' : ''}`}
+          onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
+        >
+        <div className="sim-modal" role="dialog" aria-modal="true" aria-label="Text-to-Punch Card Simulator">
+          <div className="sim-modal-header">
+            <div className="sim-modal-title">
+              <span className="sim-modal-title-icon">🕳️</span> Text-to-Punch Card Simulator
+            </div>
+            <button className="sim-modal-close" onClick={() => setOpen(false)} aria-label="Close simulator">✕</button>
+          </div>
 
-      <div className="sim-note">
-        <p><strong>Hollerith Code:</strong></p>
-        <ul style={{ textAlign: 'justify' }}>
-          <li><strong>[DIGITS]</strong> punch a single hole in their own row (0–9).</li>
-          <li><strong>[LETTERS]</strong> need two holes — a zone punch (row 12, 11, or 0) combined with a digit punch (1–9).</li>
-          <li><strong>[A–I]</strong> use zone 12, <strong>[J–R]</strong> use zone 11, <strong>[S–Z]</strong> use zone 0.</li>
-          <li><strong>[SHIFT LOCK] and [SHIFT KEY]</strong> toggle the number keys between their digit and symbol characters, just like a real mechanical typewriter.</li>
-        </ul>
+          <div className="sim-modal-body">
+            <div className="punch-sim-wrap">
+              <div className="punch-card-frame" ref={frameRef}>
+                <div className="punch-card-titlebar">TEXT-TO-PUNCH CARD SIMULATOR</div>
+                <canvas ref={canvasRef} id="punchCanvas" width="900" height="220" aria-label="Punch card visualization" />
+              </div>
 
-        <p><strong><br />Note that:</strong></p>
-        <ul style={{ textAlign: 'justify' }}>
-          <li>This simulator only punches <strong>letters, numbers, and spaces</strong> (symbols are shown but left unpunched to keep the card readable).</li>
-          <li>Standard Hollerith code <strong>has no separate lowercase encoding</strong> — letter keys punch the same hole pattern regardless of shift state, matching how the original keypunch machines worked.</li>
-        </ul>
-      </div>
-    </div>
+              <div className="punch-output" id="punchOutput">{outputText}</div>
+
+              <div className="typewriter">
+                <div className="tw-row">
+                  <button className={`tw-key${isPressed('1')}`} onClick={() => pressChar('1', '1', '!')}><span className="tw-top">!</span><span className="tw-bot">1</span></button>
+                  <button className={`tw-key${isPressed('2')}`} onClick={() => pressChar('2', '2', '"')}><span className="tw-top">&quot;</span><span className="tw-bot">2</span></button>
+                  <button className={`tw-key${isPressed('3')}`} onClick={() => pressChar('3', '3', '#')}><span className="tw-top">#</span><span className="tw-bot">3</span></button>
+                  <button className={`tw-key${isPressed('4')}`} onClick={() => pressChar('4', '4', '$')}><span className="tw-top">$</span><span className="tw-bot">4</span></button>
+                  <button className={`tw-key${isPressed('5')}`} onClick={() => pressChar('5', '5', '%')}><span className="tw-top">%</span><span className="tw-bot">5</span></button>
+                  <button className={`tw-key${isPressed('6')}`} onClick={() => pressChar('6', '6', '-')}><span className="tw-top">-</span><span className="tw-bot">6</span></button>
+                  <button className={`tw-key${isPressed('7')}`} onClick={() => pressChar('7', '7', '+')}><span className="tw-top">+</span><span className="tw-bot">7</span></button>
+                  <button className={`tw-key${isPressed('8')}`} onClick={() => pressChar('8', '8', '8')}><span className="tw-top">&nbsp;</span><span className="tw-bot">8</span></button>
+                  <button className={`tw-key${isPressed('9')}`} onClick={() => pressChar('9', '9', '(')}><span className="tw-top">(</span><span className="tw-bot">9</span></button>
+                  <button className={`tw-key${isPressed('0')}`} onClick={() => pressChar('0', '0', ')')}><span className="tw-top">)</span><span className="tw-bot">0</span></button>
+                  <button className={`tw-key tw-wide${isPressed('backspace')}`} onClick={pressBackspace}><span className="tw-bot">BACK<br />SPACE</span></button>
+                </div>
+
+                <div className="tw-row tw-indent-1">
+                  <button className={`tw-key${isPressed('q')}`} onClick={() => pressChar('q', 'q')}>Q</button>
+                  <button className={`tw-key${isPressed('w')}`} onClick={() => pressChar('w', 'w')}>W</button>
+                  <button className={`tw-key${isPressed('e')}`} onClick={() => pressChar('e', 'e')}>E</button>
+                  <button className={`tw-key${isPressed('r')}`} onClick={() => pressChar('r', 'r')}>R</button>
+                  <button className={`tw-key${isPressed('t')}`} onClick={() => pressChar('t', 't')}>T</button>
+                  <button className={`tw-key${isPressed('y')}`} onClick={() => pressChar('y', 'y')}>Y</button>
+                  <button className={`tw-key${isPressed('u')}`} onClick={() => pressChar('u', 'u')}>U</button>
+                  <button className={`tw-key${isPressed('i')}`} onClick={() => pressChar('i', 'i')}>I</button>
+                  <button className={`tw-key${isPressed('o')}`} onClick={() => pressChar('o', 'o')}>O</button>
+                  <button className={`tw-key${isPressed('p')}`} onClick={() => pressChar('p', 'p')}>P</button>
+                  <button className={`tw-key${isPressed('.')}`} onClick={() => pressChar('.', '.', ':')}><span className="tw-top">:</span><span className="tw-bot">.</span></button>
+                </div>
+
+                <div className="tw-row tw-indent-2">
+                  <button className={`tw-key tw-wide${shiftLock ? ' tw-active' : ''}${isPressed('shiftlock')}`} onClick={pressShiftLock}><span className="tw-bot">SHIFT<br />LOCK</span></button>
+                  <button className={`tw-key${isPressed('a')}`} onClick={() => pressChar('a', 'a')}>A</button>
+                  <button className={`tw-key${isPressed('s')}`} onClick={() => pressChar('s', 's')}>S</button>
+                  <button className={`tw-key${isPressed('d')}`} onClick={() => pressChar('d', 'd')}>D</button>
+                  <button className={`tw-key${isPressed('f')}`} onClick={() => pressChar('f', 'f')}>F</button>
+                  <button className={`tw-key${isPressed('g')}`} onClick={() => pressChar('g', 'g')}>G</button>
+                  <button className={`tw-key${isPressed('h')}`} onClick={() => pressChar('h', 'h')}>H</button>
+                  <button className={`tw-key${isPressed('j')}`} onClick={() => pressChar('j', 'j')}>J</button>
+                  <button className={`tw-key${isPressed('k')}`} onClick={() => pressChar('k', 'k')}>K</button>
+                  <button className={`tw-key${isPressed('l')}`} onClick={() => pressChar('l', 'l')}>L</button>
+                  <button className={`tw-key${isPressed(';')}`} onClick={() => pressChar(';', ';', ':')}><span className="tw-top">:</span><span className="tw-bot">;</span></button>
+                </div>
+
+                <div className="tw-row tw-indent-3">
+                  <button className={`tw-key tw-wide${shiftHeld ? ' tw-active' : ''}${isPressed('shiftL')}`} onClick={() => pressShift('shiftL')}><span className="tw-bot">SHIFT<br />KEY</span></button>
+                  <button className={`tw-key${isPressed('z')}`} onClick={() => pressChar('z', 'z')}>Z</button>
+                  <button className={`tw-key${isPressed('x')}`} onClick={() => pressChar('x', 'x')}>X</button>
+                  <button className={`tw-key${isPressed('c')}`} onClick={() => pressChar('c', 'c')}>C</button>
+                  <button className={`tw-key${isPressed('v')}`} onClick={() => pressChar('v', 'v')}>V</button>
+                  <button className={`tw-key${isPressed('b')}`} onClick={() => pressChar('b', 'b')}>B</button>
+                  <button className={`tw-key${isPressed('n')}`} onClick={() => pressChar('n', 'n')}>N</button>
+                  <button className={`tw-key${isPressed('m')}`} onClick={() => pressChar('m', 'm')}>M</button>
+                  <button className={`tw-key${isPressed(',')}`} onClick={() => pressChar(',', ',', '?')}><span className="tw-top">?</span><span className="tw-bot">,</span></button>
+                  <button className={`tw-key tw-wide${shiftHeld ? ' tw-active' : ''}${isPressed('shiftR')}`} onClick={() => pressShift('shiftR')}><span className="tw-bot">SHIFT<br />KEY</span></button>
+                </div>
+
+                <div className="tw-row tw-spacerow">
+                  <button className="tw-spacebar" aria-label="Space" onClick={() => pressChar('space', ' ')} />
+                </div>
+              </div>
+
+              <div className="sim-legend">
+                <div className="sim-legend-item">
+                  <div className="legend-swatch" style={{ background: '#111128', border: '1px solid #333' }} />
+                  <span>Punched hole</span>
+                </div>
+                <div className="sim-legend-item">
+                  <div className="legend-swatch" style={{ background: '#3a3520', border: '1px solid #554' }} />
+                  <span>Unpunched position</span>
+                </div>
+              </div>
+
+              <div className="sim-note">
+                <p><strong>Hollerith Code:</strong></p>
+                <ul style={{ textAlign: 'justify' }}>
+                  <li><strong>[DIGITS]</strong> punch a single hole in their own row (0–9).</li>
+                  <li><strong>[LETTERS]</strong> need two holes — a zone punch (row 12, 11, or 0) combined with a digit punch (1–9).</li>
+                  <li><strong>[A–I]</strong> use zone 12, <strong>[J–R]</strong> use zone 11, <strong>[S–Z]</strong> use zone 0.</li>
+                  <li><strong>[SHIFT LOCK] and [SHIFT KEY]</strong> toggle the number keys between their digit and symbol characters, just like a real mechanical typewriter.</li>
+                </ul>
+
+                <p><strong><br />Note that:</strong></p>
+                <ul style={{ textAlign: 'justify' }}>
+                  <li>This simulator only punches <strong>letters, numbers, and spaces</strong> (symbols are shown but left unpunched to keep the card readable).</li>
+                  <li>Standard Hollerith code <strong>has no separate lowercase encoding</strong> — letter keys punch the same hole pattern regardless of shift state, matching how the original keypunch machines worked.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>,
+        document.body
+      )}
+    </>
   );
 }

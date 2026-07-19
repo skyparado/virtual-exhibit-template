@@ -291,25 +291,10 @@
   .mem-tier-meta      { display: none; }
 }
 
-.figure-placeholder {
-  margin: 1.5rem 0;
-  text-align: center;
-}
- 
-.figure-img {
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  display: block;
-  margin: 0 auto;
-}
-
 .figure-img-pmr {
   max-width: 750px;
 }
- 
+
 .figure-img-hdd {
   max-width: 600px;
 }

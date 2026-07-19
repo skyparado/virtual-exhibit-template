@@ -250,22 +250,11 @@ body.theme-fullcapacity {
   justify-content: center;
 }
 
-@keyframes armSweep {
-  0%,100% { transform: rotate(-20deg); }
-  50%      { transform: rotate(14deg); }
-}
-
 .hdd-svg {
   width: 100%;
   max-width: 35vh;
   height: auto;
   filter: drop-shadow(0 0 24px rgba(57,255,20,0.12)) drop-shadow(0 0 60px rgba(128,0,255,0.2));
-}
-
-.hdd-arm-g {
-  transform-box: view-box;
-  transform-origin: 266px 50px;
-  animation: armSweep 5s ease-in-out infinite;
 }
 
 .hdd-spec-tags {
@@ -286,6 +275,36 @@ body.theme-fullcapacity {
   text-align: center;
   background: rgba(0,0,0,0.4);
 }
+
+/* Shared figure/photo treatment for every exhibit page — letterboxed so
+   photos of wildly different aspect ratios and native resolutions never
+   blow up past a sane, consistent on-page size or upscale into blur. */
+.figure-placeholder {
+  margin: 1.75rem 0;
+  text-align: center;
+}
+
+.figure-img {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  height: 420px;
+  object-fit: contain;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin: 0 auto;
+}
+
+.figure-placeholder figcaption {
+  margin-top: 0.6rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.figure-placeholder figcaption a { color: var(--accent-cyan); text-decoration: none; }
+.figure-placeholder figcaption a:hover { text-decoration: underline; }
 
 .stats-bar {
   display: flex;
