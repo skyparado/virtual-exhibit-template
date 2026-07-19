@@ -12,8 +12,14 @@ toc:
     label: "How It Works"
   - href: "#pits-lands"
     label: "Pits & Lands"
+  - href: "#error-correction"
+    label: "Error Correction"
   - href: "#standards"
     label: "CD vs DVD vs Blu-ray"
+  - href: "#recordable"
+    label: "Recordable & Rewritable Discs"
+  - href: "#decline"
+    label: "The Decline of Optical Media"
   - href: "#simulator"
     label: "Interactive Simulator"
   - href: "#references"
@@ -39,6 +45,17 @@ import CapacityChart from '../../components/CapacityChart.astro';
     Over 30 years, optical storage evolved through three generations — CD (1982),
     DVD (1995), and Blu-ray (2006) — each squeezing more data onto the same disc by
     using shorter and shorter wavelengths of laser light.
+  </p>
+  <p>
+    Optical discs weren't the first medium to encode information as light-readable
+    marks — the <strong>LaserDisc</strong>, launched in 1978, pioneered the idea of a
+    reflective analog video disc read by laser. But LaserDiscs were bulky (the size of
+    a vinyl record) and analog, storing video as a continuously varying signal rather
+    than discrete bits. The CD's breakthrough was combining the laser-reading concept
+    with fully <strong>digital</strong> encoding, governed by the Red Book standard
+    Sony and Philips published in 1980 — the first time an optical format's physical
+    and logical specifications were locked down before mass production, letting every
+    manufacturer's discs play in every manufacturer's player.
   </p>
 </section>
 
@@ -110,6 +127,33 @@ import CapacityChart from '../../components/CapacityChart.astro';
   </p>
 </section>
 
+<section id="error-correction">
+  <h2>Error Correction: Surviving Scratches and Dust</h2>
+  <p>
+    A CD spins at up to 500 RPM under a laser reading marks measured in hundredths of a
+    micron — a single fingerprint smudge, dust particle, or hairline scratch can wipe out
+    thousands of consecutive bits. Optical media survives this because every byte written
+    to the disc is protected by <strong>CIRC</strong> (Cross-Interleaved Reed-Solomon Code),
+    developed for the Red Book standard alongside EFM.
+  </p>
+  <p>
+    CIRC works in two layers. First, a <strong>Reed-Solomon</strong> code adds parity symbols
+    that let the player reconstruct missing or corrupted bytes through math alone, without
+    ever needing to re-read the disc. Second, and just as important, the encoder
+    <strong>interleaves</strong> the data — spreading each chunk of a file across
+    widely separated physical locations on the spiral track before writing it. A scratch
+    that destroys one contiguous stretch of the disc surface therefore only damages a few
+    scattered bytes from many different chunks, each easily recoverable by Reed-Solomon,
+    rather than annihilating one chunk completely.
+  </p>
+  <p>
+    This is why a CD with a visible scratch across its surface will often still play
+    perfectly, while a single deep scratch on a hard drive platter can be catastrophic —
+    the interleaving trades a small amount of storage overhead for a large amount of
+    physical resilience.
+  </p>
+</section>
+
 <section id="standards">
   <h2>CD vs. DVD vs. Blu-ray</h2>
   <p>Shorter wavelength = smaller pits = more data. Same disc, totally different capacity:</p>
@@ -164,6 +208,66 @@ import CapacityChart from '../../components/CapacityChart.astro';
     capacity on the exact same diameter disc. The tradeoff: Blu-ray's thinner protective
     layer (0.1 mm vs. DVD's 0.6 mm) makes it more scratch-prone.
   </p>
+  <p>
+    Capacity could also be doubled without shrinking pits further, by stacking a second
+    semi-transparent recording layer beneath the first. <strong>Dual-layer DVDs (DVD-9)</strong>
+    hold 8.5 GB by refocusing the laser deeper into the disc for the second layer, and
+    Blu-ray pushed the same trick to <strong>BD-XL</strong> discs with up to four layers
+    and 128 GB — though each additional layer demands a more precise, more expensive laser
+    assembly to focus through the layers above it without cross-talk.
+  </p>
+</section>
+
+<section id="recordable">
+  <h2>Recordable & Rewritable Discs</h2>
+  <p>
+    Factory-pressed discs like retail CDs have their pits physically stamped into the
+    polycarbonate at manufacture — there is no "writing" involved at all. Consumer
+    recordable discs had to fake the same optical behavior using materials a laser
+    could alter at home, which split the technology into two families.
+  </p>
+  <p>
+    <strong>CD-R and DVD±R</strong> ("recordable") discs replace the reflective aluminum
+    layer's neighbor with a layer of light-sensitive organic <strong>dye</strong>. A
+    high-power write laser heats spots along the dye layer, permanently darkening them
+    so they scatter light instead of reflecting it — mimicking a pit optically, even
+    though the disc surface itself never actually deforms. Because the dye can't
+    revert once burned, these discs are <strong>write-once</strong>: ideal for archival
+    backups precisely because the data can't later be altered or accidentally erased.
+  </p>
+  <p>
+    <strong>CD-RW and DVD±RW</strong> ("rewritable") discs use a <strong>phase-change
+    alloy</strong> instead of dye — typically a silver-indium-antimony-tellurium
+    compound. The write laser can heat this alloy to two different temperatures: a
+    high heat that melts it into a disordered, light-scattering <em>amorphous</em>
+    state (representing a pit), or a lower, sustained heat that lets it cool slowly
+    back into an ordered, reflective <em>crystalline</em> state (erasing that spot back
+    to a land). This reversible melt-and-anneal cycle is what lets rewritable discs be
+    erased and rewritten roughly 1,000 times, at the cost of a dimmer reflectivity
+    contrast than a stamped disc — which is why rewritable media generally demands a
+    more sensitive, more expensive laser pickup to read reliably.
+  </p>
+</section>
+
+<section id="decline">
+  <h2>The Decline of Optical Media</h2>
+  <p>
+    Blu-ray, released in 2006, turned out to be the last mainstream optical format.
+    Its arrival coincided almost exactly with two shifts that made physical discs feel
+    increasingly unnecessary: consumer broadband made streaming video and downloadable
+    software practical, and flash memory prices fell fast enough that USB drives and SD
+    cards became cheaper, faster, rewritable, and far more durable per gigabyte than any
+    disc could be.
+  </p>
+  <p>
+    By the early 2010s, laptop manufacturers began shipping models without an optical
+    drive at all, and software distribution moved to digital storefronts. Optical media
+    never fully disappeared — it remains dominant in film physical-media collecting,
+    professional archival workflows (thanks to CIRC's resilience and long dye/inorganic
+    shelf life), and regions with limited broadband — but its three-decade run as the
+    default medium for distributing music, movies, games, and software effectively ended
+    within a decade of Blu-ray's launch.
+  </p>
 </section>
 
 <section id="simulator">
@@ -207,6 +311,15 @@ import CapacityChart from '../../components/CapacityChart.astro';
     <li>
       Yale University. (n.d.). <em>CDs and DVDs: Application.</em>
       https://volga.eng.yale.edu/teaching-resources/cds-and-dvds/application
+    </li>
+    <li>
+      Wicker, S. B., &amp; Bhargava, V. K. (Eds.). (1994). <em>Reed-Solomon codes and
+      their applications.</em> IEEE Press.
+    </li>
+    <li>
+      Nishiuchi, K., &amp; Yamada, H. (1998). Phase-change optical recording. In
+      <em>Photonic Materials and Optical Storage</em> (pp. 175–186). Springer.
+      https://doi.org/10.1007/978-1-4615-5341-2_12
     </li>
   </ul>
 </section>
