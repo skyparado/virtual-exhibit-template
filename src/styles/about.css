@@ -16,7 +16,7 @@
   color: var(--accent-cyan);
   font-size: 0.8rem;
   letter-spacing: 2px;
-  margin-bottom: 1rem;
+  margin-bottom: 2.5rem;
 }
 .about-wrap p {
   font-size: 0.82rem;
@@ -372,6 +372,5 @@
 
 .section-divider {
   border-bottom: 1px solid rgba(0,255,255,0.15);
-  padding-bottom: 0.4rem;
-  margin-bottom: 0;
+  margin-bottom: 1rem;
 }
