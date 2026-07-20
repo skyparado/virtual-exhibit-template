@@ -5,32 +5,87 @@ isHome: false
 ---
 
 import '../../styles/about.css';
+import lance from '../../assets/lance.png';
+import xan from '../../assets/xan.png';
+import maurienne from '../../assets/maurienne.png';
+import sky from '../../assets/sky.png';
+import rhian from '../../assets/rhian.png';
 
 <div class="about-wrap">
   <h1>ABOUT US</h1>
   <p class="sub">CSARCH2 — Group 7 [S01] — 3rd Term, A.Y. 2025–2026</p>
 
-  <p style="text-align: justify;">
+  <div class="section-divider"></div>
+
+  <p class="about-text" style="text-align: justify;">
     <strong style="color: var(--text);">Full Capacity: The Evolution of Computer Data Storage</strong> is
     a virtual exhibit created in partial fulfillment of the course requirements for Introduction to
     Computer Organization and Architecture 2 (CSARCH2) at De La Salle University – Manila.
   </p>
 
-  <p style="text-align: justify;">
+  <p class="about-text" style="text-align: justify;">
     The exhibit traces the history of data storage from punch cards and magnetic drums to solid-state
     drives and emerging technologies like DNA storage, highlighting the architectural principles and
     trade-offs behind each innovation.
   </p>
 
   <div class="members">
+    <h2>AI Usage Declaration</h2>
+    <p class="about-text" style="text-align: justify;">
+      In the development of this exhibit, the group used AI as a supporting tool throughout the design and development process. AI
+      assistance was primarily used for debugging layout, rendering, and state-management
+      issues; drafting and refining simulator and animation logic; writing explanatory inline code comments;
+      improving UI spacing, contrast, and responsive behavior; and reviewing the clarity,
+      grammar, and terminology of our written content.
+    </p>
+    <p class="about-text" style="text-align: justify;">
+      All AI-assisted code and content were manually reviewed, tested locally, and verified
+      against our cited sources before being committed to the project. AI tools were treated
+      as a guide for troubleshooting and refinement, not as a substitute for our own
+      understanding, and final implementation decisions, exhibit content, and simulator
+      behavior were confirmed and adjusted by each member individually.
+    </p>
+  </div>
+
+  <div class="members">
     <h2>Submitted by</h2>
-    <ul class="member-list">
-      <li>GALICIA, Lance Krystofer A.</li>
-      <li>KE, Xan Luo C.</li>
-      <li>MOJICA, Maurienne Marie M.</li>
-      <li>PARADO, Sky Hannah G.</li>
-      <li>YAMSUAN, Rhian Claire V.</li>
-    </ul>
+    <div class="member-grid">
+      <div class="member-card">
+        <div class="member-photo-wrap">
+          <img src={lance.src} alt="Lance Krystofer Galicia" class="member-photo" />
+        </div>
+        <span class="member-float-emoji">💾</span>
+        <p class="member-name">GALICIA, Lance Krystofer A.</p>
+      </div>
+      <div class="member-card">
+        <div class="member-photo-wrap">
+          <img src={xan.src} alt="Xan Luo Ke" class="member-photo" />
+        </div>
+        <span class="member-float-emoji">📡</span>
+        <p class="member-name">KE, Xan Luo C.</p>
+      </div>
+      <div class="member-card">
+        <div class="member-photo-wrap">
+          <img src={maurienne.src} alt="Maurienne Marie Mojica" class="member-photo" />
+        </div>
+        <span class="member-float-emoji">⚡</span>
+        <p class="member-name">MOJICA, Maurienne Marie M.</p>
+      </div>
+      <div class="member-card">
+        <div class="member-photo-wrap">
+          <img src={sky.src} alt="Sky Hannah Parado" class="member-photo" />
+        </div>
+        <span class="member-float-emoji">💿</span>
+        <p class="member-name">PARADO, Sky Hannah G.</p>
+      </div>
+      <div class="member-card">
+        <div class="member-photo-wrap">
+          <img src={rhian.src} alt="Rhian Claire Yamsuan" class="member-photo" />
+        </div>
+        <span class="member-float-emoji">🧠</span>
+        <p class="member-name">YAMSUAN, Rhian Claire V.</p>
+      </div>
+    </div>
   </div>
 
   <div class="members">
