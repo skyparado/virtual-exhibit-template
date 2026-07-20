@@ -26,6 +26,7 @@ toc:
     label: "References"
 ---
 
+import '../../styles/horizon-simulator.css';
 import OpticalEncoder from '../../components/OpticalEncoder.jsx';
 import OpticalDiagram from '../../components/OpticalDiagram.astro';
 import WavelengthLab from '../../components/WavelengthLab.astro';
@@ -281,8 +282,9 @@ import OpticalDeclineChart from '../../components/OpticalDeclineChart.astro';
 
 <section id="simulator">
   <h2>Interactive: Optical Pit &amp; Land Encoder</h2>
-  <p>
-    Type up to 3 characters, hit <strong>Encode</strong> to see your text as a disc track
+  <p style="text-align:justify;">
+    Launch the simulator to observe how an optical disc stores and retrieves data. Type up
+    to 3 characters, hit <strong>Encode</strong> to see your text as a disc track
     (dark = pit, bright = land), then <strong>Scan</strong> to watch the laser read it back.
   </p>
 

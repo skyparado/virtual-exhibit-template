@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 const MAX_CHARS = 3;
 const TRACK_Y = 75;
@@ -10,7 +11,7 @@ const W_MIN = 280;
 const W_MAX = 672;
 const L0 = 1; // NRZI reference level before the first cell (1 = land)
 
-export default function OpticalEncoder() {
+function OpticalEncoderContent() {
   const holderRef = useRef(null);
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
@@ -421,5 +422,65 @@ export default function OpticalEncoder() {
         </p>
       )}
     </div>
+  );
+}
+
+export default function OpticalEncoder() {
+  const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    document.body.classList.add('sim-locked');
+    const onKey = (e) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.body.classList.remove('sim-locked');
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  return (
+    <>
+      <div className="sim-launch-card">
+        <div className="sim-launch-icon">💿</div>
+        <h3>Encode, Scan, Decode</h3>
+        <p>
+          Type up to 3 characters, encode them into a disc track of pits and lands, then
+          watch a laser scan the surface and decode your text back one bit at a time —
+          with an NRZI toggle that switches to how real CDs actually store the data.
+        </p>
+        <button className="sim-launch-btn" onClick={() => setOpen(true)}>▶ Launch Simulator</button>
+        <div className="sim-launch-tags">
+          <span className="sim-launch-tag">🔴 Laser pickup</span>
+          <span className="sim-launch-tag">🕳️ Pits &amp; lands</span>
+          <span className="sim-launch-tag">🔀 NRZI encoding</span>
+          <span className="sim-launch-tag">🔤 Binary decode</span>
+        </div>
+      </div>
+
+      {mounted && createPortal(
+        <div
+          className={`sim-overlay${open ? ' is-open' : ''}`}
+          onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
+        >
+          <div className="sim-modal" role="dialog" aria-modal="true" aria-label="Optical Pit &amp; Land Encoder">
+            <div className="sim-modal-header">
+              <div className="sim-modal-title">
+                <span className="sim-modal-title-icon">💿</span> Optical Pit &amp; Land Encoder
+              </div>
+              <button className="sim-modal-close" onClick={() => setOpen(false)} aria-label="Close simulator">✕</button>
+            </div>
+
+            <div className="sim-modal-body">
+              {open && <OpticalEncoderContent />}
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+    </>
   );
 }
