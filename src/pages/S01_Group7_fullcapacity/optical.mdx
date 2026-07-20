@@ -27,6 +27,7 @@ toc:
 ---
 
 import '../../styles/horizon-simulator.css';
+import '../../styles/optical.css';
 import OpticalEncoder from '../../components/OpticalEncoder.jsx';
 import OpticalDiagram from '../../components/OpticalDiagram.astro';
 import WavelengthLab from '../../components/WavelengthLab.astro';
@@ -50,6 +51,25 @@ import OpticalDeclineChart from '../../components/OpticalDeclineChart.astro';
     DVD (1995), and Blu-ray (2006), each squeezing more data onto the same disc by
     using shorter and shorter wavelengths of laser light.
   </p>
+
+  <div class="gen-banner" aria-hidden="true">
+    <div class="gen-disc gen-cd">
+      <div class="gen-face"></div>
+      <span class="gen-name">CD</span>
+      <span class="gen-meta">1982<br />780 nm &middot; infrared</span>
+    </div>
+    <div class="gen-disc gen-dvd">
+      <div class="gen-face"></div>
+      <span class="gen-name">DVD</span>
+      <span class="gen-meta">1995<br />650 nm &middot; red</span>
+    </div>
+    <div class="gen-disc gen-bd">
+      <div class="gen-face"></div>
+      <span class="gen-name">BLU-RAY</span>
+      <span class="gen-meta">2006<br />405 nm &middot; violet</span>
+    </div>
+  </div>
+  <p class="gen-caption">Three generations, one disc size &mdash; each read by a shorter wavelength than the last.</p>
   <p>
     Optical discs weren't the first medium to encode information as light-readable
     marks. The <strong>LaserDisc</strong>, launched in 1978, pioneered the idea of a
@@ -120,6 +140,43 @@ import OpticalDeclineChart from '../../components/OpticalDeclineChart.astro';
     (no transition) is a <code style="color:var(--accent-green)">0</code>.
     This is called <strong>NRZI</strong> encoding.
   </p>
+
+  <div class="nrzi-stage" aria-hidden="true">
+    <div class="nrzi-track">
+      <div class="nrzi-strip">
+        <span class="nrzi-seg is-land" style="--w:3"></span>
+        <span class="nrzi-seg is-pit"  style="--w:5"></span>
+        <span class="nrzi-seg is-land" style="--w:4"></span>
+        <span class="nrzi-seg is-pit"  style="--w:7"></span>
+        <span class="nrzi-seg is-land" style="--w:3"></span>
+        <span class="nrzi-seg is-pit"  style="--w:6"></span>
+        <span class="nrzi-seg is-land" style="--w:9"></span>
+        <span class="nrzi-seg is-pit"  style="--w:4"></span>
+        <span class="nrzi-seg is-land" style="--w:3"></span>
+        <span class="nrzi-seg is-pit"  style="--w:8"></span>
+        <span class="nrzi-seg is-land" style="--w:5"></span>
+        <span class="nrzi-seg is-pit"  style="--w:4"></span>
+        <span class="nrzi-seg is-land" style="--w:3"></span>
+        <span class="nrzi-seg is-pit"  style="--w:5"></span>
+        <span class="nrzi-seg is-land" style="--w:4"></span>
+        <span class="nrzi-seg is-pit"  style="--w:7"></span>
+        <span class="nrzi-seg is-land" style="--w:3"></span>
+        <span class="nrzi-seg is-pit"  style="--w:6"></span>
+        <span class="nrzi-seg is-land" style="--w:9"></span>
+        <span class="nrzi-seg is-pit"  style="--w:4"></span>
+        <span class="nrzi-seg is-land" style="--w:3"></span>
+        <span class="nrzi-seg is-pit"  style="--w:8"></span>
+        <span class="nrzi-seg is-land" style="--w:5"></span>
+        <span class="nrzi-seg is-pit"  style="--w:4"></span>
+      </div>
+      <div class="nrzi-head"></div>
+    </div>
+    <div class="nrzi-legend">
+      <span class="lg-land">Land (reflects)</span>
+      <span class="lg-pit">Pit (scatters)</span>
+      <span class="lg-one">Transition = 1</span>
+    </div>
+  </div>
   <ul>
     <li><strong>Noise immunity</strong>: no baseline needed between bits, easier to read at speed.</li>
     <li><strong>Self-clocking</strong>: the drive syncs its clock to the transitions themselves.</li>
@@ -253,6 +310,33 @@ import OpticalDeclineChart from '../../components/OpticalDeclineChart.astro';
     contrast than a stamped disc, which is why rewritable media generally demands a
     more sensitive, more expensive laser pickup to read reliably.
   </p>
+
+  <div class="burn-stage" aria-hidden="true">
+    <div class="burn-cell burn-r">
+      <div class="burn-row">
+        <span class="burn-dot" style="--i:0"></span>
+        <span class="burn-dot" style="--i:1"></span>
+        <span class="burn-dot" style="--i:2"></span>
+        <span class="burn-dot" style="--i:3"></span>
+        <span class="burn-dot" style="--i:4"></span>
+        <span class="burn-dot" style="--i:5"></span>
+      </div>
+      <span class="burn-label">CD-R &middot; DYE</span>
+      <span class="burn-note">Each spot darkens once and stays dark. Write-once, by chemistry.</span>
+    </div>
+    <div class="burn-cell burn-rw">
+      <div class="burn-row">
+        <span class="burn-dot" style="--i:0"></span>
+        <span class="burn-dot" style="--i:1"></span>
+        <span class="burn-dot" style="--i:2"></span>
+        <span class="burn-dot" style="--i:3"></span>
+        <span class="burn-dot" style="--i:4"></span>
+        <span class="burn-dot" style="--i:5"></span>
+      </div>
+      <span class="burn-label">CD-RW &middot; ALLOY</span>
+      <span class="burn-note">Melts to amorphous, anneals back to crystalline. The same spot, ~1,000 times.</span>
+    </div>
+  </div>
 
   <RecordableDiscDiagram />
 </section>
