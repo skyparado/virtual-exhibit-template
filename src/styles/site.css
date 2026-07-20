@@ -1242,6 +1242,19 @@ body.theme-fullcapacity {
   .sim-controls { flex-direction: column; align-items: flex-start; }
   .sim-input { width: 100%; }
 
+  /* prevent scroll-reveal animation from hiding full sections on mobile
+     when intersection triggers are delayed or not supported */
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .reveal-stagger > * {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
 }
 
 /* phones: a 7-column table can't fit, so each row becomes a labeled card.
